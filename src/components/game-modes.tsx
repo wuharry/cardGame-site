@@ -77,7 +77,8 @@ export function GameModes() {
 
         <p className="body-cjk mt-6 text-center text-[0.8rem]">
           區網開房不使用 UPnP。外網對戰由專用伺服器主持，
-          玩家無需替家中路由器設定埠轉發。線上版本與兩人實測另行驗收，請依驗收公告使用相容版本。
+          玩家無需替家中路由器設定埠轉發。線上大廳的玩家數包含大廳與對戰中玩家，
+          轉入戰鬥房時可能短暫變動；公開列表只顯示等待中的雙人房。
         </p>
       </div>
     </section>

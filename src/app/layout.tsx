@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "暮色秘典 Twilight Codex",
     description:
-      "四路前後排、種族結界與自己的六十張。244 種正式卡，Windows R3 下載資訊與開發進度。",
+      `四路前後排、種族結界與自己的六十張。244 種正式卡，Windows ${GAME_FACTS.version} 下載資訊與雙人房間對戰。`,
     type: "website",
     locale: "zh_TW",
     images: [{ url: mediaUrl("/media/screens/hero-battlefield.webp"), width: 1280, height: 720, alt: "暮色秘典實機戰場" }],

@@ -3,7 +3,7 @@
  * 本機驗收可先填成品資訊；公開附件實際可下載後才填 RELEASE_BASE 並開放下載。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.11-r3";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.11-r4";
 
 export type BuildStatus = "available" | "preparing" | "planned";
 
@@ -28,13 +28,13 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · 64-bit",
     status: "available",
-    file: "TwilightCodex-Windows-20261011-local-1244.zip",
-    version: "2026.10.11-R3",
-    size: "583.3 MiB",
+    file: "TwilightCodex-Windows-20261011-R4.zip",
+    version: "2026.10.11-R4",
+    size: "583.2 MiB",
     updated: "2026-10-11",
-    sha256: "b4807044b0e40b33b681c1e625270b0805e573b70e2e4189ca2d57da8803aa2f",
+    sha256: "14243c2f1b5e397fdc468c335252f39e709ca25bcd7c8c53ef47c02d290b8f48",
     requirement: "64 位元 Windows · 滑鼠與鍵盤",
-    note: "Windows ZIP 已提供公開下載，本機解壓、啟動與單人前三回合操作已驗證。請完整解壓縮，再執行 TwilightCodex.exe，不需另外安裝 Godot。線上版本與兩人實測另行驗收。",
+    note: "R4 新增線上玩家數與即時公開房列表，每房兩人，雙方準備完成後開局。請完整解壓縮，再執行 TwilightCodex.exe，不需另外安裝 Godot；連線雙方都需更新至 R4。",
   },
   {
     id: "macos",
@@ -107,6 +107,18 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "2026.10.11-R4",
+    date: "2026-10-11",
+    title: "雙人大廳：看見玩家，也看見房間",
+    changes: [
+      "線上大廳顯示目前連線玩家數，包含大廳與對戰中的玩家；同一玩家不重複計算。",
+      "公開等待房會隨建立、加入與離開更新，列出房間名稱及 1／2、2／2 人數，滿房不能加入。",
+      "建立房間後仍可看見其他公開房；先離開自己的房間，才能加入另一房。私人房只透過房碼加入，不出現在公開列表。",
+      "優先完成兩人對戰流程，雙方準備完成才開局；本版未新增觀戰功能。",
+      "連線協定更新為 13，請兩位玩家都更新 Windows 版，再連線至新版伺服器。",
+    ],
+  },
   {
     version: "2026.10.11-R3",
     date: "2026-10-11",

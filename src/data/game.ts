@@ -1,14 +1,14 @@
-/** 依 Windows 2026.10.11-R3 的 source snapshot 核對；線上驗收另行公告。 */
+/** 依 canonical Godot 專案 2026.10.11-R4 核對；下載成品資訊另見 releases.ts。 */
 export const GAME_FACTS = {
   nameZh: "暮色秘典",
   nameEn: "Twilight Codex",
-  version: "2026.10.11-R3",
+  version: "2026.10.11-R4",
   engine: "Godot 4.7",
   lanes: 4,
   cards: 244,
   tokens: 21,
   aiPresets: 19,
-  protocol: 12,
+  protocol: 13,
 } as const;
 
 export interface LaneUnit {
@@ -202,7 +202,7 @@ export const COLLECTION_FEATURES: SystemRule[] = [
   { label: "Daily pack ticket", value: "1 券／登入日", note: "每日以台灣時間 00:00 換日；登入日可領一券並累積，未登入的日期不補發。新手抽完前，一般卡包尚未開放，包券仍可累積。" },
   { label: "Collection limit", value: "滿 3 張不再抽到", note: "一般卡包每包 5 張，已持有 3 張的卡不再加入可抽清單。稀有度按可抽卡池的相對權重抽取，沒有保底；既有收藏不重置。" },
   { label: "Guest collection", value: "保存在本機", note: "訪客收藏與牌組保存在這台電腦，不能當作正式帳號的雲端持有量；訪客、AI 與區網練習不列入正式戰績。" },
-  { label: "Online account", value: "線上驗收另行公告", note: "正式外網需要登入帳號、雲端持有權與合法自組牌組，並由相容的專用伺服器主持。線上版本與兩人實測另行驗收；本頁不代表真人連線已通過。" },
+  { label: "Online account", value: "帳號登入 · 雙人房間", note: "正式外網需要登入帳號、完成 150 次新手抽卡，並選用雲端持有量足夠的合法自組牌組。進入線上大廳可查看線上玩家數與公開等待房，選擇房間加入或自己開房。" },
 ];
 
 export const SPOILS_RULES: SystemRule[] = [
@@ -232,8 +232,8 @@ export const GAME_MODES: GameMode[] = [
   },
   {
     zh: "外網配對與房間", en: "Online Lobby",
-    body: "專用伺服器提供配對、公開與私人等待房；正式對戰要求登入帳號、完成新手抽卡，並使用雲端持有量足夠的合法自組牌組。正常擊敗真人可取得一張戰利品，雙方收藏會實際增減。線上版本與兩人實測另行驗收。",
-    meta: "需帳號持卡驗證 · 正式連線驗收另行公告",
+    body: "進入線上大廳即可查看目前線上玩家數及其他玩家建立的公開等待房。每房兩人，選擇未滿的房間加入，或建立自己的公開房、私人房；兩位玩家都準備完成後開局。正式對戰需要登入帳號、抽完 150 次新手卡，並選用持有量足夠的合法六十張牌組。",
+    meta: "兩人對戰 · 公開房列表 · 私人房以房碼加入",
   },
 ];
 

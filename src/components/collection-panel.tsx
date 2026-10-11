@@ -45,7 +45,7 @@ export function CollectionPanel() {
 
         <p className="body-cjk mt-8 max-w-3xl border-l border-brass-dim pl-4 text-[0.86rem]">
           玩家只使用自己的持有卡組牌，AI 預組不供選用。
-          本機訪客收藏與雲端帳號收藏分開保存；線上版本、帳號與兩人連線實測另行驗收。
+          本機訪客收藏與雲端帳號收藏分開保存；正式線上對戰需登入帳號，並選用雲端持有量足夠的合法牌組。
         </p>
 
         <div className="mt-14 border-t border-rule pt-10">
