@@ -1,4 +1,4 @@
-import { BUILDS, buildStatusText, downloadUrl, type Build } from "@/data/releases";
+import { BUILDS, buildStatusText, downloadUrl, releasePageUrl, type Build } from "@/data/releases";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -70,6 +70,7 @@ export function DownloadPanel() {
 
 function FeaturedBuild({ build }: { build: Build }) {
   const href = downloadUrl(build);
+  const releaseHref = releasePageUrl(build);
 
   return (
     <div className="plate notch mt-12 md:mt-14">
@@ -121,6 +122,17 @@ function FeaturedBuild({ build }: { build: Build }) {
           </div>
         )}
       </div>
+
+      {releaseHref && (
+        <p className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem] md:px-10">
+          下載無反應？到{" "}
+          <a href={releaseHref} className="text-brass-hi underline underline-offset-4 hover:text-parchment">
+            GitHub 版本頁
+          </a>
+          {" "}的 Assets 選擇 <code className="break-all">{build.file}</code>，勿選 Source code。
+          此入口仍使用相同 GitHub 附件來源，無法繞過附件網域封鎖。
+        </p>
+      )}
 
       <dl className="grid grid-cols-2 md:grid-cols-4">
         <Spec label="Version" value={build.version ?? "—"} />
