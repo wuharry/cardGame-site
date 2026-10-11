@@ -11,7 +11,7 @@ const browser = await chromium.launch({
 const page = await browser.newPage({ viewport: { width: W, height: H } });
 await page.goto("http://localhost:3100/", { waitUntil: "networkidle" });
 await page.waitForTimeout(800);
-for (const id of ["cards", "systems", "modes", "download", "changelog"]) {
+for (const id of ["cards", "systems", "collection", "modes", "download", "changelog"]) {
   await page.locator(`#${id}`).scrollIntoViewIfNeeded();
   await page.waitForTimeout(700);
   await page.locator(`#${id}`).screenshot({ path: `${OUT}/${PREFIX}-${id}.png` });

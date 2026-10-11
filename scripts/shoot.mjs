@@ -40,9 +40,9 @@ await page.close();
 // 手機版戰場
 const m = await browser.newPage({ viewport: { width: 390, height: 844 } });
 await m.goto(URL, { waitUntil: "networkidle" });
-const msteps = await m.locator("li[data-step]").all();
+const msteps = await m.locator('[aria-label="戰場規則步驟"] button').all();
 for (const i of [0, 4, 5]) {
-  await msteps[i].scrollIntoViewIfNeeded();
+  await msteps[i].click();
   await m.waitForTimeout(900);
   await m.screenshot({ path: `${OUT}/mobile-lane-${i}.png` });
 }
