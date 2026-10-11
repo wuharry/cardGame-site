@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { ARENAS, ROSTER } from "@/data/game";
+import { ARENAS, GAME_FACTS, ROSTER } from "@/data/game";
+import { mediaUrl } from "@/data/media";
 
 /**
  * 戰場與陣容。
@@ -10,15 +11,19 @@ export function ArenaBand() {
   return (
     <section className="border-t border-rule-soft bg-ink">
       <div className="mx-auto max-w-6xl px-5 pt-20 md:pt-28">
-        <p className="eyebrow">V — The Ground</p>
+        <p className="eyebrow">VI — The Ground</p>
         <h2 className="section-title mt-4 max-w-2xl text-3xl sm:text-4xl">
           每一局的戰場都是抽出來的
         </h2>
         <p className="body-cjk mt-5 max-w-2xl text-[0.98rem]">
-          地形與植被在進場時才程序生成，所以同一張戰場不會長得一樣。
-          3D 場景配像素立牌——單位是像素的，光線與景深是 3D 的。
+          對局會從森林、洞窟與冰原抽選戰場。
+          像素角色站在立體地形上，搭配河流、霧氣、燈光與各場景的環境效果。
         </p>
       </div>
+
+      <p className="body-cjk mx-auto mt-5 max-w-6xl px-5 text-[0.78rem]">
+        洞窟為 R3 Windows 實際對局，森林為四路驗收畫面；冰原仍為較早版本場景預覽，牌位規則以四路說明為準。
+      </p>
 
       {/* 滿版：讓圖跨出容器，打斷整站的欄寬節奏 */}
       <div className="mt-12 grid gap-px bg-rule-soft md:mt-16 md:grid-cols-3">
@@ -26,7 +31,7 @@ export function ArenaBand() {
           <figure key={arena.en} className="relative bg-ink">
             <div className="relative aspect-[16/10] md:aspect-[4/3]">
               <Image
-                src={arena.image}
+                src={mediaUrl(arena.image)}
                 alt={`${arena.zh}戰場的遊戲畫面`}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
@@ -63,7 +68,7 @@ export function ArenaBand() {
           >
             站在上面的人
           </h3>
-          <p className="hud-label">92 cards · 60 minions</p>
+          <p className="hud-label">{GAME_FACTS.cards} cards · {GAME_FACTS.tokens} tokens</p>
         </div>
 
         <ul className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
@@ -74,7 +79,7 @@ export function ArenaBand() {
                 style={{ borderRadius: "var(--radius-card)" }}
               >
                 <Image
-                  src={unit.art}
+                  src={mediaUrl(unit.art)}
                   alt={`${unit.name}的卡圖`}
                   fill
                   sizes="(max-width: 640px) 30vw, 160px"

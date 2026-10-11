@@ -4,6 +4,7 @@ const NAV = [
   { href: "#lanes", zh: "路線", en: "Lanes" },
   { href: "#cards", zh: "卡型", en: "Cards" },
   { href: "#systems", zh: "規則", en: "Rules" },
+  { href: "#collection", zh: "組牌", en: "Collection" },
   { href: "#modes", zh: "模式", en: "Modes" },
 ];
 
@@ -16,16 +17,16 @@ export function SiteHeader() {
             className="text-lg font-bold tracking-[0.22em] text-parchment"
             style={{ fontFamily: "var(--font-serif)" }}
           >
-            卡牌對決
+            暮色秘典
           </span>
           <span className="hidden text-[0.62rem] tracking-[0.3em] text-faint uppercase sm:inline"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            CardGame Demo
+            Twilight Codex
           </span>
         </Link>
 
-        <nav className="ml-auto hidden items-center gap-7 md:flex">
+        <nav className="ml-auto hidden items-center gap-5 lg:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}

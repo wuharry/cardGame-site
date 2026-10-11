@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { mediaUrl } from "@/data/media";
 
 /**
  * 一張實體卡。比例、卡圖窗、費用菱形、攻血四角都照遊戲裡的卡面來。
@@ -49,7 +50,7 @@ export function GameCard({
     >
       <div className="relative m-[5px] mb-0 flex-1 overflow-hidden border border-rule-soft bg-ink">
         {art && (
-          <Image src={art} alt={alt ?? ""} fill sizes={sizes} className="object-cover" />
+          <Image src={mediaUrl(art)} alt={alt ?? ""} fill sizes={sizes} className="object-cover" />
         )}
       </div>
 

@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { GAME_FACTS } from "@/data/game";
 
 /** 掛名與技術事實。CC-BY 的素材必須署名，這裡是它該待的地方。 */
 const CREDITS = [
-  { label: "Engine", value: "Godot 4.5 · GDScript · Forward+" },
+  { label: "Engine", value: `${GAME_FACTS.engine} · GDScript · Forward+` },
   { label: "Type", value: "Noto Serif TC · Cinzel · Barlow" },
   { label: "Icons", value: "Icons by Andrey Kalyuzhnyy (CC BY 4.0)" },
-  { label: "Characters", value: "Tiny RPG Character Asset Pack" },
+  { label: "Icons / source", value: "Icons: Shikashi's Fantasy Icons Pack; partly based on game-icons.net (CC BY 3.0)" },
 ];
 
 export function SiteFooter() {
@@ -18,13 +19,13 @@ export function SiteFooter() {
               className="text-lg tracking-[0.2em] text-parchment"
               style={{ fontFamily: "var(--font-serif)" }}
             >
-              卡牌對決
+              暮色秘典
             </span>
             <span
               className="text-[0.62rem] tracking-[0.3em] text-faint uppercase"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              CardGame Demo
+              Twilight Codex
             </span>
           </p>
 
@@ -33,6 +34,7 @@ export function SiteFooter() {
               { href: "#lanes", label: "路線" },
               { href: "#cards", label: "卡型" },
               { href: "#systems", label: "規則" },
+              { href: "#collection", label: "組牌" },
               { href: "#modes", label: "模式" },
               { href: "#download", label: "下載" },
               { href: "#changelog", label: "更新紀錄" },
@@ -65,6 +67,7 @@ export function SiteFooter() {
 
         <p className="mt-10 text-[0.75rem] text-faint">
           個人開發專案。網站上的畫面全部擷取自實際執行的遊戲。
+          引擎授權：<a href="https://godotengine.org/license/" className="underline underline-offset-4">Godot Engine · MIT</a>。
         </p>
       </div>
     </footer>

@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { GAME_MODES, NETWORK_NOTES } from "@/data/game";
+import { mediaUrl } from "@/data/media";
 
 /**
- * Section 05 — 對戰模式。
+ * Section 07 — 對戰模式。
  * 版面直接借遊戲主選單：暗底、置中的明體條目、上下髮絲線。
  * 連線的技術細節放在最後一條規格帶裡，用規格表的語氣，不做成技術行銷。
  */
@@ -13,7 +14,7 @@ export function GameModes() {
       className="vignette relative overflow-hidden border-t border-rule-soft"
     >
       <Image
-        src="/media/screens/town.webp"
+        src={mediaUrl("/media/screens/town.webp")}
         alt=""
         fill
         sizes="100vw"
@@ -22,9 +23,9 @@ export function GameModes() {
 
       <div className="relative z-10 mx-auto max-w-3xl px-5 py-20 md:py-28">
         <header className="text-center">
-          <p className="eyebrow">VI — The Table</p>
+          <p className="eyebrow">VII — The Table</p>
           <h2 className="section-title mt-4 text-3xl sm:text-4xl">
-            找得到人，就能開一局
+            先練一局，再邀朋友對戰
           </h2>
         </header>
 
@@ -75,8 +76,8 @@ export function GameModes() {
         </dl>
 
         <p className="body-cjk mt-6 text-center text-[0.8rem]">
-          開房時會自動向路由器申請埠轉發。失敗的話畫面會直接說明原因，
-          並給出手動轉發或 Tailscale 的作法。
+          區網開房不使用 UPnP。外網對戰由專用伺服器主持，
+          玩家無需替家中路由器設定埠轉發。線上版本與兩人實測另行驗收，請依驗收公告使用相容版本。
         </p>
       </div>
     </section>

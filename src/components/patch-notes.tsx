@@ -1,8 +1,7 @@
 import { RELEASE_NOTES } from "@/data/releases";
 
 /**
- * Section 08 — 更新紀錄。
- * 一本流水帳：版號在左邊留白處，內容靠一條縱線串起來。
+ * 開發更新紀錄；日期與下載成品資訊分開維護。
  * 不是卡片列表，也不做展開收合——這種東西應該一眼掃完。
  */
 export function PatchNotes() {
@@ -11,18 +10,22 @@ export function PatchNotes() {
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <header className="flex flex-wrap items-baseline justify-between gap-4">
           <div>
-            <p className="eyebrow">VIII — Log</p>
-            <h2 className="section-title mt-4 text-3xl sm:text-4xl">更新紀錄</h2>
+            <p className="eyebrow">IX — Log</p>
+            <h2 className="section-title mt-4 text-3xl sm:text-4xl">開發更新紀錄</h2>
           </div>
           <p className="hud-label">
-            {RELEASE_NOTES.length} releases · latest {RELEASE_NOTES[0].date.replaceAll("-", ".")}
+            {RELEASE_NOTES.length} updates · latest {RELEASE_NOTES[0].date.replaceAll("-", ".")}
           </p>
         </header>
+
+        <p className="body-cjk mt-5 max-w-2xl text-[0.9rem]">
+          以下記錄目前程式的開發進度。可下載的版本、大小與發佈日期以下載區為準。
+        </p>
 
         <ol className="mt-12 md:mt-14">
           {RELEASE_NOTES.map((note, index) => (
             <li
-              key={note.version}
+              key={`${note.date}-${note.title}`}
               className="border-t border-rule-soft py-8 md:grid md:grid-cols-[10rem_minmax(0,1fr)] md:gap-10"
             >
               <div className="flex items-baseline gap-3 md:block">

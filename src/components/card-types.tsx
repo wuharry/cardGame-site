@@ -7,11 +7,11 @@ import { CardNote, GameCard } from "./game-card";
 const byId = (id: string) => CARD_TYPES.find((t) => t.id === id)!;
 
 /**
- * Section 03 — 五種卡型。
+ * Section 03 — 六種卡型。
  *
  * 不排五張一樣的卡片。左邊把「場上一個單位其實是三張牌疊出來的」直接疊給你看
  * （從者站著、靈裝扣在旁邊、伏印蓋著塞在底下），右邊是兩張法術：秘術正著打，
- * 瞬咒斜插進來，因為它是唯一能在對手回合出手的牌。
+ * 瞬咒斜插進來，因為它在守方反制窗口使用。
  *
  * 唯一的互動是把伏印翻開——那本來就是這張卡的規則。
  */
@@ -23,6 +23,7 @@ export function CardTypeShowcase() {
   const ward = byId("ward");
   const arcana = byId("arcana");
   const quick = byId("quick");
+  const domain = byId("domain");
 
   return (
     <section id="cards" className="grain relative border-t border-rule-soft bg-ink">
@@ -33,8 +34,8 @@ export function CardTypeShowcase() {
             場上的一個單位，其實是三張牌疊出來的
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            牌組裡有五種卡：從者站上路線，靈裝扣在它身上，伏印蓋著埋在它底下，
-            秘術在自己回合結算，瞬咒只在對手出手時插進來。
+            牌組裡有六種卡：從者站上路線，靈裝扣在它身上，伏印蓋著埋在它底下，
+            秘術在自己回合結算，瞬咒在反應時機介入，結界則持續支援種族戰術。
           </p>
         </header>
 
@@ -59,7 +60,7 @@ export function CardTypeShowcase() {
                     art={ward.art}
                     alt={ward.artAlt}
                     name="荊棘伏印"
-                    cost={2}
+                    cost={1}
                     stamp="Ward"
                     sizes="(max-width: 1024px) 34vw, 130px"
                   />
@@ -78,8 +79,8 @@ export function CardTypeShowcase() {
                   art={minion.art}
                   alt={minion.artAlt}
                   name="騎士"
-                  cost={3}
-                  atk={4}
+                  cost={4}
+                  atk={3}
                   hp={5}
                   sizes="(max-width: 1024px) 46vw, 175px"
                 />
@@ -91,7 +92,7 @@ export function CardTypeShowcase() {
                 <GameCard
                   art={equip.art}
                   alt={equip.artAlt}
-                  name="祕銀重鎧"
+                  name="秘銀胸鎧"
                   cost={2}
                   stamp="Equip"
                   sizes="(max-width: 1024px) 34vw, 130px"
@@ -100,7 +101,7 @@ export function CardTypeShowcase() {
                   className="absolute -right-1 -bottom-2 border border-brass-dim bg-ink px-1.5 py-0.5 text-[0.66rem] tabular-nums text-brass-hi"
                   style={{ fontFamily: "var(--font-hud)" }}
                 >
-                  +0 / +3
+                  +0 / +2
                 </span>
               </div>
 
@@ -144,8 +145,8 @@ export function CardTypeShowcase() {
                 <GameCard
                   art={arcana.art}
                   alt={arcana.artAlt}
-                  name="烈焰爆破"
-                  cost={4}
+                  name="火焰爆裂"
+                  cost={3}
                   stamp="Arcana"
                   sizes="(max-width: 1024px) 46vw, 175px"
                 />
@@ -156,7 +157,7 @@ export function CardTypeShowcase() {
                 <GameCard
                   art={quick.art}
                   alt={quick.artAlt}
-                  name="虛空叱令"
+                  name="虛空反噬"
                   cost={2}
                   stamp="Quick"
                   sizes="(max-width: 1024px) 42vw, 160px"
@@ -210,6 +211,29 @@ export function CardTypeShowcase() {
                 </div>
               ))}
             </dl>
+          </div>
+        </div>
+
+        <div className="mt-16 grid gap-8 border-t border-rule-soft pt-10 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-10">
+          <div className="mx-auto w-40 sm:mx-0">
+            <GameCard
+              art={domain.art}
+              alt={domain.artAlt}
+              name="妖精之森"
+              cost={3}
+              stamp="Domain"
+              sizes="160px"
+            />
+          </div>
+          <div className="self-center">
+            <SubHead mark="C" title="一方一個結界，讓種族互相支援" />
+            <div className="mt-6 max-w-2xl">
+              <CardNote zh={domain.zh} en={domain.en} rule={domain.detail} />
+            </div>
+            <p className="body-cjk mt-5 max-w-2xl text-[0.86rem]">
+              結界是持續存在的領域卡。妖精、風暴城、矮人、龍、潮汐與獸人各有種族結界，
+              觸發條件與效果以各張卡文為準。
+            </p>
           </div>
         </div>
       </div>
