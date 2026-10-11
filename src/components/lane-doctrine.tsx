@@ -8,6 +8,7 @@ import { mediaUrl } from "@/data/media";
 /** 捲動或按步驟，查看四路前後排的直觀交鋒規則。 */
 export function LaneDoctrine() {
   const [active, setActive] = useState(0);
+  const [is3DView, setIs3DView] = useState(false);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
   const boardRef = useRef<HTMLDivElement | null>(null);
 
@@ -60,7 +61,7 @@ export function LaneDoctrine() {
           >
             <div className="w-full">
               {/* 步驟導航列 */}
-              <div className="mb-3 flex items-center justify-between">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="hud-label text-[0.62rem] text-brass">
                     情境 {currentStep.index} / 07
@@ -68,6 +69,20 @@ export function LaneDoctrine() {
                   <span className="border border-brass-dim bg-brass/10 px-2 py-0.5 text-[0.62rem] text-brass-hi" style={{ fontFamily: "var(--font-hud)" }}>
                     {currentStep.tag}
                   </span>
+                  {/* HD-2D 透視切換按鈕 */}
+                  <button
+                    type="button"
+                    onClick={() => setIs3DView((v) => !v)}
+                    className={`border px-2 py-0.5 text-[0.62rem] transition-colors cursor-pointer ${
+                      is3DView
+                        ? "border-brass bg-brass text-ink font-bold shadow-[0_0_8px_rgba(200,162,60,0.4)]"
+                        : "border-rule text-quill hover:border-brass-dim hover:text-parchment"
+                    }`}
+                    style={{ fontFamily: "var(--font-hud)" }}
+                    title="切換 Godot Forward+ HD-2D 實機透視角度"
+                  >
+                    {is3DView ? "🎮 HD-2D 透視" : "📐 2D 平面"}
+                  </button>
                 </div>
 
                 <nav aria-label="戰場規則步驟" className="flex items-center gap-1">
@@ -92,7 +107,12 @@ export function LaneDoctrine() {
               </div>
 
               {/* 棋盤實體 */}
-              <Board step={currentStep} onNext={() => selectStep((active + 1) % LANE_STEPS.length)} onPrev={() => selectStep((active - 1 + LANE_STEPS.length) % LANE_STEPS.length)} />
+              <Board
+                step={currentStep}
+                is3DView={is3DView}
+                onNext={() => selectStep((active + 1) % LANE_STEPS.length)}
+                onPrev={() => selectStep((active - 1 + LANE_STEPS.length) % LANE_STEPS.length)}
+              />
             </div>
           </div>
 
@@ -179,10 +199,12 @@ function samePosition(
 
 function Board({
   step,
+  is3DView,
   onNext,
   onPrev,
 }: {
   step: LaneStep;
+  is3DView: boolean;
   onNext: () => void;
   onPrev: () => void;
 }) {
@@ -280,9 +302,18 @@ function Board({
   ];
 
   return (
-    <div className="select-none">
-      {/* 棋盤主體，具備動態 SVG 瞄準疊加層 */}
-      <div ref={containerRef} className="relative rounded-sm border border-rule bg-board p-2.5 sm:p-3.5">
+    <div className="select-none" style={{ perspective: "1100px" }}>
+      {/* 棋盤主體，具備動態 SVG 瞄準疊加層與可切換 HD-2D 透視 */}
+      <div
+        ref={containerRef}
+        className="relative rounded-sm border border-rule bg-board p-2.5 sm:p-3.5 transition-all duration-500 ease-out"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: is3DView ? "rotateX(18deg) scale(0.97)" : "none",
+          transformOrigin: "center bottom",
+          boxShadow: is3DView ? "0 24px 60px rgba(0, 0, 0, 0.85)" : undefined,
+        }}
+      >
         {/* 動態攻擊軌跡 SVG */}
         <svg
           className="pointer-events-none absolute inset-0 z-30 h-full w-full overflow-visible"

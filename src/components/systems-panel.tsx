@@ -1,9 +1,10 @@
 import { ACTION_RULES, RESOURCE_RULES, type SystemRule } from "@/data/game";
+import { PixelDice } from "./pixel-dice";
 
 /**
  * Section 04 — 規則帳。
  * 版面照遊戲 HUD 排：上面是回合與魔力，中間兩欄是規則書內文，
- * 下面把「手牌上限 8」畫成真的八個槽位。不是規格卡片牆。
+ * 下面把「手牌上限 8」畫成真的八個槽位，並提供官方 3D 像素骰子互動體驗。
  */
 export function SystemsPanel() {
   return (
@@ -77,6 +78,11 @@ export function SystemsPanel() {
               滿手時抽到的第 9 張直接入墓，雙方都看得到那張牌。
             </p>
           </div>
+        </div>
+
+        {/* 3D 像素骰子互動區 */}
+        <div className="mt-8">
+          <PixelDice />
         </div>
       </div>
     </section>
