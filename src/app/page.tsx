@@ -3,6 +3,7 @@ import { EntryScreen } from "@/components/entry-screen";
 import { LaneDoctrine } from "@/components/lane-doctrine";
 import { CardTypeShowcase } from "@/components/card-types";
 import { SystemsPanel } from "@/components/systems-panel";
+import { CollectionPanel } from "@/components/collection-panel";
 import { ArenaBand } from "@/components/arena-band";
 import { GameModes } from "@/components/game-modes";
 import { DownloadPanel } from "@/components/download-panel";
@@ -29,6 +30,7 @@ export default function HomePage() {
         <LaneDoctrine />
         <CardTypeShowcase />
         <SystemsPanel />
+        <CollectionPanel />
         <ArenaBand />
         <GameModes />
         <DownloadPanel />

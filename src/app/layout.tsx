@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Barlow, Barlow_Condensed } from "next/font/google";
+import { GAME_FACTS } from "@/data/game";
+import { mediaUrl } from "@/data/media";
 import "./globals.css";
 
 /* 銘刻感的羅馬碑刻體：只給徽標與段落編號，維持「金屬牌」的印象。 */
@@ -26,31 +28,33 @@ const barlowCondensed = Barlow_Condensed({
   display: "swap",
 });
 
+const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cardgame-demo.example"),
+  metadataBase: new URL(process.env.SITE_URL ?? (productionHost ? `https://${productionHost}` : "http://localhost:3100")),
   title: {
-    default: "卡牌對決 CardGame Demo — 五條路線的回合制卡牌對戰",
-    template: "%s — 卡牌對決 CardGame Demo",
+    default: "暮色秘典 Twilight Codex — 四路前後排的回合制卡牌對戰",
+    template: "%s — 暮色秘典 Twilight Codex",
   },
   description:
-    "以 Godot 4.5 開發的 3D 回合制卡牌對戰遊戲。戰場是五條並排路線，攻擊只走正前方——你站的那一路，就是你選的那場仗。提供 Android APK 下載。",
+    `${GAME_FACTS.nameZh} ${GAME_FACTS.nameEn}：HD-2D 回合制卡牌對戰，四路前後排、六種卡型與種族結界，${GAME_FACTS.cards} 種正式卡。完成新手抽卡，組出自己的六十張。查看 Windows 版下載資訊及開發進度。`,
   keywords: [
-    "卡牌對決",
-    "CardGame Demo",
+    "暮色秘典",
+    "Twilight Codex",
     "卡牌遊戲",
     "Godot",
     "HD-2D",
     "回合制",
     "獨立遊戲",
-    "Android APK",
+    "Windows 遊戲",
   ],
   openGraph: {
-    title: "卡牌對決 CardGame Demo",
+    title: "暮色秘典 Twilight Codex",
     description:
-      "五條路線的回合制卡牌對戰。站位就是策略。Godot 4.5 打造的 HD-2D 戰場。",
+      "四路前後排、種族結界與自己的六十張。244 種正式卡，Windows R3 下載資訊與開發進度。",
     type: "website",
     locale: "zh_TW",
-    images: [{ url: "/media/screens/hero-battlefield.webp", width: 1920, height: 1080 }],
+    images: [{ url: mediaUrl("/media/screens/hero-battlefield.webp"), width: 1280, height: 720, alt: "暮色秘典實機戰場" }],
   },
 };
 
