@@ -82,6 +82,17 @@ export function downloadUrl(build: Build): string | null {
   }
 }
 
+/** 版本頁沿用同一份 GitHub 附件資訊，不另外維護版本網址。 */
+export function releasePageUrl(build: Build): string | null {
+  const href = downloadUrl(build);
+  if (!href) return null;
+  const url = new URL(href);
+  if (url.origin !== "https://github.com") return null;
+  const match = url.pathname.match(/^\/([^/]+)\/([^/]+)\/releases\/download\/(.+)\/[^/]+$/);
+  if (!match) return null;
+  return `${url.origin}/${match[1]}/${match[2]}/releases/tag/${match[3]}`;
+}
+
 export function buildStatusText(build: Build): string {
   if (downloadUrl(build)) return "可下載";
   return build.status === "planned" ? "尚未提供" : "新版準備中";
