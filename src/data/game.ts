@@ -1,144 +1,132 @@
-/**
- * 遊戲事實。全部取自 CardGame Demo 的 Gameplay Spec，不是行銷詞。
- * 規格改了就改這裡，版面不用動。
- */
+/** 依 Windows 2026.10.11-R3 的 source snapshot 核對；線上驗收另行公告。 */
+export const GAME_FACTS = {
+  nameZh: "暮色秘典",
+  nameEn: "Twilight Codex",
+  version: "2026.10.11-R3",
+  engine: "Godot 4.7",
+  lanes: 4,
+  cards: 244,
+  tokens: 21,
+  aiPresets: 19,
+  protocol: 12,
+} as const;
 
 export interface LaneUnit {
   name: string;
   atk: number;
   hp: number;
-  /** 卡池裡真的那張卡的卡圖 */
   art: string;
-  /** 嘲諷單位：守護左右相鄰路線 */
   taunt?: boolean;
+  flying?: boolean;
 }
 
-/** 五條路線的推演步驟。Section 02 靠 scroll 逐步推進。 */
+export interface LanePosition {
+  side: "player" | "enemy";
+  row: "front" | "back";
+  /** 0–3 對應路線 1–4。 */
+  lane: number;
+}
+
 export interface LaneStep {
   id: string;
   index: string;
   heading: string;
   body: string;
-  /** index 0-4 對應路線 1-5 */
-  player: (LaneUnit | null)[];
-  enemy: (LaneUnit | null)[];
-  /** 這一步有攻擊推出去的路線 */
-  attacks: number[];
-  /** 被前排擋下的路線 */
-  blocked: number[];
-  /** 一路打到本體的路線 */
-  toFace: number[];
-  /** 被嘲諷改道：from 路線的攻擊被 to 路線的嘲諷單位接走 */
-  taunted: { from: number; to: number } | null;
+  playerFront: (LaneUnit | null)[];
+  playerBack: (LaneUnit | null)[];
+  enemyFront: (LaneUnit | null)[];
+  enemyBack: (LaneUnit | null)[];
+  attacker: LanePosition | null;
+  target: LanePosition | "hero" | null;
+  guardian: LanePosition | null;
+  blocked: boolean;
+  hitHero: boolean;
+  notice: string;
   enemyHp: number;
 }
 
-const PLAYER_LINE: (LaneUnit | null)[] = [
-  { name: "騎士", atk: 4, hp: 5, art: "/media/cards/knight.webp" },
-  null,
-  { name: "樹人守衛", atk: 3, hp: 8, art: "/media/cards/treant_guardian.webp" },
-  { name: "貓族盜賊", atk: 5, hp: 3, art: "/media/cards/catfolk_rogue.webp" },
-  null,
-];
+// 基礎數值取自 data/cards/*.tres；每一步是獨立情境，不接續計算傷害。
+const KNIGHT: LaneUnit = { name: "騎士", atk: 3, hp: 5, art: "/media/cards/knight.webp" };
+const TREANT: LaneUnit = { name: "樹靈守衛", atk: 3, hp: 7, art: "/media/cards/treant_guardian.webp" };
+const ROGUE: LaneUnit = { name: "貓族盜賊", atk: 3, hp: 3, art: "/media/cards/catfolk_rogue.webp" };
+const GARGOYLE: LaneUnit = { name: "石像鬼哨兵", atk: 3, hp: 6, flying: true, art: "/media/cards/gargoyle_sentinel.webp" };
+const MUSHROOM: LaneUnit = { name: "蘑菇術士", atk: 1, hp: 3, art: "/media/cards/mushroom_mage.webp" };
+const AXEMAN: LaneUnit = { name: "重甲斧兵", atk: 4, hp: 6, taunt: true, art: "/media/cards/armored_axeman.webp" };
+const EMPTY: (LaneUnit | null)[] = [null, null, null, null];
+const PLAYER_FRONT = [KNIGHT, null, null, ROGUE];
+const KNIGHT_POSITION: LanePosition = { side: "player", row: "front", lane: 0 };
 
 export const LANE_STEPS: LaneStep[] = [
   {
-    id: "field",
-    index: "01",
-    heading: "戰場是五條並排的路線",
-    body: "雙方各佔一側，路線一對一正面對應。沒有「自由選目標」這回事——你把單位放在第幾路，就決定了它會和誰對上。",
-    player: [null, null, null, null, null],
-    enemy: [null, null, null, null, null],
-    attacks: [],
-    blocked: [],
-    toFace: [],
-    taunted: null,
-    enemyHp: 20,
+    id: "field", index: "01", heading: "四條路線，每路都有前後排",
+    body: "雙方各有四個前排與四個後排卡槽。從者可放進任一空著的我方卡槽；召喚當回合不能普攻或使用攻擊型技能，除非帶有【衝鋒】。",
+    playerFront: EMPTY, playerBack: EMPTY, enemyFront: EMPTY, enemyBack: EMPTY,
+    attacker: null, target: null, guardian: null, blocked: false, hitHero: false,
+    notice: "雙方各有四路 × 前後兩排。", enemyHp: 20,
   },
   {
-    id: "summon",
-    index: "02",
-    heading: "召喚就是選路",
-    body: "支付魔力把從者放進卡槽。放下去的那一刻，你已經替它決定了這局要面對的方向。召喚當回合它不能攻擊，除非帶著【衝鋒】。",
-    player: PLAYER_LINE,
-    enemy: [null, null, null, null, null],
-    attacks: [],
-    blocked: [],
-    toFace: [],
-    taunted: null,
-    enemyHp: 20,
+    id: "cross-lane", index: "02", heading: "敵方前排，可以跨路選目標",
+    body: "第一路的騎士可以攻擊第三路的石像鬼哨兵。普通攻擊不限定正前方；沒有嘲諷限制時，敵方前排都能成為目標。攻擊從者會交換傷害。",
+    playerFront: PLAYER_FRONT, playerBack: EMPTY,
+    enemyFront: [null, null, GARGOYLE, null], enemyBack: [null, null, MUSHROOM, null],
+    attacker: KNIGHT_POSITION, target: { side: "enemy", row: "front", lane: 2 },
+    guardian: null, blocked: false, hitHero: false,
+    notice: "騎士（第 1 路） → 石像鬼哨兵（第 3 路）：可以指定。", enemyHp: 20,
   },
   {
-    id: "straight",
-    index: "03",
-    heading: "攻擊只走正前方",
-    body: "從者不會斜著打，也不會挑軟柿子。攻擊沿著自己那條路線筆直推出去，碰到什麼就打什麼。",
-    player: PLAYER_LINE,
-    enemy: [null, null, null, null, null],
-    attacks: [0, 2, 3],
-    blocked: [],
-    toFace: [],
-    taunted: null,
-    enemyHp: 20,
+    id: "back-guard", index: "03", heading: "前排保護自己那一路的後排",
+    body: "第三路的石像鬼哨兵仍在場，後面的蘑菇術士就不能被普通攻擊或攻擊型技能直接指定。先移除那名同路前排，才會打開後排；法術與非攻擊技能依卡文判斷。",
+    playerFront: PLAYER_FRONT, playerBack: EMPTY,
+    enemyFront: [null, null, GARGOYLE, null], enemyBack: [null, null, MUSHROOM, null],
+    attacker: KNIGHT_POSITION, target: { side: "enemy", row: "back", lane: 2 },
+    guardian: { side: "enemy", row: "front", lane: 2 }, blocked: true, hitHero: false,
+    notice: "蘑菇術士受同路前排保護：不能直接攻擊。", enemyHp: 20,
   },
   {
-    id: "block",
-    index: "04",
-    heading: "有人站著，就過不去",
-    body: "對手在第三路擺上前排，那一路的攻擊停在它身上，雙方同時交換傷害——ATK 既是攻擊力，也是反擊力。其餘路線依然空著。",
-    player: PLAYER_LINE,
-    enemy: [null, null, { name: "石像哨兵", atk: 4, hp: 6, art: "/media/cards/gargoyle_sentinel.webp" }, null, null],
-    attacks: [0, 2, 3],
-    blocked: [2],
-    toFace: [],
-    taunted: null,
-    enemyHp: 20,
+    id: "hero-blocked", index: "04", heading: "打英雄，檢查攻擊者自己的路線",
+    body: "第四路的貓族盜賊想直擊英雄，會被同路的樹靈守衛擋住。選敵方前排可以跨路；攻擊英雄則要先看攻擊者那一路有沒有敵方前排。",
+    playerFront: PLAYER_FRONT, playerBack: EMPTY,
+    enemyFront: [null, null, null, TREANT], enemyBack: EMPTY,
+    attacker: { side: "player", row: "front", lane: 3 }, target: "hero",
+    guardian: { side: "enemy", row: "front", lane: 3 }, blocked: true, hitHero: false,
+    notice: "貓族盜賊（第 4 路） → 英雄：被同路前排擋住。", enemyHp: 20,
   },
   {
-    id: "face",
-    index: "05",
-    heading: "沒人站著，就打在臉上",
-    body: "第一路與第四路前方無人阻擋，攻擊直接落到對手本體。本體只有 20 點——空著的那條路，就是漏出去的傷害。",
-    player: PLAYER_LINE,
-    enemy: [null, null, { name: "石像哨兵", atk: 4, hp: 6, art: "/media/cards/gargoyle_sentinel.webp" }, null, null],
-    attacks: [0, 2, 3],
-    blocked: [2],
-    toFace: [0, 3],
-    taunted: null,
-    enemyHp: 11,
+    id: "open-lane", index: "05", heading: "前排空了，後排不替英雄擋傷害",
+    body: "第一路只有敵方後排蘑菇術士，前排空著，也沒有嘲諷守護。騎士便能直擊英雄，造成基礎攻擊力 3 點傷害；打英雄不會受到反擊。",
+    playerFront: PLAYER_FRONT, playerBack: EMPTY,
+    enemyFront: EMPTY, enemyBack: [MUSHROOM, null, null, null],
+    attacker: KNIGHT_POSITION, target: "hero", guardian: null, blocked: false, hitHero: true,
+    notice: "騎士直擊英雄：20 → 17。後排不阻擋英雄攻擊。", enemyHp: 17,
   },
   {
-    id: "taunt",
-    index: "06",
-    heading: "嘲諷把傷害拉過來",
-    body: "在路線制裡，「逼你打我」在同一路本來就成立，所以嘲諷改成守護型：它額外罩住左右相鄰路線。第四路原本能打臉，現在被隔壁的嘲諷單位接了下來。",
-    player: PLAYER_LINE,
-    enemy: [
-      null,
-      null,
-      { name: "石像哨兵", atk: 4, hp: 6, art: "/media/cards/gargoyle_sentinel.webp" },
-      null,
-      { name: "蕈菇法師", atk: 2, hp: 7, taunt: true, art: "/media/cards/mushroom_mage.webp" },
-    ],
-    attacks: [0, 2, 3],
-    blocked: [2],
-    toFace: [0],
-    taunted: { from: 3, to: 4 },
-    enemyHp: 7,
+    id: "taunt", index: "06", heading: "前排嘲諷，守住自己與相鄰路線",
+    body: "第二路的重甲斧兵帶有【嘲諷】，會守護第一、二、三路。第一路的騎士必須先選它，不能改打其他從者或英雄；第四路不在這名守護者的範圍。",
+    playerFront: PLAYER_FRONT, playerBack: EMPTY,
+    enemyFront: [null, AXEMAN, null, null], enemyBack: EMPTY,
+    attacker: KNIGHT_POSITION, target: "hero", guardian: { side: "enemy", row: "front", lane: 1 },
+    blocked: true, hitHero: false,
+    notice: "第 1 路受相鄰嘲諷守護：必須先攻擊重甲斧兵。", enemyHp: 20,
+  },
+  {
+    id: "flying", index: "07", heading: "飛行直擊英雄，可以越過阻擋",
+    body: "石像鬼哨兵帶有【飛行】，攻擊英雄時能越過同路前排與嘲諷守護。這個例外只適用於直擊英雄；攻擊從者仍要遵守嘲諷與前排保護後排的限制。",
+    playerFront: [GARGOYLE, null, null, ROGUE], playerBack: EMPTY,
+    enemyFront: [TREANT, AXEMAN, null, null], enemyBack: EMPTY,
+    attacker: KNIGHT_POSITION, target: "hero", guardian: null, blocked: false, hitHero: true,
+    notice: "石像鬼哨兵飛越前排與嘲諷，英雄 20 → 17。", enemyHp: 17,
   },
 ];
 
 /* ------------------------------------------------------------------ */
 
-export type CardTypeId = "minion" | "arcana" | "quick" | "equip" | "ward";
+export type CardTypeId = "minion" | "arcana" | "quick" | "equip" | "ward" | "domain";
 
 export interface CardType {
   id: CardTypeId;
   zh: string;
   en: string;
-  /** 一句話說清楚它跟其他卡型的差別 */
   rule: string;
-  /** 真正有識別度的那條規則細節 */
   detail: string;
   timing: string;
   art: string;
@@ -147,63 +135,42 @@ export interface CardType {
 
 export const CARD_TYPES: CardType[] = [
   {
-    id: "minion",
-    zh: "從者",
-    en: "Minion",
-    rule: "站上路線的戰鬥單位，有攻擊力與生命值。",
-    detail:
-      "每回合有 1 次攻擊 + 1 次主動技能，兩者獨立計算。攻擊時雙向交換傷害——ATK 同時是攻擊力與反擊力。",
-    timing: "主要階段召喚",
-    art: "/media/cards/knight.webp",
-    artAlt: "從者卡「騎士」的卡圖",
+    id: "minion", zh: "從者", en: "Minion",
+    rule: "站上前後排的戰鬥單位，有攻擊力與生命值。",
+    detail: "每回合最多一次普攻與一次技能。強化攻擊會用掉普攻；獨立攻擊可另外發動，非攻擊技能是否共用普攻則看卡文。攻擊從者時雙方交換傷害。",
+    timing: "主要階段召喚", art: "/media/cards/knight.webp", artAlt: "從者卡「騎士」的卡圖",
   },
   {
-    id: "arcana",
-    zh: "秘術",
-    en: "Arcana",
-    rule: "主動法術。宣告即付費，結算完就離場。",
-    detail:
-      "只有攻方能在自己回合施放。指定目標的當下就開啟反制窗口，守方有機會把它擋掉。潛行單位不能被指定。",
-    timing: "僅攻方 · 自己回合",
-    art: "/media/cards/arcana_fireblast.webp",
-    artAlt: "秘術卡的卡圖",
+    id: "arcana", zh: "秘術", en: "Arcana",
+    rule: "自己回合施放的主動法術，依卡文結算後入墓。",
+    detail: "宣告時支付魔力，守方有反制機會。指定單體、全體、抽牌或墓地效果各依卡文處理；潛行單位不能被敵方單體秘術指定。",
+    timing: "自己的主要階段", art: "/media/cards/arcana_fireblast.webp", artAlt: "秘術卡「火焰爆裂」的卡圖",
   },
   {
-    id: "quick",
-    zh: "瞬咒",
-    en: "Quick",
-    rule: "反應法術。唯一能在對手回合出手的牌。",
-    detail:
-      "只在反制窗口打得出來，用來抵銷對方的秘術或伏印。後發先解——它會比被反制的那張先結算完。",
-    timing: "僅守方 · 反制窗口",
-    art: "/media/cards/quick_void_rebuke.webp",
-    artAlt: "瞬咒卡的卡圖",
+    id: "quick", zh: "瞬咒", en: "Quick",
+    rule: "守方的反應法術，在符合卡文的事件出現時反制。",
+    detail: "不同瞬咒可回應秘術、召喚、普攻、技能或伏印等事件，並消耗守方剩餘魔力。不能在主要階段主動打出；已埋設伏印也能在對手回合觸發。",
+    timing: "守方 · 符合卡文的反應時機", art: "/media/cards/quick_void_rebuke.webp", artAlt: "瞬咒卡「虛空反噬」的卡圖",
   },
   {
-    id: "equip",
-    zh: "靈裝",
-    en: "Equip",
-    rule: "附著在我方從者身上的裝備，持續加成。",
-    detail:
-      "一名從者一次只能帶一件：新的蓋掉舊的，舊加成收回、現有生命夾回上限，舊卡入墓。宿主陣亡，靈裝跟著陪葬。",
-    timing: "主要階段附著",
-    art: "/media/cards/equip_mithril_plate.webp",
-    artAlt: "靈裝卡的卡圖",
+    id: "equip", zh: "靈裝", en: "Equip",
+    rule: "附著在我方從者身上的裝備，持續提供加成。",
+    detail: "一名從者一次只能帶一件。新的取代舊的，收回舊加成並把現有生命限制在新上限內，舊卡入墓；宿主離場通常一併離場，特殊效果依卡文處理。",
+    timing: "主要階段附著", art: "/media/cards/equip_mithril_plate.webp", artAlt: "靈裝卡「秘銀胸鎧」的卡圖",
   },
   {
-    id: "ward",
-    zh: "伏印",
-    en: "Ward",
-    rule: "蓋著埋在我方從者底下的陷阱，不佔卡槽。",
-    detail:
-      "埋下去以後，我方整排卡槽開始紅色脈動。對手知道場上有陷阱，但不知道埋在哪個從者底下——連系統訊息都不報宿主的名字。",
-    timing: "主要階段埋設",
-    art: "/media/cards/ward_thorn_sigil.webp",
-    artAlt: "伏印卡「荊棘伏印」的卡圖",
+    id: "ward", zh: "伏印", en: "Ward",
+    rule: "蓋在從者底下的陷阱，不佔卡槽，符合條件才觸發。",
+    detail: "一般埋在我方從者底下，一名宿主最多一張；【屍變伏印】則埋在敵方從者底下。埋設時只公開有伏印，觸發後才揭露卡名與效果。",
+    timing: "主要階段埋設 · 依卡文觸發", art: "/media/cards/ward_thorn_sigil.webp", artAlt: "伏印卡「荊棘伏印」的卡圖",
+  },
+  {
+    id: "domain", zh: "結界", en: "Domain",
+    rule: "持續存在的領域卡，依種族與卡文支援我方戰場。",
+    detail: "每側同時最多一張，不佔從者卡槽；打出新結界會取代舊結界，舊卡入墓。妖精之森會在每個己方回合首名妖精進場時，於同路空著的我方前排召喚 1／2 樹精；同路前排已有卡仍會用掉本回合的觸發。",
+    timing: "主要階段設置 · 依卡文持續觸發", art: "/media/cards/domain_fairy_forest.webp", artAlt: "結界卡「妖精之森」的卡圖",
   },
 ];
-
-/* ------------------------------------------------------------------ */
 
 export interface SystemRule {
   label: string;
@@ -212,21 +179,38 @@ export interface SystemRule {
 }
 
 export const ACTION_RULES: SystemRule[] = [
-  { label: "Attack", value: "1 / turn", note: "每個從者每回合一次普通攻擊，免費。" },
-  { label: "Active skill", value: "1 / turn", note: "與攻擊分開計算，消耗魔力，可各用一次。" },
-  { label: "Summoning sickness", value: "1 turn", note: "召喚當回合不能攻擊，除非帶【衝鋒】。" },
-  { label: "Hero HP", value: "20", note: "降到 0 即落敗。打臉不吃反擊。" },
+  { label: "Attack", value: "1 / turn", note: "每個從者每回合最多一次普通攻擊，免費。" },
+  { label: "Active skill", value: "1 / turn", note: "技能消耗魔力；強化攻擊與普攻擇一，其他技能是否共用攻擊依卡文。" },
+  { label: "Summoning sickness", value: "1 turn", note: "召喚當回合不能普攻或用攻擊型技能，除非帶【衝鋒】。" },
+  { label: "Hero HP", value: "20", note: "降到 0 即落敗。打英雄不受到反擊。" },
 ];
 
 export const RESOURCE_RULES: SystemRule[] = [
-  { label: "Mana", value: "+1 / turn", note: "回合開始 +1 並回滿，上限 10。" },
-  { label: "Carry over", value: "none", note: "沒用完的魔力不留到下回合。" },
-  { label: "Deck", value: "60", note: "同名卡最多 3 張。抽完不再抽，也沒有疲勞傷害。" },
-  { label: "Hand limit", value: "8", note: "滿手時抽到的牌當場銷毀，雙方都看得到。" },
-  { label: "Discard for mana", value: "Cost ÷ 2", note: "捨 1 張手牌換暫時魔力，無條件捨去，隔回合才能再用。" },
+  { label: "Mana", value: "+1 / turn", note: "輪到自己的回合時，自然魔力上限 +1 並回滿，最高 10。" },
+  { label: "Carry over", value: "refill", note: "剩餘魔力可供守方反應使用；下次自己的回合重新回滿，不累加。" },
+  { label: "Deck", value: "60", note: "同名卡最多 3 張，並且必須持有足夠份數。抽完不再抽，沒有疲勞傷害。" },
+  { label: "Hand limit", value: "8", note: "滿手時抽到的牌直接入墓，雙方都能看見。" },
+  { label: "Discard for mana", value: "Cost ÷ 2", note: "捨一張手牌換暫時魔力，無條件捨去；下一個自己的回合不能再用，再下一回合恢復。" },
 ];
 
-/* ------------------------------------------------------------------ */
+/** 玩家只使用持有卡自組牌組；內部 AI 預組不可選作玩家牌組。 */
+export const COLLECTION_FEATURES: SystemRule[] = [
+  { label: "Card pool", value: "244 + 21", note: "244 種正式卡可收藏與組牌，另有 21 種由效果產生的衍生物或形態。卡型包含從者、秘術、瞬咒、靈裝、伏印與結界。" },
+  { label: "Starter draws", value: "150 次新手抽卡", note: "新玩家從空收藏開始，先完成全部 150 次新手抽卡；可一次抽 1／10／50／100 張，不消耗每日包券。這是抽卡次數，不是 150 包。" },
+  { label: "Your deck", value: "60 張 · 每卡最多 3", note: "新手抽卡完成後，從自己持有的卡建立牌組。保存完整 60 張、每卡不超過 3 張且持有量足夠的自組牌組，再選用它，才能進入單人練習。" },
+  { label: "AI opponents", value: "19 副內部 AI 預組", note: "AI 使用內部預組作為對手；這些預組不供玩家選用。玩家可篩選持有卡、查看費用曲線、保存草稿，再完成自己的牌組。" },
+  { label: "Daily pack ticket", value: "1 券／登入日", note: "每日以台灣時間 00:00 換日；登入日可領一券並累積，未登入的日期不補發。新手抽完前，一般卡包尚未開放，包券仍可累積。" },
+  { label: "Collection limit", value: "滿 3 張不再抽到", note: "一般卡包每包 5 張，已持有 3 張的卡不再加入可抽清單。稀有度按可抽卡池的相對權重抽取，沒有保底；既有收藏不重置。" },
+  { label: "Guest collection", value: "保存在本機", note: "訪客收藏與牌組保存在這台電腦，不能當作正式帳號的雲端持有量；訪客、AI 與區網練習不列入正式戰績。" },
+  { label: "Online account", value: "線上驗收另行公告", note: "正式外網需要登入帳號、雲端持有權與合法自組牌組，並由相容的專用伺服器主持。線上版本與兩人實測另行驗收；本頁不代表真人連線已通過。" },
+];
+
+export const SPOILS_RULES: SystemRule[] = [
+  { label: "Win a formal PvP match", value: "選 1 張", note: "正常擊敗真人後，勝者從敗者本局的起始牌組選一張卡作為戰利品。" },
+  { label: "Actual card transfer", value: "勝者 +1 · 敗者 −1", note: "領取會實際改變雙方收藏；勝者已持有 3 張的卡不能選，敗者也必須仍持有該卡。" },
+  { label: "Claim before playing again", value: "先完成結算", note: "有可領取的戰利品時，必須先處理，才能開始下一場真人對戰。" },
+  { label: "Practice and disconnects", value: "依對戰類型處理", note: "訪客、AI 與區網不列入正式戰績。正式對戰開賽後離開或斷線會記敗，但不產生奪卡戰利品。" },
+];
 
 export interface GameMode {
   zh: string;
@@ -237,34 +221,28 @@ export interface GameMode {
 
 export const GAME_MODES: GameMode[] = [
   {
-    zh: "單人練習",
-    en: "AI Practice",
-    body: "敵方 AI 被寫成「另一個會按按鈕的玩家」：它的每個動作都走與連線相同的結算路徑，不吃特權、不偷看你的手牌。",
-    meta: "離線 · 單機",
+    zh: "單人練習", en: "AI Practice",
+    body: "先完成 150 次新手抽卡，再以持有卡自組合法的 60 張牌組並選用，接著進入「單人遊戲」與 AI 對戰。也能先開「新手教學」熟悉規則；AI 的 19 副內部預組不供玩家選用。",
+    meta: "離線 · 本機訪客可玩",
   },
   {
-    zh: "熱座雙人",
-    en: "Hot Seat",
-    body: "同一台機器輪流。雙方各有獨立的魔力、牌堆與手牌帳，換回合就換手牌視圖——非行動方的單位動不了。",
-    meta: "離線 · 同機兩人",
+    zh: "區網對戰", en: "Local Network",
+    body: "兩台電腦連到同一個網路，在「多人遊戲 → 區網對戰」由一人開房，另一人輸入房主位址加入。雙方必須使用相容版本，房主需允許遊戲通過防火牆。",
+    meta: "同一網路 · 玩家開房 · 不列正式戰績",
   },
   {
-    zh: "連線對戰",
-    en: "Host / Client",
-    body: "一方開房、一方輸入 IP 加入。開局由房主把雙方牌堆與起手打包同步，之後的召喚、攻擊、技能、法術全走 RPC 在兩台重放。",
-    meta: "區網 · 異地",
+    zh: "外網配對與房間", en: "Online Lobby",
+    body: "專用伺服器提供配對、公開與私人等待房；正式對戰要求登入帳號、完成新手抽卡，並使用雲端持有量足夠的合法自組牌組。正常擊敗真人可取得一張戰利品，雙方收藏會實際增減。線上版本與兩人實測另行驗收。",
+    meta: "需帳號持卡驗證 · 正式連線驗收另行公告",
   },
 ];
 
-/** 連線的技術腳註：用規格表的語氣，不做成技術行銷。 */
 export const NETWORK_NOTES = [
-  { label: "Transport", value: "ENet · UDP 8910" },
-  { label: "Sync", value: "開局發帳，之後 RPC 重放" },
-  { label: "NAT", value: "UPnP 自動轉發" },
-  { label: "Fallback", value: "手動轉發 · Tailscale" },
+  { label: "Protocol", value: `${GAME_FACTS.protocol} · 雙方需相容版本` },
+  { label: "LAN", value: "ENet · UDP 8910" },
+  { label: "Online", value: "專用伺服器主持" },
+  { label: "On disconnect", value: "斷線結束該局" },
 ];
-
-/* ------------------------------------------------------------------ */
 
 export interface Arena {
   zh: string;
@@ -274,38 +252,22 @@ export interface Arena {
 }
 
 export const ARENAS: Arena[] = [
-  {
-    zh: "森林",
-    en: "Forest",
-    note: "程序生成的草泥地與樹叢，一條溪流橫過戰場中線。",
-    image: "/media/screens/arena-forest.webp",
-  },
-  {
-    zh: "洞窟",
-    en: "Caverns",
-    note: "發光蘑菇與鐘乳石，暖色餘燼從岩壁滲出來。",
-    image: "/media/screens/arena-caverns.webp",
-  },
-  {
-    zh: "冰原",
-    en: "Frostlands",
-    note: "結冰的河面與雪松，冰稜從地表刺出。",
-    image: "/media/screens/arena-frostlands.webp",
-  },
+  { zh: "森林", en: "Forest", note: "溪流穿過河床，草坡、岩台與樹叢沿著兩側延伸。", image: "/media/screens/arena-forest.webp" },
+  { zh: "洞窟", en: "Caverns", note: "發光蘑菇、鐘乳石與起伏岩台，薄霧與暖光交錯。", image: "/media/screens/arena-caverns.webp" },
+  { zh: "冰原", en: "Frostlands", note: "結冰河面、雪堤與雪松，冷光落在冰稜之間。", image: "/media/screens/arena-frostlands.webp" },
 ];
 
-/** 首屏底下那排卡圖：真的卡池裡的角色，不是裝飾。 */
 export const ROSTER = [
   { art: "/media/cards/frost_witch.webp", name: "冰霜女巫" },
-  { art: "/media/cards/treant_guardian.webp", name: "樹人守衛" },
+  { art: "/media/cards/treant_guardian.webp", name: "樹靈守衛" },
   { art: "/media/cards/necromancer.webp", name: "死靈法師" },
-  { art: "/media/cards/harpy_hunter.webp", name: "鷹身獵手" },
+  { art: "/media/cards/harpy_hunter.webp", name: "鷹身人獵手" },
   { art: "/media/cards/pirate_captain.webp", name: "海盜船長" },
-  { art: "/media/cards/dwarf_smith.webp", name: "矮人鐵匠" },
-  { art: "/media/cards/ratfolk_plague_doctor.webp", name: "鼠人瘟醫" },
-  { art: "/media/cards/lizard_warrior.webp", name: "蜥蜴戰士" },
+  { art: "/media/cards/dwarf_smith.webp", name: "矮人鍛造師" },
+  { art: "/media/cards/ratfolk_plague_doctor.webp", name: "鼠人疫醫" },
+  { art: "/media/cards/lizard_warrior.webp", name: "蜥蜴人戰士" },
   { art: "/media/cards/wandering_bard.webp", name: "流浪吟遊詩人" },
-  { art: "/media/cards/gargoyle_sentinel.webp", name: "石像哨兵" },
+  { art: "/media/cards/gargoyle_sentinel.webp", name: "石像鬼哨兵" },
   { art: "/media/cards/catfolk_rogue.webp", name: "貓族盜賊" },
-  { art: "/media/cards/mushroom_mage.webp", name: "蕈菇法師" },
+  { art: "/media/cards/mushroom_mage.webp", name: "蘑菇術士" },
 ];
