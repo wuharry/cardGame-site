@@ -13,21 +13,22 @@ export function CollectionPanel() {
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
             目前卡池有 {GAME_FACTS.cards} 種正式卡，另外有 {GAME_FACTS.tokens} 種衍生物或形態。
-            先完成 150 次新手抽卡，再用持有卡自組六十張、保存並選用，就能進入單人練習。
+            用持有卡自組合法六十張、保存並選用，就能進入對戰，不必抽完新手 150 次額度。
+            組牌時直接閱讀目前選取卡牌的完整效果，剩餘抽數可以稍後領取。
           </p>
         </header>
 
         <figure className="mt-10 max-w-4xl border border-rule-soft bg-board p-1">
           <Image
             src={mediaUrl("/media/screens/main-menu.webp")}
-            alt="暮色秘典 R3 首次啟動畫面：剩餘 150 次新手抽卡，完成後自組六十張牌組"
+            alt="暮色秘典 R3 歷史新玩家畫面，顯示 150 次新手抽卡額度"
             width={1282}
             height={752}
             sizes="(max-width: 1024px) 100vw, 896px"
             className="h-auto w-full"
           />
           <figcaption className="body-cjk px-3 py-3 text-[0.78rem]">
-            Windows R3 解壓包的實際新玩家畫面；先抽完新手卡，再自組並選用牌組。
+            Windows R3 的歷史新玩家畫面；新版新手額度未用完也能從主選單組牌，合法持有六十張即可對戰。
           </figcaption>
         </figure>
 

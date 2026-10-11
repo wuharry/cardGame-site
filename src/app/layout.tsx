@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     template: "%s — 暮色秘典 Twilight Codex",
   },
   description:
-    `${GAME_FACTS.nameZh} ${GAME_FACTS.nameEn}：HD-2D 回合制卡牌對戰，四路前後排、六種卡型與種族結界，${GAME_FACTS.cards} 種正式卡。完成新手抽卡，組出自己的六十張。查看 Windows 版下載資訊及開發進度。`,
+    `${GAME_FACTS.nameZh} ${GAME_FACTS.nameEn}：HD-2D 回合制卡牌對戰，四路前後排、六種卡型與種族結界，${GAME_FACTS.cards} 種正式卡。合法持有六十張即可對戰，選牌直接閱讀效果。查看 Windows 版下載資訊及開發進度。`,
   keywords: [
     "暮色秘典",
     "Twilight Codex",

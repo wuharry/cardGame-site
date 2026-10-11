@@ -1,9 +1,9 @@
 /**
  * 下載成品與程式開發紀錄分開維護。
- * 本機驗收可先填成品資訊；公開附件實際可下載後才填 RELEASE_BASE 並開放下載。
+ * 本機可先備妥新版部署稿；公開附件可下載、檢查碼與啟動驗收通過後才部署。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.11-r4";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.11-r5";
 
 export type BuildStatus = "available" | "preparing" | "planned";
 
@@ -15,10 +15,12 @@ export interface Build {
   file: string | null;
   version: string | null;
   size: string | null;
+  /** 版本化 ZIP 的實際位元組數，用於核對附件。 */
+  bytes?: number;
   updated: string | null;
   requirement: string;
   note?: string;
-  /** 實際上傳 ZIP 的 SHA-256；未產生成品時不填假值。 */
+  /** 版本化 ZIP 的實際 SHA-256；未產生成品時不填假值。 */
   sha256?: string;
 }
 
@@ -28,13 +30,14 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · 64-bit",
     status: "available",
-    file: "TwilightCodex-Windows-20261011-R4.zip",
-    version: "2026.10.11-R4",
-    size: "583.2 MiB",
+    file: "TwilightCodex-Windows-20261011-R5.zip",
+    version: "2026.10.11-R5",
+    size: "594.1 MiB",
+    bytes: 622950365,
     updated: "2026-10-11",
-    sha256: "14243c2f1b5e397fdc468c335252f39e709ca25bcd7c8c53ef47c02d290b8f48",
+    sha256: "8b1dbfedfdc3fce01586ac270420e1629c1972d8b14f79b0ea698298b9d7f053",
     requirement: "64 位元 Windows · 滑鼠與鍵盤",
-    note: "R4 新增線上玩家數與即時公開房列表，每房兩人，雙方準備完成後開局。請完整解壓縮，再執行 TwilightCodex.exe，不需另外安裝 Godot；連線雙方都需更新至 R4。",
+    note: "R5 收錄 109 張重繪卡圖，開放新手額度未用完時組牌與合法六十張對戰，組牌可直接閱讀效果，並加入像素風 3D 骰子及連線 PvP 回合計時。請完整解壓縮後執行 TwilightCodex.exe，不需另外安裝 Godot；連線雙方與伺服器都需更新至 R5（協定 14）。",
   },
   {
     id: "macos",
@@ -108,6 +111,20 @@ export interface ReleaseNote {
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "2026.10.11-R5",
+    date: "2026-10-11",
+    title: "先組自己的六十張，選牌就看效果",
+    changes: [
+      "150 次免費新手抽卡可分批領取；保存並選用合法持有的六十張牌組即可對戰，每卡最多三張，不必抽完額度。一般卡包仍於新手額度歸零後開放。",
+      "組牌畫面加入固定效果區，懸停、聚焦或選取即可閱讀完整卡牌效果。選取牌組卡牌先查看效果，另用「移除一張」或 Delete 移除。",
+      "本機訪客可瀏覽正式大廳；需要登入時會顯示原因與電子郵件登入入口。登入、收藏同步、待確認抽卡與合法牌組分別提示，不用猜開房按鈕為何停用。",
+      "擲骰改用六面像素風 3D 骰子，演出翻滾、彈跳與停穩，呈現原始與最終點數及最終六點爆擊；減少動態時直接顯示停穩結果。",
+      "下載包收錄 109 張重繪卡圖，更新從者、種族與法術場景；網站既有卡圖與截圖仍標示原匯入版本。",
+      "PvE 回合不限時；連線真人 PvP 每回合 100 秒，最後 15 秒倒數。逾時停止接受新操作，現有效果結算完成後自動結束回合；選擇視窗自開啟起有 20 秒，逾時採用預設選項。",
+      "連線協定更新為 14，兩位玩家與伺服器都需使用相容版本。下載包與正式部署狀態以下載區為準。",
+    ],
+  },
+  {
     version: "2026.10.11-R4",
     date: "2026-10-11",
     title: "雙人大廳：看見玩家，也看見房間",
@@ -126,7 +143,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     changes: [
       "正式名稱更新為《暮色秘典 Twilight Codex》，卡池擴充為 244 種正式卡與 21 種衍生物或形態。",
       "加入第六種卡型「結界 / Domain」；每側最多一張，依種族與卡文持續支援戰場。",
-      "新玩家先完成 150 次新手抽卡，再用持有卡自組合法六十張並選用；19 副內部預組只供 AI 對手使用。",
+      "R3 當時的新玩家需先完成 150 次新手抽卡，再用持有卡自組合法六十張並選用；此門檻已於 R5 移除，19 副內部預組仍只供 AI 使用。",
       "正式真人 PvP 正常勝出後可選敗者起始牌組一張，勝者 +1、敗者 −1；滿三張不可領，有待領戰利品需先處理。",
       "連線協定更新為 12；Windows ZIP 已公開下載並確認解壓啟動，線上版本與兩人實測另行驗收。",
     ],
@@ -149,7 +166,7 @@ export const RELEASE_NOTES: ReleaseNote[] = [
     changes: [
       "訪客練習收藏、卡牌篩選、費用曲線、牌組草稿與保存，支援每副六十張、同名最多三張。",
       "開包支援一包與批次揭曉；本機訪客進度與帳號收藏分開處理。",
-      "此為當時的開發紀錄；目前新手抽卡、玩家組牌與卡池內容，以 2026.10.11-R3 的規則為準。",
+      "此為當時的開發紀錄；現行新手抽卡、玩家組牌與卡池內容，以本頁最新版本說明為準。",
     ],
   },
   {

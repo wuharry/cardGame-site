@@ -2,7 +2,7 @@
 
 《暮色秘典》的介紹與下載頁。Next.js 16 + TypeScript + Tailwind v4。
 
-遊戲本體在 `E:/card-game-demo(4.5)`（Godot 4.7）。目前網站玩法與雙人大廳文案依 canonical 專案 **2026.10.11-R4 / protocol 13** 核對；實際可下載版本以 `src/data/releases.ts` 為準。歷史戰場與卡圖仍保留 R3 匯入來源。這個 repo 只放網站，
+遊戲本體在 `E:/card-game-demo(4.5)`（Godot 4.7）。本機網站部署稿同步 canonical 專案 **2026.10.11-R5 / protocol 14**；正式帳號第 6 份遷移已套用並通過後檢，R5 ZIP 完整解壓與實際 EXE 的 headless、一般 GUI 啟動已通過，公開附件與正式伺服器仍須分別驗收。官網目前維持 R4，本機 `src/data/releases.ts` 是公開附件驗收後才可部署的 R5 設定，不能當作已上線證明。歷史戰場與卡圖仍保留 R3 匯入來源。這個 repo 只放網站，
 刻意獨立於遊戲專案之外——否則 `node_modules` 會被 Godot 的 FileSystem 掃進去。
 
 ---
@@ -29,17 +29,15 @@ npm start
 3. 填入真實的 `version` / `size` / `updated` / `sha256`；先確認同一份 ZIP 解壓、啟動成功，並核對公開附件的檔名與 SHA-256，再把 Windows 的 `status` 改成 `"available"`。網站部署後，另驗收正式下載連結；換版仍需重新執行這些檢查。
 
 `RELEASE_BASE` 是空字串、不是有效 HTTPS 網址、或 `status` 不是 `available` 時，不會產生下載連結。
-首頁、下載按鈕與狀態欄都使用同一個判定。目前 Windows 下載資料已切到 R4，其餘平台「尚未提供」。[R4 Windows 試玩版 Release](https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.11-r4) 的 ZIP 與檢查碼附件已公開發布，下載按鈕使用該版本的固定附件網址。
+首頁、下載按鈕與狀態欄都使用同一個判定。本機 R5 部署稿已填入實際封版檔名、大小與 SHA-256，必須完成實際 EXE 啟動與公開附件核對後才上傳網站來源並部署。其餘平台「尚未提供」。[既有 R4 Release](https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.11-r4) 的標準 R4 ZIP 與檢查碼已公開；先前本機 `-R4-verified.zip` 候選因追加遊戲修正而停止發布，不可將它當作公開附件。
 
-目前成品是 `TwilightCodex-Windows-20261011-R4.zip`，版本 `2026.10.11-R4 / protocol 13`，大小 **611,548,015 bytes（583.2 MiB）**，SHA-256 為 `14243c2f1b5e397fdc468c335252f39e709ca25bcd7c8c53ef47c02d290b8f48`。完整解壓後執行 `TwilightCodex.exe`。
-
-R4 附件網址：[Windows ZIP](https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.11-r4/TwilightCodex-Windows-20261011-R4.zip)；[SHA-256 檢查碼](https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.11-r4/TwilightCodex-Windows-20261011-R4.zip.sha256)。本機 ZIP 的 CRC 與內含 EXE 的 SHA-256 已核對，Windows EXE 與伺服器 PCK 的封裝資源檢查各通過 293 項；公開 GitHub API 的附件大小與 SHA-256 也一致。尚未完整重新下載公開 ZIP，亦未完成兩個正式 JWT 帳號的真人對局，不能把封裝檢查當成這兩項驗收。
+本機 `BUILDS` 與 `RELEASE_BASE` 已一併準備成 R5：`TwilightCodex-Windows-20261011-R5.zip`、622,950,365 bytes（594.1 MiB）、SHA-256 `8b1dbfedfdc3fce01586ac270420e1629c1972d8b14f79b0ea698298b9d7f053`、tag `v2026.10.11-r5`。`available` 是待部署稿的設定，公開上傳／部署目前仍為 `NOT RUN`；公開附件驗收前禁止部署。完整解壓後執行 `TwilightCodex.exe`；本機封裝檢查不能推定公開下載或真人對局已通過。
 
 GitHub 私有 repo 的附件也需要權限。給朋友免登入下載時，可另外建只放發佈檔的公開 repo，不必公開遊戲原始碼。
 建議使用固定版本的附件網址，避免 `latest` 換版後，網站上的版本與檔案不一致。
 
 ```powershell
-Get-FileHash -LiteralPath '完整路徑\TwilightCodex-Windows-20261011-R4.zip' -Algorithm SHA256
+Get-FileHash -LiteralPath '完整路徑\本次版本的Windows包.zip' -Algorithm SHA256
 ```
 
 **新增平台**就是往 `BUILDS` 加一筆，版面自己長出來，不用動 component。
@@ -52,13 +50,21 @@ Get-FileHash -LiteralPath '完整路徑\TwilightCodex-Windows-20261011-R4.zip' -
 
 檔案：[src/data/game.ts](src/data/game.ts)。四路前後排的推演步驟、六種卡型、
 規則帳、收藏與組牌、對戰模式、戰場、陣容全部在這裡。**版面吃資料，改數字不用改版面。**
-目前依 R4 專案核對：Godot 4.7、244 種正式卡、21 種衍生物或形態、連線協定 13。六種卡型包含結界（Domain），每側最多一張，不佔從者卡槽，新結界替換舊結界並令舊卡入墓。
+本輪 R5 文案使用 Godot 4.7、244 種正式卡、21 種衍生物或形態與連線協定 14。六種卡型包含結界（Domain），每側最多一張，不佔從者卡槽，新結界替換舊結界並令舊卡入墓。
 
-新建玩家先完成 150 次新手抽卡，再用持有卡自組合法六十張、每卡最多三張，保存並選用後進入單人。19 副內部預組只供 AI 使用，不是玩家可選範本；既有收藏不重置。
+新建玩家有 150 次免費新手額度，可逐步領取；額度未用完也能從主選單用持有卡組牌與保存草稿。完整合法六十張、每卡最多三張且持有量足夠，保存並選用後即可對戰，不必抽完額度；普通卡包仍須等額度歸零才開放，每日券照常累積。19 副內部預組只供 AI 使用，既有收藏不重置。
+
+組牌畫面固定顯示目前卡牌的完整效果，懸停、鍵盤聚焦與選取都能閱讀；牌組清單選卡先顯示效果，另按「移除一張」或 Delete 移除。骰子改用六面像素風 3D 演出，顯示翻滾、彈跳、停穩、原始與最終點數及最終六點爆擊；減少動態直接顯示停穩結果。PvE 不限時；連線真人 PvP 每回合 100 秒，最後 15 秒倒數；逾時停止接受新操作，現有效果結算完成後自動結束回合。需要回應的選擇視窗自開啟起有 20 秒，逾時採用預設選項。本機 R5 封裝資源檢查已涵蓋骰子與計時，不能推定完整公網真人對局已通過。
+
+R5 遊戲下載包收錄 109 張重繪卡圖，包含更新的從者、種族與法術場景。網站本輪沒有重新匯入卡圖，既有網站圖片仍保留 R3 來源說明，不能把網站圖樣當作 R5 下載包的完整圖鑑。
 
 正式真人 PvP 正常勝出後，勝者從敗者本局起始牌組挑一張，勝者收藏 +1、敗者實際 −1；勝者已持有三張不能領。有可領戰利品要先處理才能開始下一場。AI、區網與訪客練習不列正式戰績；正式對戰開賽後離開或斷線會記敗，但不產生奪卡戰利品。
 
-正式外網需要帳號持卡驗證與相容的專用伺服器。R4 線上大廳提供連線玩家數、即時公開等待房及雙人準備流程。人數合併已握手的大廳玩家與已進入戰鬥房的玩家，不重複計算；轉場期間尚未接上戰鬥連線時可能短暫下降。公開列表只列等待房，滿兩人禁止加入，私人房碼不公開；已在房內可查看其他房，須先離房再加入。真人帳號與完整正式對局的驗收結果需另留證據，本機啟動成功不能替代。
+正式外網需要登入、同步帳號收藏、選用合法持有的六十張牌組及相容的專用伺服器。本機訪客可瀏覽大廳；開房與加入停用時會顯示登入原因和「電子郵件登入」入口，未選牌組則可直接打開組牌。雲端收藏不透過 ENet 傳送，由主選單提供實際收藏與牌組的就緒原因，正式 HTTPS 入場券仍由帳號服務驗證。待確認抽卡與同步中分別提示，不誤稱必須抽完 150 次新手額度。
+
+大廳保留連線玩家數、即時公開等待房及雙人準備流程。人數合併已握手的大廳玩家與已進入戰鬥房的玩家，不重複計算；轉場期間尚未接上戰鬥連線時可能短暫下降。公開列表只列等待房，滿兩人禁止加入，私人房碼不公開；已在房內須先離房再加入。正式 Supabase 已套用第 6 份 `20261011_account_deck_unlock.sql`，後檢 9 項通過：移除抽完新手額度的門檻，保留登入身分、合法持有牌組、待領獎勵與 RPC 權限檢查。證據位於遊戲專案 `build/r5-production/sql/summary.json`；不要重跑既有 installer 或重設玩家資料。R5 仍須同步更新 protocol 14 的客戶端與伺服器；真實 JWT 與完整正式對局結果仍需獨立驗收。
+
+本輪來源回歸：帳號 SQL 隔離 PostgreSQL 67 項通過；多人 UI headless 46 項、原生 Forward+ 54 項（8 張 1280×720 截圖）、房間流程 15 項、網路選單 32 項、主選單收藏整合 48 項通過，完整 engine／stdout 無 ERROR 或 WARNING。測試只用隔離 profile、合成帳號服務與 loopback，不建立正式測試房；不能代替 R5 成品、真實 JWT 與公網雙人對局驗收。登入入口實際開啟電子郵件面板，合法持有六十張且剩 49 抽可按鈕開房，證據在遊戲專案 `build/room-create-20261011/`。
 
 ### 建議部署方式
 
@@ -70,11 +76,21 @@ Get-FileHash -LiteralPath '完整路徑\TwilightCodex-Windows-20261011-R4.zip' -
 
 ### 部署紀錄（2026-10-11）
 
-R4 遊戲來源 commit 為 `386776742db463c553758414252e96fdbb1bfca5`；Windows ZIP、Server TAR.GZ 及兩份檢查碼已於 `v2026.10.11-r4` 公開發布。下載檔名、大小與 SHA-256 見上方下載段落，匿名 GitHub API 已核對四個附件的名稱、上傳狀態與兩份遊戲包的 digest。
+R5 本機封版來源為 `94d1ba400f39b6a3da39ccb8aa86ede15bc93b9e` 加入未提交修改，使用全新 `source-attempt3`；來源清單共 14,782 檔、1,299,375,140 bytes，SHA-256 `448c144807cd3ce0642a71da04341a29fd9f466a6c618abda6b8ba4a536b0262`。本輪 Godot 4.7.2 匯入使用可重新生成的既有快取，exit code 0、零 ERROR／WARNING；這不是完全無快取的首次匯入，也不覆寫下方 R4 的歷史匯入失敗。
+
+R5 ZIP 已通過 CRC 與 19 個完整解壓檔案的逐檔 SHA-256 核對；ZIP 為 622,950,365 bytes（594.1 MiB）、SHA-256 `8b1dbfedfdc3fce01586ac270420e1629c1972d8b14f79b0ea698298b9d7f053`。包內 `TwilightCodex.exe` 為 734,342,152 bytes、SHA-256 `b78fa16e4cff0c2d1c0728de76644e085aff391e8c944f993548aa318502c68b`。封裝資源檢查 303 項、實際解壓 EXE 的 headless 與一般 GUI 啟動均為 `PASS`，exit code 0、engine／stdout／stderr 零 ERROR／WARNING，執行前後 EXE SHA-256 相同。矮人工坊兩張更新 PNG 的匯入 MD5、封裝 CTEX SHA-256 與材質解碼另通過 10 項檢查，最終來源檢查沒有檔案新增、移除或內容變動。證據位於 `E:\card-game-demo(4.5)\build\windows-zip-20261011-r5\qa\` 的 `package.json`、`local-verification.json`、`new-art-packed.json` 與 `source-final.json`。
+
+R5 MovieMaker 截圖流程保留 `FAIL`：雖然 exit code 0 並產生主選單畫面，退出仍有 4 筆 ObjectDB 警告與 1 筆 `resources still in use` ERROR；一般 GUI 啟動沒有這些診斷。本輪不宣稱全部測試全綠。R5 GitHub 附件上傳、Google Cloud 伺服器更新、Vercel 正式部署、匿名公開下載、朋友電腦與兩個真實帳號完整外網對局驗收均為 `NOT RUN`，正式官網仍為 R4。
+
+先前未發布的 R4 候選來源為 `94d1ba400f39b6a3da39ccb8aa86ede15bc93b9e`，來源清單 SHA-256 為 `58eeae61f9698e096c106e7823298bf17f3ebf980af65d4139bdc4c9e0b77ca6`。該候選 Windows 匯出 exit code 0、零 ERROR／WARNING；ZIP CRC 與完整解壓核對通過。`TwilightCodex-Windows-20261011-R4-verified.zip` 為 611,679,761 bytes，SHA-256 為 `5c07837990e2b1ab41d2d43f52e2aef0d5afe84b01bc7a340f1ce620fb247b49`，因追加遊戲修正而停止發布。證據位於 `E:\card-game-demo(4.5)\build\windows-zip-20261011-r4`，不套用為 R5 驗收結果。
+
+該 R4 候選的 fresh-source import 保留 `FAIL`：來源缺少 403 個 MTL 材質檔，另有 297 筆 OBJ ambient 材質警告；診斷見 `qa/import-diagnostics.json`。來源匯入、Windows export 與實際 EXE 啟動分開紀錄，後續 R5 重新驗收也不能覆寫這份歷史結果。
+
+先前 R4 遊戲來源 commit 為 `386776742db463c553758414252e96fdbb1bfca5`；標準 `TwilightCodex-Windows-20261011-R4.zip`、Server TAR.GZ 及兩份檢查碼已於 `v2026.10.11-r4` 公開發布並保留。標準 R4 ZIP 大小為 611,548,015 bytes、SHA-256 為 `14243c2f1b5e397fdc468c335252f39e709ca25bcd7c8c53ef47c02d290b8f48`；該批 Windows EXE 與伺服器 PCK 的封裝資源檢查各通過 293 項，匿名 GitHub API 亦已核對四個附件的名稱、上傳狀態與兩份遊戲包的 digest。這些證據不套用成本輪 `-verified.zip` 的公開下載或真人對局驗收。
 
 Google Cloud 既有伺服器於 2026-10-11 09:57:43 UTC 更新成功，線上 PCK SHA-256 為 `fec51a5cfee27d1814f7660adc58109c7d56b3849d02ed2453f5d418543cc1ac`，更新前備份位於 `/opt/card-game-server-backups/20261011T095741Z-35159`。公開外網大廳檢查通過 11 項；完整兩個正式帳號的真人對局仍為 NOT RUN。
 
-網站由 `wuharry/cardGame-site` 的 `main` 推送觸發既有 Vercel 正式部署。正式下載區必須另核對 R4 版本、583.2 MiB、SHA-256 與完整 ZIP 網址，不能只看建置完成。R4 證據保存在遊戲專案 `build/release-r4/` 的 `release-api-verification.json` 與網站正式驗收紀錄。以下保留 R3 的歷史部署紀錄。
+網站由 `wuharry/cardGame-site` 的 `main` 推送觸發既有 Vercel 正式部署。先前 R4 網站 commit 為 `e9a59a5753d2045296faf94430efea7422ebede4`，Vercel deployment `4utP7ctAG5LDECqx67NR1WECGhhA` 顯示 `Ready / Production`。本輪 R5 尚待發布新附件與更新下載資料；正式下載區必須核對本輪版本、大小、SHA-256 與完整附件網址，不能只看建置完成。先前 R4 證據保存在遊戲專案 `build/release-r4/` 的 `release-api-verification.json` 與網站正式驗收紀錄。以下保留 R3 的歷史部署紀錄。
 
 正式網址是 [twilight-codex.vercel.app](https://twilight-codex.vercel.app/)，既有 Vercel 專案為 [twilight-codex](https://vercel.com/wuharrys-projects/twilight-codex)。首版使用 Chrome 的 Vercel 檔案上傳流程部署，當時已驗收桌機、手機版與四路教學互動。
 
@@ -94,7 +110,7 @@ Godot Movie Maker 的退出清理錯誤尚未處理，嚴格錄影 QA 總報告�
 
 後續提交並 push 網站變更到 `main` 會觸發 Vercel 建置；只改本機檔案不會更新網站。每次發布都要確認 Vercel 顯示 `Ready`，再到正式網址驗收新版內容與下載連結。
 
-換遊戲版本時，先在下載 repo 發布新的版本附件，再修改網站的 `src/data/releases.ts` 並部署。只上傳新 Release 不會自動更換網站的固定版本網址；例如本輪指定 `v2026.10.11-r3`，日後仍會下載 R3，直到網站資料更新。
+換遊戲版本時，先在下載 repo 發布新的版本附件，再修改網站的 `src/data/releases.ts` 並部署。只上傳新 Release 不會自動更換網站的固定版本網址；固定 R4 tag 的網站會繼續下載 R4，直到下載資料一起更新。
 
 來源清單、部署識別與驗收截圖保存在 `E:\card-game-demo(4.5)\build\windows-zip-20261011-1244\qa`。其中 `frontend-deployment.json` 保留首版檔案上傳部署，`release-deployment.json` 記錄本輪公開 Release、Git 自動部署與下載驗收限制。本輪未執行本機 git commit 或 push；上述網站來源提交由 GitHub 網頁完成。本段最終驗收補記僅更新本機 README，未再公開提交。
 
