@@ -1,0 +1,289 @@
+[
+  {
+    "source": "assets/ui/card_art/knight_themed_card_art.png",
+    "resource": "data/cards/knight.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "53232657a387246ab6ffefe1e4db3cf74b9c839510c958261ab1c1c5957684ac",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/knight.webp",
+    "outputSha256": "a6d74ec13acfba78a17605716666a02b35d3907a5d0e022a7f67ace946654296"
+  },
+  {
+    "source": "assets/ui/card_art/treant_guardian_themed_card_art.png",
+    "resource": "data/cards/treant_guardian.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "bcca5aad6d99f89b32be61e1f80663f127f3dcde70300fafe14120c88007317b",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/treant_guardian.webp",
+    "outputSha256": "f83765658e799edb1253a9abf489e04efab7131f10c4a8721f89021b1f76be61"
+  },
+  {
+    "source": "assets/ui/card_art/necromancer_themed_card_art.png",
+    "resource": "data/cards/necromancer.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "233a2e394bb0b07b7a6942c867c41a62342d6a68a2e2ccde0ac18c1f4e99b7e5",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/necromancer.webp",
+    "outputSha256": "a00e69dffc33dd6f256977dec35989c2ea4013aad3ab7857741ab1ad790b18ff"
+  },
+  {
+    "source": "assets/ui/card_art/catfolk_rogue_themed_card_art.png",
+    "resource": "data/cards/catfolk_rogue.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "70250bb9eac90fe746ef3595807127b441d4fa23ec3ce2ca397ce388c7516bca",
+    "width": 720,
+    "height": 480,
+    "output": "/media/cards/catfolk_rogue.webp",
+    "outputSha256": "477ba6c48517a7a445ab09b7b5b5c58cb4c8bffcfe3b398a24fa7b9c25db5c5d"
+  },
+  {
+    "source": "assets/ui/card_art/gargoyle_sentinel_themed_card_art.png",
+    "resource": "data/cards/gargoyle_sentinel.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "73ec47c6d5322a05b4ce5e5f2d83929e2f295fbccd3c9b865f5e895232355e7e",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/gargoyle_sentinel.webp",
+    "outputSha256": "f15d9ad475cbb579ce74d2cf8b15e55c1b3d7fc527ad02a956069f9eb43d74f8"
+  },
+  {
+    "source": "assets/ui/card_art/harpy_hunter_themed_card_art.png",
+    "resource": "data/cards/harpy_hunter.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "fb08eed6306a08e6ba83589cfa79f249134653731d4d8b3d7522cd658a263476",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/harpy_hunter.webp",
+    "outputSha256": "bf76aab5410c82be3db7d6cdf2fe2753ebd6d6b477400c81500f99c31e19bd87"
+  },
+  {
+    "source": "assets/ui/card_art/pirate_captain_themed_card_art.png",
+    "resource": "data/cards/pirate_captain.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "2c3eae7431d498febd12b2d57fca077b63fda6db4841e0b5cbfe5229f80c9514",
+    "width": 720,
+    "height": 480,
+    "output": "/media/cards/pirate_captain.webp",
+    "outputSha256": "819cf21f281a8f7bf8cbcc9051615271819c5b550e2c413504eda3b466f9b738"
+  },
+  {
+    "source": "assets/ui/card_art/mushroom_mage_themed_card_art.png",
+    "resource": "data/cards/mushroom_mage.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "9bb8248b1259b73d67e18ca973741ab50e6d35f9fcb192879023aec2e8305168",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/mushroom_mage.webp",
+    "outputSha256": "3fbcb83b631768c29748bdc4c3aeca800ce15d6812b55fd32f0c34102d6cf73b"
+  },
+  {
+    "source": "assets/ui/card_art/ratfolk_plague_doctor_themed_card_art.png",
+    "resource": "data/cards/ratfolk_plague_doctor.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "14078bb2fbbafe9b89dc7e67deb5f585d793ab69524143fc02ce9c75ece337c7",
+    "width": 720,
+    "height": 480,
+    "output": "/media/cards/ratfolk_plague_doctor.webp",
+    "outputSha256": "a3f81eab751f714df9c92d4c54c8953ebdbc744fd3801dd6c7b90021d12ec26e"
+  },
+  {
+    "source": "assets/ui/card_art/dwarf_smith_themed_card_art.png",
+    "resource": "data/cards/dwarf_smith.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "fb8145d2677f97d21f3f6b423f2a96510ad98604d717b8640b71911bf729a747",
+    "width": 720,
+    "height": 509,
+    "output": "/media/cards/dwarf_smith.webp",
+    "outputSha256": "f81090b09ba255014a5ed081ac898bf251d49b10b75be5983f3ea9e6f09d77ea"
+  },
+  {
+    "source": "assets/ui/card_art/lizard_warrior_themed_card_art.png",
+    "resource": "data/cards/lizard_warrior.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "f2e7b6e911c879160cb8b66b83d7fe1e922c92a563388a619058da9d5bd581d9",
+    "width": 720,
+    "height": 505,
+    "output": "/media/cards/lizard_warrior.webp",
+    "outputSha256": "6757a0a343cf041dedc6bd54a3176d9c6e1f0aa5f57f01d6ddb2884280e91385"
+  },
+  {
+    "source": "assets/ui/card_art/wandering_bard_themed_card_art.png",
+    "resource": "data/cards/wandering_bard.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "9ee783472daa66d54a7dc2c60e9473bff01fda4ab9c3b1d784c086fa5e39db7a",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/wandering_bard.webp",
+    "outputSha256": "b00ce9442fdca6d646ee7e096ddce63ca9aa595cf1deaa523f1f7023af72c74b"
+  },
+  {
+    "source": "assets/ui/card_art/arcana_fireblast_themed_card_art.png",
+    "resource": "data/cards/arcana_fireblast.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "51f782ed7bb596a8de2d3c5f74b1ee97c110b843b12d1af9c8472ac70087e495",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/arcana_fireblast.webp",
+    "outputSha256": "5aa4a7102a2c44e3fcbfa486135b85d6bc4f9e84b75f7e1b2ab3b33bc1285fb1"
+  },
+  {
+    "source": "assets/ui/card_art/arcana_frost_shackles_themed_card_art.png",
+    "resource": "data/cards/arcana_frost_shackles.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "93329b9b18c1bc34f0aba9e5312fc12a52d3b60a09b1cdd2c1bf26125d42fab3",
+    "width": 720,
+    "height": 480,
+    "output": "/media/cards/arcana_frost_shackles.webp",
+    "outputSha256": "9ac31dbf34e5ab06afc53d61f2f63b84ac1d40aa0576cdc56b4a73ac3440e880"
+  },
+  {
+    "source": "assets/ui/card_art/arcana_star_tempest_themed_card_art.png",
+    "resource": "data/cards/arcana_star_tempest.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "bf44e713e70072ddcacfc73f0f8c24f7c5f6ef6f3cfdaaa66d8d53b1826c578a",
+    "width": 720,
+    "height": 480,
+    "output": "/media/cards/arcana_star_tempest.webp",
+    "outputSha256": "07c073edddffdbc6a3b893c0ca051dc209ab5eeef8e35a28e40370d029815a70"
+  },
+  {
+    "source": "assets/ui/card_art/quick_void_rebuke_themed_card_art.png",
+    "resource": "data/cards/quick_void_rebuke.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "ebc60487f9de331e764587e9596a85fdb146427ec766e13abdec4e2109738226",
+    "width": 720,
+    "height": 480,
+    "output": "/media/cards/quick_void_rebuke.webp",
+    "outputSha256": "5d50798fe0892e9da56dab1f9bf08443ff80a2dfa9df7086b4de6fa8a042a22c"
+  },
+  {
+    "source": "assets/ui/card_art/quick_reversal_edict_themed_card_art.png",
+    "resource": "data/cards/quick_reversal_edict.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "1b8781526efa907ca046395f8ac5d3e59b464db19af9c2dde0e2c4d521805782",
+    "width": 720,
+    "height": 480,
+    "output": "/media/cards/quick_reversal_edict.webp",
+    "outputSha256": "0d7799eb6e81622297a762315cf4cc857b7601b9fc4cbbb662bf22ea202e5da9"
+  },
+  {
+    "source": "assets/ui/card_art/equip_mithril_plate_themed_card_art.png",
+    "resource": "data/cards/equip_mithril_plate.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "70096ae10690999de4ecbe89de2e21844c7252c0dff07d4ae054db0a065692e4",
+    "width": 720,
+    "height": 480,
+    "output": "/media/cards/equip_mithril_plate.webp",
+    "outputSha256": "341989c4658d26efca8eaab972e3eec26445608385a950f27ea4f94a87afdc1f"
+  },
+  {
+    "source": "assets/ui/card_art/ward_thorn_sigil_themed_card_art.png",
+    "resource": "data/cards/ward_thorn_sigil.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "c36f863530a139a7f5142c66fa85f22b75e1b5941ab314aae262569379f11697",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/ward_thorn_sigil.webp",
+    "outputSha256": "a5090555ec8dd3ea79eb49b1028284e3fa332e48cf3bd68ce1827afc73866583"
+  },
+  {
+    "source": "assets/ui/card_art/ward_blast_sigil_themed_card_art.png",
+    "resource": "data/cards/ward_blast_sigil.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "471192c7818ec0fc21714af40d2398de660fdcc4abfaaaa896ea9fdc4fde12e9",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/ward_blast_sigil.webp",
+    "outputSha256": "69eb6a871cc33c0ac4e45a6963fa835fb0e4d1abe0bf74231f85939aa2480d0a"
+  },
+  {
+    "source": "assets/ui/card_art/Frost_Witch_CardArt.png",
+    "resource": "data/cards/frost_witch.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "bcdf8c20699df9b7ad9a99809f81ea826687e6fb845bab780b42a29521f3ee54",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/frost_witch.webp",
+    "outputSha256": "303115aa952e52934c23fe06a722540076d2f16fdb9e19271408720499680902"
+  },
+  {
+    "source": "assets/ui/card_art/armored_axeman_themed_card_art.png",
+    "resource": "data/cards/armored_axeman.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "b5d856f71d16eda1f380d2c1ec74de2f8d8b026f4066ec6e31f70e9bfe820d5b",
+    "width": 720,
+    "height": 507,
+    "output": "/media/cards/armored_axeman.webp",
+    "outputSha256": "771049d7ffcab5187f17bdd17a6ca4c25578ee4e0320d4e9be3f0b48c403b5f1"
+  },
+  {
+    "source": "assets/ui/card_art/magecraft/domain_fairy_forest.png",
+    "resource": "data/cards/domain_fairy_forest.tres",
+    "sourceVersion": "2026.10.11-R3",
+    "sourceSha256": "d944a9527394c37089ce4f4f6e31ad85bd20012e0486257c74620e9b3a48c3fe",
+    "width": 720,
+    "height": 502,
+    "output": "/media/cards/domain_fairy_forest.webp",
+    "outputSha256": "8ffb58ecf164b3bc0a32b90962ec8465b40aa0ff044b0fd783130d267f491763"
+  },
+  {
+    "sourceVersion": "2026.10.11-R3",
+    "source": "qa/gui-fresh-main-menu.jpg",
+    "sourceRoot": "release-package",
+    "note": "Windows 解壓包實際啟動畫面，包含視窗標題列；已目視確認 R3 品牌、新玩家抽卡與組牌入口。",
+    "sourceSha256": "1dedafb61c004f488a16510aeb6e8ec5f89ba71b5d11d8f2339181557ca69563",
+    "width": 1282,
+    "height": 752,
+    "output": "/media/screens/main-menu.webp",
+    "outputSha256": "c05b057e9a511b6c7a5baccedc517b04978f84b24445bd14f7c534666ee4dc4d"
+  },
+  {
+    "sourceVersion": "2026.10.11-R3",
+    "source": "qa/gui-singleplayer-turn3.jpg",
+    "sourceRoot": "release-package",
+    "note": "Windows R3 解壓包以合法自組牌組進入單人，AI 行動後回到我方第三回合的四路洞窟實際畫面；含視窗標題列。",
+    "sourceSha256": "e59c38a767fd4773b8dd7308c0da74f56194192d62efa1c2cee15c7a1ccda7c1",
+    "width": 1282,
+    "height": 752,
+    "output": "/media/screens/arena-caverns.webp",
+    "outputSha256": "bd35ee2d28fbafcc989f7c91dbeafa1f46a95fc97d116375e062f3815d15cb69"
+  },
+  {
+    "source": "docs/qa/combat-interactions-20261009/screenshots/sickness/normal100/next-owning-turn-ready.png",
+    "note": "四路版本的原生 QA 截圖；使用測試配置，不代表自然對戰紀錄。",
+    "sourceSha256": "2c24fd5b684f2b54f5b275f9b5bb4c9d1938573a93b46eabd1434622084ac4f3",
+    "width": 1280,
+    "height": 720,
+    "output": "/media/screens/hero-battlefield.webp",
+    "outputSha256": "c5788580ee0f79080235d094e8ad73d34a52b2b870599449ca559b97dbb597de"
+  },
+  {
+    "source": "docs/qa/combat-interactions-20261009/screenshots/sickness/normal100/summoned-versus-ready-and-charge.png",
+    "note": "四路版本的原生 QA 截圖；呈現召喚疲勞與疾行。",
+    "sourceSha256": "184e1d7bea3ae2b706e480c7d9237ff87f6b08590ab05959d8df792247ed6003",
+    "width": 1280,
+    "height": 720,
+    "output": "/media/screens/arena-forest.webp",
+    "outputSha256": "b0839eb3d91c8d73a189b1dd357465623b252a6ce7eb28f09bfb2016b61e263c"
+  },
+  {
+    "source": "docs/art/clear-water-20261009/after-frostlands-front.png",
+    "note": "較早版本的雪地場景預覽，仍顯示五路；現行規則為四路。",
+    "sourceSha256": "0dae27f6c3385b437a11e7dc5f6e00b1a2671bcaafe5cb337486e4e0a7d8b999",
+    "width": 1280,
+    "height": 720,
+    "output": "/media/screens/arena-frostlands.webp",
+    "outputSha256": "e3ea38070946e648e3a59bb379eee028e88fe2ae5173656dad5559ea2d7cc735"
+  },
+  {
+    "output": "/media/screens/town.webp",
+    "outputSha256": "e61a154adab82425633af813f7b79c1076b79dcc5e6674df7aef7357c54a7187",
+    "width": 1600,
+    "height": 900,
+    "retained": true,
+    "note": "保留網站既有無 UI 主選單背景；原始擷取來源未保存，未宣稱重新匯入。"
+  }
+]
