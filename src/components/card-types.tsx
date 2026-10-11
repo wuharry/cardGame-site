@@ -9,11 +9,10 @@ const byId = (id: string) => CARD_TYPES.find((t) => t.id === id)!;
 /**
  * Section 03 — 六種卡型。
  *
- * 不排五張一樣的卡片。左邊把「場上一個單位其實是三張牌疊出來的」直接疊給你看
- * （從者站著、靈裝扣在旁邊、伏印蓋著塞在底下），右邊是兩張法術：秘術正著打，
- * 瞬咒斜插進來，因為它在守方反制窗口使用。
- *
- * 唯一的互動是把伏印翻開——那本來就是這張卡的規則。
+ * 直觀展示：
+ * 左邊：從者三重生態（主體 + 靈裝 + 隱秘伏印），點擊即可翻開陷阱
+ * 右邊：法術與反制窗口時機軸
+ * 下方：種族領域結界
  */
 export function CardTypeShowcase() {
   const [wardRevealed, setWardRevealed] = useState(false);
@@ -26,34 +25,35 @@ export function CardTypeShowcase() {
   const domain = byId("domain");
 
   return (
-    <section id="cards" className="grain relative border-t border-rule-soft bg-ink">
-      <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
+    <section id="cards" className="grain relative border-t border-rule-soft bg-ink py-20 md:py-28">
+      <div className="mx-auto max-w-6xl px-5">
         <header className="max-w-2xl">
-          <p className="eyebrow">III — The Deck</p>
+          <p className="eyebrow">III — The Cards</p>
           <h2 className="section-title mt-4 text-3xl sm:text-4xl">
-            場上的一個單位，其實是三張牌疊出來的
+            場上的一個單位，是三張牌疊出來的
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            牌組裡有六種卡：從者站上路線，靈裝扣在它身上，伏印蓋著埋在它底下，
-            秘術在自己回合結算，瞬咒在反應時機介入，結界則持續支援種族戰術。
+            牌組裡共有六種卡型：從者站上路線交鋒，靈裝武裝其身，伏印暗伏其底；
+            秘術於己方回合發難，瞬咒於反制時機插隊，結界則為全族提供持續庇護。
           </p>
         </header>
 
         <div className="mt-14 grid gap-16 lg:grid-cols-2 lg:gap-12 xl:gap-20">
-          {/* ============ 疊在一起的那三張 ============ */}
+          {/* ============ A: 從者三重武裝生態 ============ */}
           <div>
-            <SubHead mark="A" title="一個從者，三張牌" />
+            <SubHead mark="A" title="從者三重武裝生態" tag="站場組合" />
 
-            {/* 卡片疊放區：只放卡，文字一律在外面，不跟絕對定位打架 */}
+            {/* 卡片疊放區 */}
             <div className="relative mx-auto mt-8 aspect-[20/22] w-[min(20rem,86vw)] lg:mx-0">
-              {/* 伏印：蓋著、塞在從者底下，只露出下緣 */}
+              {/* 伏印：蓋著、塞在從者底下 */}
               <button
                 type="button"
                 onClick={() => setWardRevealed((v) => !v)}
                 aria-pressed={wardRevealed}
-                className={`absolute top-[47%] left-[3%] w-[38%] cursor-pointer -rotate-6 transition-transform hover:-translate-y-1 ${
-                  wardRevealed ? "z-30" : "z-0"
+                className={`absolute top-[47%] left-[3%] w-[38%] cursor-pointer -rotate-6 transition-all duration-300 hover:-translate-y-1 ${
+                  wardRevealed ? "z-30 shadow-[0_0_16px_rgba(220,94,78,0.5)]" : "z-0"
                 }`}
+                title={wardRevealed ? "點擊蓋回伏印" : "點擊翻開伏印陷阱"}
               >
                 {wardRevealed ? (
                   <GameCard
@@ -69,7 +69,7 @@ export function CardTypeShowcase() {
                 )}
               </button>
 
-              {/* 從者：主體。場上有伏印時，卡槽整排紅色脈動。 */}
+              {/* 從者：主體 */}
               <div
                 className={`absolute top-0 left-0 z-10 w-[52%] border p-1 transition-colors ${
                   wardRevealed ? "border-transparent" : "ward-alert"
@@ -86,7 +86,7 @@ export function CardTypeShowcase() {
                 />
               </div>
 
-              {/* 靈裝：扣在從者右側，一條實線接回去 */}
+              {/* 靈裝：扣在從者右側 */}
               <div className="absolute top-[8%] left-[54%] z-20 w-[38%]">
                 <span className="absolute top-[22%] -left-4 h-px w-4 bg-brass-dim" />
                 <GameCard
@@ -98,49 +98,64 @@ export function CardTypeShowcase() {
                   sizes="(max-width: 1024px) 34vw, 130px"
                 />
                 <span
-                  className="absolute -right-1 -bottom-2 border border-brass-dim bg-ink px-1.5 py-0.5 text-[0.66rem] tabular-nums text-brass-hi"
+                  className="absolute -right-1 -bottom-2 border border-brass bg-ink px-1.5 py-0.5 text-[0.66rem] tabular-nums font-bold text-brass-hi shadow-sm"
                   style={{ fontFamily: "var(--font-hud)" }}
                 >
-                  +0 / +2
+                  🛡️ +0 / +2
                 </span>
               </div>
 
-              {/* 翻牌提示掛在疊放區右下，不擠進卡片之間 */}
-              <p className="absolute right-0 bottom-0 z-30">
+              {/* 翻牌互動按鈕 */}
+              <div className="absolute right-0 bottom-0 z-30">
                 <button
                   type="button"
                   onClick={() => setWardRevealed((v) => !v)}
-                  className="cursor-pointer border border-crimson-dim bg-ink px-2.5 py-1.5 text-[0.68rem] tracking-[0.16em] text-crimson-hi uppercase transition-colors hover:border-crimson"
+                  className="cursor-pointer border border-crimson-dim bg-ink px-3 py-1.5 text-[0.72rem] tracking-[0.16em] text-crimson-hi uppercase transition-all hover:border-crimson hover:bg-crimson/10 shadow-sm"
                   style={{ fontFamily: "var(--font-hud)" }}
                 >
-                  {wardRevealed ? "蓋回去" : "翻開伏印"}
+                  {wardRevealed ? "⟲ 蓋回伏印" : "👁 翻開伏印陷阱"}
                 </button>
-              </p>
+              </div>
             </div>
 
-            <div className="mt-10 space-y-7">
-              <CardNote zh={minion.zh} en={minion.en} rule={minion.detail} />
-              <CardNote zh={equip.zh} en={equip.en} rule={equip.detail} />
-              <CardNote
-                zh={ward.zh}
-                en={ward.en}
-                rule={ward.detail}
-                tone="crimson"
-              />
+            {/* 三種卡型條列說明 */}
+            <div className="mt-10 space-y-5">
+              <div className="plate p-3.5 border-l-2 border-brass">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-parchment">👤 {minion.zh} ({minion.en})</span>
+                  <span className="hud-label text-brass-hi">{minion.timing}</span>
+                </div>
+                <p className="body-cjk mt-2 text-[0.84rem]">{minion.detail}</p>
+              </div>
+
+              <div className="plate p-3.5 border-l-2 border-brass-dim">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-parchment">🗡️ {equip.zh} ({equip.en})</span>
+                  <span className="hud-label text-quill">{equip.timing}</span>
+                </div>
+                <p className="body-cjk mt-2 text-[0.84rem]">{equip.detail}</p>
+              </div>
+
+              <div className="plate p-3.5 border-l-2 border-crimson">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-crimson-hi">💣 {ward.zh} ({ward.en})</span>
+                  <span className="hud-label text-crimson-hi">{ward.timing}</span>
+                </div>
+                <p className="body-cjk mt-2 text-[0.84rem]">{ward.detail}</p>
+              </div>
             </div>
 
-            <p className="body-cjk mt-8 border-l border-crimson-dim pl-4 text-[0.86rem]">
-              上面那張從者正在脈動——場上有伏印時，我方整排卡槽都會這樣亮。
-              對手看得到警戒，卻不知道埋在誰底下。
+            <p className="body-cjk mt-6 border-l border-crimson-dim pl-4 text-[0.82rem] text-faint">
+              💡 伏印埋設後，我方整排卡槽都會發出紅色警戒脈動。對手看得到危險預警，但無法確定伏印藏在誰的腳下！
             </p>
           </div>
 
-          {/* ============ 兩張法術 ============ */}
+          {/* ============ B: 兩張法術，兩個時機 ============ */}
           <div>
-            <SubHead mark="B" title="兩張法術，兩個時機" />
+            <SubHead mark="B" title="兩張法術，兩個時機" tag="主動與反制" />
 
             <div className="relative mx-auto mt-8 aspect-[20/19] w-[min(20rem,86vw)] lg:mx-0">
-              {/* 秘術：正著打，自己的回合 */}
+              {/* 秘術 */}
               <div className="absolute top-0 left-0 z-10 w-[52%]">
                 <GameCard
                   art={arcana.art}
@@ -152,8 +167,8 @@ export function CardTypeShowcase() {
                 />
               </div>
 
-              {/* 瞬咒：斜著插進來，打斷的就是左邊那張的結算 */}
-              <div className="absolute top-[22%] left-[44%] z-20 w-[48%] rotate-[8deg]">
+              {/* 瞬咒 */}
+              <div className="absolute top-[20%] left-[44%] z-20 w-[48%] rotate-[8deg]">
                 <GameCard
                   art={quick.art}
                   alt={quick.artAlt}
@@ -165,38 +180,62 @@ export function CardTypeShowcase() {
               </div>
 
               <span
-                className="absolute bottom-[2%] left-0 border border-steel-dim bg-ink px-2 py-1 text-[0.66rem] tracking-[0.16em] text-steel uppercase"
+                className="absolute bottom-[2%] left-0 border border-steel bg-ink px-2.5 py-1 text-[0.68rem] tracking-[0.16em] text-steel font-bold uppercase shadow-sm"
                 style={{ fontFamily: "var(--font-hud)" }}
               >
-                反制窗口
+                ⚡ 守方反制窗口
               </span>
             </div>
 
-            <div className="mt-10 space-y-7">
-              <CardNote zh={arcana.zh} en={arcana.en} rule={arcana.detail} />
-              <CardNote
-                zh={quick.zh}
-                en={quick.en}
-                rule={quick.detail}
-                tone="steel"
-              />
+            {/* 反制窗口說明 */}
+            <div className="plate notch mt-8 p-4 border-l-2 border-steel">
+              <span className="hud-label text-steel">反制時序概念</span>
+              <div className="mt-2 flex items-center justify-between text-xs text-parchment/80">
+                <span className="rounded bg-panel px-2 py-1">對手出牌宣告</span>
+                <span>➔</span>
+                <span className="rounded border border-steel bg-steel/20 px-2 py-1 font-bold text-steel">⚡ 反制窗口開啟</span>
+                <span>➔</span>
+                <span className="rounded bg-panel px-2 py-1">結算／反制失效</span>
+              </div>
+              <p className="mt-2.5 text-[0.78rem] text-quill">
+                瞬咒只能在「守方反制窗口」打出，消耗留存的魔力。能打斷對手的秘術、攻擊或特殊技能！
+              </p>
             </div>
 
-            <dl className="mt-12 border-t border-rule-soft">
+            <div className="mt-6 space-y-4">
+              <div className="plate p-3.5 border-l-2 border-brass-dim">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-parchment">📜 {arcana.zh} ({arcana.en})</span>
+                  <span className="hud-label text-brass-hi">{arcana.timing}</span>
+                </div>
+                <p className="body-cjk mt-2 text-[0.84rem]">{arcana.detail}</p>
+              </div>
+
+              <div className="plate p-3.5 border-l-2 border-steel">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-steel">⚡ {quick.zh} ({quick.en})</span>
+                  <span className="hud-label text-steel">{quick.timing}</span>
+                </div>
+                <p className="body-cjk mt-2 text-[0.84rem]">{quick.detail}</p>
+              </div>
+            </div>
+
+            {/* 卡型速查表 */}
+            <dl className="mt-8 border-t border-rule-soft">
               {CARD_TYPES.map((type) => (
                 <div
                   key={type.id}
-                  className="flex items-baseline justify-between gap-4 border-b border-rule-soft py-2.5"
+                  className="flex items-baseline justify-between gap-4 border-b border-rule-soft py-2"
                 >
                   <dt className="flex items-baseline gap-2">
                     <span
-                      className="text-sm text-parchment"
+                      className="text-sm text-parchment font-medium"
                       style={{ fontFamily: "var(--font-serif)" }}
                     >
                       {type.zh}
                     </span>
                     <span
-                      className="text-[0.6rem] tracking-[0.2em] text-faint uppercase"
+                      className="text-[0.62rem] tracking-[0.2em] text-faint uppercase"
                       style={{ fontFamily: "var(--font-hud)" }}
                     >
                       {type.en}
@@ -214,6 +253,7 @@ export function CardTypeShowcase() {
           </div>
         </div>
 
+        {/* ============ C: 結界領域 ============ */}
         <div className="mt-16 grid gap-8 border-t border-rule-soft pt-10 sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-10">
           <div className="mx-auto w-40 sm:mx-0">
             <GameCard
@@ -226,13 +266,13 @@ export function CardTypeShowcase() {
             />
           </div>
           <div className="self-center">
-            <SubHead mark="C" title="一方一個結界，讓種族互相支援" />
-            <div className="mt-6 max-w-2xl">
+            <SubHead mark="C" title="全場結界，種族連攜核心" tag="領域光環" />
+            <div className="mt-4 max-w-2xl">
               <CardNote zh={domain.zh} en={domain.en} rule={domain.detail} />
             </div>
-            <p className="body-cjk mt-5 max-w-2xl text-[0.86rem]">
-              結界是持續存在的領域卡。妖精、風暴城、矮人、龍、潮汐與獸人各有種族結界，
-              觸發條件與效果以各張卡文為準。
+            <p className="body-cjk mt-3 max-w-2xl text-[0.86rem] text-faint">
+              💡 結界每側最多存在一張（不佔從者卡槽）。打出新結界會將舊結界置入墓地。
+              妖精、風暴城、矮人、龍、潮汐與獸人各有專屬領域，可大幅強化種族體系！
             </p>
           </div>
         </div>
@@ -241,21 +281,39 @@ export function CardTypeShowcase() {
   );
 }
 
-function SubHead({ mark, title }: { mark: string; title: string }) {
+function SubHead({
+  mark,
+  title,
+  tag,
+}: {
+  mark: string;
+  title: string;
+  tag?: string;
+}) {
   return (
-    <h3 className="flex items-baseline gap-3 border-b border-rule-soft pb-3">
-      <span
-        className="text-sm text-brass"
-        style={{ fontFamily: "var(--font-display)" }}
-      >
-        {mark}
-      </span>
-      <span
-        className="text-lg text-parchment"
-        style={{ fontFamily: "var(--font-serif)" }}
-      >
-        {title}
-      </span>
+    <h3 className="flex items-baseline justify-between border-b border-rule-soft pb-3">
+      <div className="flex items-baseline gap-3">
+        <span
+          className="text-sm font-bold text-brass"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          {mark}
+        </span>
+        <span
+          className="text-lg font-bold text-parchment"
+          style={{ fontFamily: "var(--font-serif)" }}
+        >
+          {title}
+        </span>
+      </div>
+      {tag && (
+        <span
+          className="border border-rule px-2 py-0.5 text-[0.62rem] text-faint"
+          style={{ fontFamily: "var(--font-hud)" }}
+        >
+          {tag}
+        </span>
+      )}
     </h3>
   );
 }

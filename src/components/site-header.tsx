@@ -1,32 +1,34 @@
 import Link from "next/link";
 
 const NAV = [
+  { href: "#flow", zh: "流程", en: "Flow" },
   { href: "#lanes", zh: "路線", en: "Lanes" },
   { href: "#cards", zh: "卡型", en: "Cards" },
   { href: "#systems", zh: "規則", en: "Rules" },
-  { href: "#collection", zh: "組牌", en: "Collection" },
+  { href: "#collection", zh: "奪卡與組牌", en: "Spoils" },
   { href: "#modes", zh: "模式", en: "Modes" },
 ];
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-rule-soft bg-ink">
+    <header className="sticky top-0 z-50 border-b border-rule-soft bg-ink/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-5">
         <Link href="/" className="group flex items-baseline gap-3">
           <span
-            className="text-lg font-bold tracking-[0.22em] text-parchment"
+            className="text-lg font-bold tracking-[0.22em] text-parchment transition-colors group-hover:text-brass-hi"
             style={{ fontFamily: "var(--font-serif)" }}
           >
             暮色秘典
           </span>
-          <span className="hidden text-[0.62rem] tracking-[0.3em] text-faint uppercase sm:inline"
+          <span
+            className="hidden text-[0.62rem] tracking-[0.3em] text-faint uppercase sm:inline"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Twilight Codex
           </span>
         </Link>
 
-        <nav className="ml-auto hidden items-center gap-5 lg:flex">
+        <nav className="ml-auto hidden items-center gap-6 lg:flex">
           {NAV.map((item) => (
             <Link
               key={item.href}

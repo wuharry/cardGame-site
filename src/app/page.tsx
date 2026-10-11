@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/site-header";
 import { EntryScreen } from "@/components/entry-screen";
+import { TurnFlow } from "@/components/turn-flow";
 import { LaneDoctrine } from "@/components/lane-doctrine";
 import { CardTypeShowcase } from "@/components/card-types";
 import { SystemsPanel } from "@/components/systems-panel";
@@ -11,15 +12,17 @@ import { PatchNotes } from "@/components/patch-notes";
 import { SiteFooter } from "@/components/site-footer";
 
 /**
- * 段落順序照玩家的認知順序排，每一段回答一個問題：
- *   入口   這是什麼、怎麼拿
- *   路線   它跟別的卡牌遊戲差在哪
- *   卡型   牌組裡有什麼
- *   規則   一回合能做多少事
- *   戰場   打起來長什麼樣、有誰
- *   模式   跟誰打
- *   下載   怎麼拿到
- *   紀錄   改了什麼
+ * 頁面段落順序：從宏觀心流到細部實戰，層層推進：
+ *   入口 (EntryScreen)       這是什麼遊戲、核心特色與下載
+ *   流程 (TurnFlow)          30 秒看懂一回合的交鋒循環 (4 階段)
+ *   路線 (LaneDoctrine)      四路前後排實戰交鋒演練 (動態軌跡)
+ *   卡型 (CardTypeShowcase)  三卡合一武裝生態與六種卡型
+ *   規則 (SystemsPanel)      一回合資源與行動上限
+ *   組牌 (CollectionPanel)   自組 60 張與硬派「勝者奪卡」法則
+ *   戰場 (ArenaBand)         實機地圖與陣容角色
+ *   模式 (GameModes)         單人練習、區網與連線對戰
+ *   下載 (DownloadPanel)     Windows 版下載與驗證
+ *   更新 (PatchNotes)        版本開發進度紀錄
  */
 export default function HomePage() {
   return (
@@ -27,6 +30,7 @@ export default function HomePage() {
       <SiteHeader />
       <main>
         <EntryScreen />
+        <TurnFlow />
         <LaneDoctrine />
         <CardTypeShowcase />
         <SystemsPanel />

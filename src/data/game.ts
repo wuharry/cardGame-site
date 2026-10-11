@@ -30,7 +30,9 @@ export interface LanePosition {
 export interface LaneStep {
   id: string;
   index: string;
+  tag: string;
   heading: string;
+  summary: string;
   body: string;
   playerFront: (LaneUnit | null)[];
   playerBack: (LaneUnit | null)[];
@@ -58,63 +60,70 @@ const KNIGHT_POSITION: LanePosition = { side: "player", row: "front", lane: 0 };
 
 export const LANE_STEPS: LaneStep[] = [
   {
-    id: "field", index: "01", heading: "四條路線，每路都有前後排",
+    id: "field", index: "01", tag: "戰場架構", heading: "四條路線，每路都有前後排",
+    summary: "雙方共有 4 路 × 前後 2 排（共 16 卡槽），前排負責迎敵阻擋、後排安全輸出發育。",
     body: "雙方各有四個前排與四個後排卡槽。從者可放進任一空著的我方卡槽；召喚當回合不能普攻或使用攻擊型技能，除非帶有【衝鋒】。",
     playerFront: EMPTY, playerBack: EMPTY, enemyFront: EMPTY, enemyBack: EMPTY,
     attacker: null, target: null, guardian: null, blocked: false, hitHero: false,
     notice: "雙方各有四路 × 前後兩排。", enemyHp: 20,
   },
   {
-    id: "cross-lane", index: "02", heading: "敵方前排，可以跨路選目標",
+    id: "cross-lane", index: "02", tag: "跨路自由", heading: "敵方前排，可以跨路選目標",
+    summary: "攻擊敵方前排不必拘泥正前方！第一路的騎士可自由斜切攻擊第三路的石像鬼哨兵。",
     body: "第一路的騎士可以攻擊第三路的石像鬼哨兵。普通攻擊不限定正前方；沒有嘲諷限制時，敵方前排都能成為目標。攻擊從者會交換傷害。",
     playerFront: PLAYER_FRONT, playerBack: EMPTY,
     enemyFront: [null, null, GARGOYLE, null], enemyBack: [null, null, MUSHROOM, null],
     attacker: KNIGHT_POSITION, target: { side: "enemy", row: "front", lane: 2 },
     guardian: null, blocked: false, hitHero: false,
-    notice: "騎士（第 1 路） → 石像鬼哨兵（第 3 路）：可以指定。", enemyHp: 20,
+    notice: "騎士（第 1 路） → 石像鬼哨兵（第 3 路）：跨路攻擊，雙方互換傷害。", enemyHp: 20,
   },
   {
-    id: "back-guard", index: "03", heading: "前排保護自己那一路的後排",
+    id: "back-guard", index: "03", tag: "前排掩護", heading: "前排保護自己那一路的後排",
+    summary: "只要同路前排仍在場，後面的蘑菇術士就處於絕對掩護中，敵方普攻無法直接鎖定！",
     body: "第三路的石像鬼哨兵仍在場，後面的蘑菇術士就不能被普通攻擊或攻擊型技能直接指定。先移除那名同路前排，才會打開後排；法術與非攻擊技能依卡文判斷。",
     playerFront: PLAYER_FRONT, playerBack: EMPTY,
     enemyFront: [null, null, GARGOYLE, null], enemyBack: [null, null, MUSHROOM, null],
     attacker: KNIGHT_POSITION, target: { side: "enemy", row: "back", lane: 2 },
     guardian: { side: "enemy", row: "front", lane: 2 }, blocked: true, hitHero: false,
-    notice: "蘑菇術士受同路前排保護：不能直接攻擊。", enemyHp: 20,
+    notice: "後排受同路前排庇護：必須先擊破前排石像鬼哨兵！", enemyHp: 20,
   },
   {
-    id: "hero-blocked", index: "04", heading: "打英雄，檢查攻擊者自己的路線",
+    id: "hero-blocked", index: "04", tag: "英雄防禦", heading: "打英雄，檢查攻擊者自己的路線",
+    summary: "想直擊敵方英雄？先檢查你自己這條路正前方有沒有敵方前排擋路！",
     body: "第四路的貓族盜賊想直擊英雄，會被同路的樹靈守衛擋住。選敵方前排可以跨路；攻擊英雄則要先看攻擊者那一路有沒有敵方前排。",
     playerFront: PLAYER_FRONT, playerBack: EMPTY,
     enemyFront: [null, null, null, TREANT], enemyBack: EMPTY,
     attacker: { side: "player", row: "front", lane: 3 }, target: "hero",
     guardian: { side: "enemy", row: "front", lane: 3 }, blocked: true, hitHero: false,
-    notice: "貓族盜賊（第 4 路） → 英雄：被同路前排擋住。", enemyHp: 20,
+    notice: "同路有敵方前排樹靈守衛：直擊路徑被完全擋下！", enemyHp: 20,
   },
   {
-    id: "open-lane", index: "05", heading: "前排空了，後排不替英雄擋傷害",
+    id: "open-lane", index: "05", tag: "破路直擊", heading: "前排空了，後排不替英雄擋傷害",
+    summary: "敵方第一路前排空缺！即便後排有蘑菇術士，騎士仍可長驅直入痛擊敵方英雄本體！",
     body: "第一路只有敵方後排蘑菇術士，前排空著，也沒有嘲諷守護。騎士便能直擊英雄，造成基礎攻擊力 3 點傷害；打英雄不會受到反擊。",
     playerFront: PLAYER_FRONT, playerBack: EMPTY,
     enemyFront: EMPTY, enemyBack: [MUSHROOM, null, null, null],
     attacker: KNIGHT_POSITION, target: "hero", guardian: null, blocked: false, hitHero: true,
-    notice: "騎士直擊英雄：20 → 17。後排不阻擋英雄攻擊。", enemyHp: 17,
+    notice: "前排無阻擋！騎士破路直取敵方英雄（20 → 17 HP），不收反擊！", enemyHp: 17,
   },
   {
-    id: "taunt", index: "06", heading: "前排嘲諷，守住自己與相鄰路線",
+    id: "taunt", index: "06", tag: "嘲諷護衛", heading: "前排嘲諷，守住自己與相鄰路線",
+    summary: "第二路重甲斧兵發動【嘲諷】，形成保護網籠罩第 1、2、3 路，強制騎士必須先打它！",
     body: "第二路的重甲斧兵帶有【嘲諷】，會守護第一、二、三路。第一路的騎士必須先選它，不能改打其他從者或英雄；第四路不在這名守護者的範圍。",
     playerFront: PLAYER_FRONT, playerBack: EMPTY,
     enemyFront: [null, AXEMAN, null, null], enemyBack: EMPTY,
     attacker: KNIGHT_POSITION, target: "hero", guardian: { side: "enemy", row: "front", lane: 1 },
     blocked: true, hitHero: false,
-    notice: "第 1 路受相鄰嘲諷守護：必須先攻擊重甲斧兵。", enemyHp: 20,
+    notice: "相鄰嘲諷牽引：受重甲斧兵護衛影響，必須優先攻擊嘲諷者！", enemyHp: 20,
   },
   {
-    id: "flying", index: "07", heading: "飛行直擊英雄，可以越過阻擋",
+    id: "flying", index: "07", tag: "飛行特權", heading: "飛行直擊英雄，可以越過阻擋",
+    summary: "石像鬼哨兵具備【飛行】，攻擊敵方英雄時能振翅高飛越過地面阻擋與嘲諷，直接爆頭！",
     body: "石像鬼哨兵帶有【飛行】，攻擊英雄時能越過同路前排與嘲諷守護。這個例外只適用於直擊英雄；攻擊從者仍要遵守嘲諷與前排保護後排的限制。",
     playerFront: [GARGOYLE, null, null, ROGUE], playerBack: EMPTY,
     enemyFront: [TREANT, AXEMAN, null, null], enemyBack: EMPTY,
     attacker: KNIGHT_POSITION, target: "hero", guardian: null, blocked: false, hitHero: true,
-    notice: "石像鬼哨兵飛越前排與嘲諷，英雄 20 → 17。", enemyHp: 17,
+    notice: "【飛行】越過地面阻擋與嘲諷！英雄受擊（20 → 17 HP）！", enemyHp: 17,
   },
 ];
 
