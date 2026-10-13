@@ -6,7 +6,7 @@ const CREDITS = [
   { label: "Engine", value: `${GAME_FACTS.engine} · GDScript · Forward+` },
   { label: "Type", value: "Noto Serif TC · Cinzel · Barlow" },
   { label: "Icons", value: "Icons by Andrey Kalyuzhnyy (CC BY 4.0)" },
-  { label: "Icons / source", value: "Icons: Shikashi's Fantasy Icons Pack; partly based on game-icons.net (CC BY 3.0)" },
+  { label: "Icons / source", value: "Matt Firth (shikashipx) · game-icons.net · CC BY 3.0 / 4.0" },
 ];
 
 export function SiteFooter() {
@@ -31,13 +31,14 @@ export function SiteFooter() {
 
           <nav className="flex flex-wrap gap-x-6 gap-y-2">
             {[
-              { href: "#lanes", label: "路線" },
-              { href: "#cards", label: "卡型" },
-              { href: "#systems", label: "規則" },
-              { href: "#collection", label: "組牌" },
-              { href: "#modes", label: "模式" },
-              { href: "#download", label: "下載" },
-              { href: "#changelog", label: "更新紀錄" },
+              { href: "/#lanes", label: "路線" },
+              { href: "/#cards", label: "卡型" },
+              { href: "/#systems", label: "規則" },
+              { href: "/#collection", label: "組牌" },
+              { href: "/#modes", label: "模式" },
+              { href: "/#download", label: "下載" },
+              { href: "/#changelog", label: "更新紀錄" },
+              { href: "/credits", label: "製作群與授權" },
             ].map((item) => (
               <Link
                 key={item.href}
@@ -68,6 +69,10 @@ export function SiteFooter() {
         <p className="mt-10 text-[0.75rem] text-faint">
           個人開發專案。網站上的畫面全部擷取自實際執行的遊戲。
           引擎授權：<a href="https://godotengine.org/license/" className="underline underline-offset-4">Godot Engine · MIT</a>。
+        </p>
+        <p className="mt-3 text-[0.75rem] leading-6 text-faint">
+          © 2026 Harvey · 暮色秘典。原創且依法受保護的內容保留相關權利；第三方素材依各自授權使用。
+          <Link href="/credits" className="underline underline-offset-4">作者、來源與授權聲明</Link>。
         </p>
       </div>
     </footer>

@@ -1,0 +1,120 @@
+{
+  "sourceRevision": "2fd9dc95b1ed1be40e82a4897ddf342956077eda",
+  "checkedOn": "2026-10-13",
+  "copyright": "© 2026 Harvey · 暮色秘典 Twilight Codex。\n\n本專案原創且依法受保護的程式與內容保留相關權利。除法律或適用授權允許外，未經許可不得複製、改作、散布、轉售，或將其另作素材包提供。\n\n第三方程式、圖片、字型與音訊的權利仍屬各原作者，依各自授權使用。本聲明不限制第三方授權已授予的分享、修改或其他權利；作者、來源、加工與授權見遊戲內「製作群」及下載包的 CREDITS.md、Licenses 目錄。\n\n公開玩家包僅供遊玩；伺服器部署包不屬於公開玩家下載內容。",
+  "groups": [
+    {
+      "title": "素材作者與授權",
+      "entries": [
+        {
+          "name": "Pixel Spell Icons Pack (32x32)",
+          "by": "Antahonist (Andrey Kalyuzhnyy)",
+          "license": "CC BY 4.0",
+          "link": "https://creativecommons.org/licenses/by/4.0/",
+          "note": "Icons by Andrey Kalyuzhnyy. Source: https://antahonist.itch.io/pixel-spell-icons-pack-32x32 . Resized and cropped; artwork unchanged."
+        },
+        {
+          "name": "Shikashi's Fantasy Icons Pack",
+          "by": "Matt Firth (shikashipx); based partly on game-icons.net",
+          "license": "Local pack: CC BY 3.0 sources; current author page: CC BY 4.0",
+          "link": "https://creativecommons.org/licenses/by/3.0/",
+          "note": "Source: https://shikashipx.itch.io/shikashis-fantasy-icons-pack . Current terms: https://creativecommons.org/licenses/by/4.0/ . Selected icons cropped from the original sheets."
+        },
+        {
+          "name": "Pixel 3D RPG Grasslands / Caverns / Frostlands",
+          "by": "Ultimate_End",
+          "license": "Personal/commercial game project permission",
+          "link": "https://ultimate-end.itch.io/",
+          "note": "Selected models and textures adapted for Godot. No standalone asset pack redistribution under the author's project-use terms."
+        },
+        {
+          "name": "Pixel 3D RPG Town Pack",
+          "by": "Ultimate_End",
+          "license": "CC BY-SA 4.0 (author's product-page license)",
+          "link": "https://creativecommons.org/licenses/by-sa/4.0/",
+          "note": "Source: https://ultimate-end.itch.io/pixel-3d-rpg-town . Models and textures converted for Godot, with material/layout adaptations. Town-derived assets retain CC BY-SA 4.0; this does not change the license of the game's separate code or other assets."
+        },
+        {
+          "name": "Noto Serif TC / Playpen Sans",
+          "by": "Google Fonts",
+          "license": "SIL Open Font License 1.1",
+          "link": "https://openfontlicense.org",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "title": "其他素材與音訊",
+      "entries": [
+        {
+          "name": "Tiny RPG Character Asset Pack 01 V2.0 / 02",
+          "by": "Zerie",
+          "license": "Personal/commercial video game project license",
+          "link": "https://zerie.itch.io/",
+          "note": "Selected character animations edited and baked for this game. No standalone asset redistribution, AI training or NFT use."
+        },
+        {
+          "name": "Time Fantasy Battlers, Fantasy RPG Icons, Pixel Animations and Effects",
+          "by": "finalbossblues (Jason Perry)",
+          "license": "Commercial game use and edits permitted; no standalone redistribution",
+          "link": "https://finalbossblues.itch.io/",
+          "note": "Purchased through itch.io. Selected animations cropped, scaled and arranged; source icon library is development-only."
+        },
+        {
+          "name": "Retro PSX Style Tree Pack",
+          "by": "Elegant Crow",
+          "license": "Models: CC0; source imagery: CC0Textures.com and Pixabay",
+          "link": "https://elegantcrow.itch.io/psx-retro-style-tree-pack",
+          "note": "Selected foliage and bark textures adapted for the forest arena; attribution is voluntary. Original source details remain in CREDITS.md."
+        },
+        {
+          "name": "Free Pixel Art Card Template Pack",
+          "by": "Luminous Dice",
+          "license": "Personal/commercial project license",
+          "link": "https://luminous-dice.itch.io/free-pixel-art-card-template-pack",
+          "note": "Card Template.zip. Atlas regions used for card frames; no standalone asset pack redistribution."
+        },
+        {
+          "name": "Sound effects",
+          "by": "Kenney",
+          "license": "CC0",
+          "link": "https://kenney.nl",
+          "note": ""
+        },
+        {
+          "name": "RPG Essentials / Minifantasy Dungeon audio",
+          "by": "Leohpaz",
+          "license": "Game project license",
+          "link": "https://leohpaz.itch.io/minifantasy-dungeon-sfx-pack",
+          "note": "Personal/commercial game use. Selected SFX trimmed and level matched; no standalone pack redistribution."
+        },
+        {
+          "name": "Nature, wood-fire, tabletop and material sound recordings",
+          "by": "UberDuo, Justsoundeffects, Nick McMahan, Mechanical Wave, Systematic Sound, Sonic Bat / Sonniss GameAudioGDC",
+          "license": "Royalty-free game project license",
+          "link": "https://sonniss.com/gameaudiogdc/",
+          "note": "Selected recordings edited and level matched for this game. Copyright remains with the original creators."
+        },
+        {
+          "name": "Catacombs art",
+          "by": "Szadi art",
+          "license": "Public domain",
+          "link": "https://szadiart.itch.io",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "title": "遊戲引擎",
+      "entries": [
+        {
+          "name": "Godot Engine 4.7",
+          "by": "Juan Linietsky, Ariel Manzur and contributors",
+          "license": "MIT License",
+          "link": "https://godotengine.org/license",
+          "note": ""
+        }
+      ]
+    }
+  ]
+}

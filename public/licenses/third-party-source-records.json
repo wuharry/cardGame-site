@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-13",
+  "purpose": "Official creator-source verification. Summaries do not replace source licenses. Source HTML snapshots are local QA evidence, not shipped game assets.",
+  "records": [
+    {
+      "id": "antahonist",
+      "source_url": "https://antahonist.itch.io/pixel-spell-icons-pack-32x32",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://antahonist.itch.io/pixel-spell-icons-pack-32x32",
+      "html_sha256": "dcadfee7b4fd18261fa8fdb2a6df978f7ce683a1695b6e5be7ce3d40e35b7393",
+      "license_summary": "CC BY 4.0 retained from bundled LICENSE; author and source identified on official page."
+    },
+    {
+      "id": "shikashi",
+      "source_url": "https://shikashipx.itch.io/shikashis-fantasy-icons-pack",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://shikashipx.itch.io/shikashis-fantasy-icons-pack",
+      "html_sha256": "67ce55461643514294ba61294bad9d2cde8098862d7c5e11205429db755436bc",
+      "license_summary": "Current page: CC BY 4.0; bundled legacy note: game-icons.net CC BY 3.0. Credit Matt Firth (shikashipx) and game-icons.net; preserve both records."
+    },
+    {
+      "id": "time-fantasy-icons",
+      "source_url": "https://itch.io/post/1103569",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://itch.io/post/1103569",
+      "html_sha256": "6eee7e16d816dcfb5ad9dcffe9be651bd05beb1f10f6ac08b36af9f7d4f0ab3a",
+      "license_summary": "Author permits edits, commercial projects and any engine, excludes standalone redistribution; attribution voluntary."
+    },
+    {
+      "id": "time-fantasy-battlers",
+      "source_url": "https://finalbossblues.itch.io/side-view-animated-rpg-battlers",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://finalbossblues.itch.io/side-view-animated-rpg-battlers",
+      "html_sha256": "e1325f2ee2249672b45a9a27b40eaf90e51a59e4d0ae8a2d0faa0ed6ab268822",
+      "license_summary": "Author product identified; general itch.io terms documented in linked author FAQ."
+    },
+    {
+      "id": "time-fantasy-faq",
+      "source_url": "https://www.patreon.com/finalbossblues/posts/patron-faq-50873907",
+      "retrieved_on": "2026-10-13",
+      "status": "CLI_FETCH_FAILED_WEB_READ_CONFIRMED",
+      "license_summary": "Author distinguishes unrestricted-engine itch.io/Patreon assets from RPG Maker DLC; project use and edits allowed, standalone redistribution prohibited.",
+      "fetch_error_type": "HTTPError"
+    },
+    {
+      "id": "pixel-effects",
+      "source_url": "https://finalbossblues.itch.io/pixel-animations-and-effects",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://finalbossblues.itch.io/pixel-animations-and-effects",
+      "html_sha256": "9345c9ed69726d77ff60e4ee5ec1999e3a837040efc28a55ba2439f179e3a18f",
+      "license_summary": "Commercial game use and edits permitted, royalties and attribution not required; standalone redistribution prohibited."
+    },
+    {
+      "id": "zerie-01",
+      "source_url": "https://zerie.itch.io/tiny-rpg-character-asset-pack",
+      "retrieved_on": "2026-10-13",
+      "status": "CLI_FETCH_FAILED_WEB_READ_CONFIRMED",
+      "license_summary": "Personal/commercial video game use and modifications permitted; no standalone redistribution, resale, re-upload, AI training or NFTs; attribution voluntary.",
+      "fetch_error_type": "HTTPError"
+    },
+    {
+      "id": "zerie-02",
+      "source_url": "https://zerie.itch.io/tiny-rpg-character-asset-pack-02",
+      "retrieved_on": "2026-10-13",
+      "status": "CLI_FETCH_FAILED_WEB_READ_CONFIRMED",
+      "license_summary": "Personal/commercial video game use and modifications permitted; no standalone redistribution, resale, re-upload, AI training or NFTs; attribution voluntary.",
+      "fetch_error_type": "HTTPError"
+    },
+    {
+      "id": "pixel3d-grasslands",
+      "source_url": "https://ultimate-end.itch.io/pixel-3d-grasslands",
+      "retrieved_on": "2026-10-13",
+      "status": "CLI_FETCH_FAILED_WEB_READ_CONFIRMED",
+      "license_summary": "Author game-project permission: personal/commercial use and modification; no standalone asset redistribution; commercial attribution requested.",
+      "fetch_error_type": "HTTPError"
+    },
+    {
+      "id": "pixel3d-caverns",
+      "source_url": "https://ultimate-end.itch.io/pixel-3d-caverns",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://ultimate-end.itch.io/pixel-3d-caverns",
+      "html_sha256": "1d5199d9daffd7367f523be95dc64d54205ce2369c3ad760ac588fbebbf425a8",
+      "license_summary": "Author game-project permission: personal/commercial use and modification; no standalone asset redistribution; commercial attribution requested."
+    },
+    {
+      "id": "pixel3d-frostlands",
+      "source_url": "https://ultimate-end.itch.io/pixel-3d-rpg-frostlands",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://ultimate-end.itch.io/pixel-3d-rpg-frostlands",
+      "html_sha256": "2351afb3635a42bce891d53f455069af2782f11f8b8327eb124fdda5589c1397",
+      "license_summary": "Author game-project permission: personal/commercial use and modification; no standalone asset redistribution; commercial attribution requested."
+    },
+    {
+      "id": "pixel3d-town",
+      "source_url": "https://ultimate-end.itch.io/pixel-3d-rpg-town",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://ultimate-end.itch.io/pixel-3d-rpg-town",
+      "html_sha256": "14309fbdcafd796dcd4e53251b7be848115f29e9accc1924e3e3261f794f1d14",
+      "license_summary": "This project uses the CC BY-SA 4.0 license listed in product metadata. Town-derived assets retain that license, attribution, source and modification notice; no additional sharing prohibition is imposed."
+    },
+    {
+      "id": "psx-trees",
+      "source_url": "https://elegantcrow.itch.io/psx-retro-style-tree-pack",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://elegantcrow.itch.io/psx-retro-style-tree-pack",
+      "html_sha256": "45ce6834543166fed9ec75e34fabd7fde2b6dc140227a70ee6c3f0c7dec7dc78",
+      "license_summary": "Models CC0; author identifies textures as CC0Textures.com and transformed Pixabay imagery; attribution voluntary."
+    },
+    {
+      "id": "pixel-template",
+      "source_url": "https://luminous-dice.itch.io/free-pixel-art-card-template-pack",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://luminous-dice.itch.io/free-pixel-art-card-template-pack",
+      "html_sha256": "2a0bbaca5a67364caa00aec7d28bf694164df4e4eab5ad622bb132a7464a89b2",
+      "license_summary": "Custom personal/commercial project license; modification permitted, no redistribution as an asset pack/template/marketplace asset; attribution voluntary."
+    },
+    {
+      "id": "ocean-shader",
+      "source_url": "https://github.com/immaculate-lift-studio/Godot-Ocean-Shader",
+      "retrieved_on": "2026-10-13",
+      "status": "FETCHED",
+      "final_url": "https://github.com/immaculate-lift-studio/Godot-Ocean-Shader",
+      "html_sha256": "4f02eceefae625d37093229f4037b028c875a941b93fde4583515dfaf5e65304",
+      "license_summary": "MIT code identified and license preserved; placeholder water photo has no individual source and is excluded rather than assumed MIT."
+    }
+  ]
+}
