@@ -71,7 +71,7 @@ export function EntryScreen() {
         {/* 遊戲主選單文字導航 */}
         <nav className="mt-10 w-[min(24rem,84vw)]">
           <MenuItem href="#download" primary>
-            {downloadUrl(windows) ? "下載 Windows 版" : "Windows 版下載資訊"}
+            {downloadUrl(windows) ? "下載 Windows／macOS 版" : "遊戲下載資訊"}
           </MenuItem>
           <MenuItem href="#flow">30 秒掌握遊戲流程</MenuItem>
           <MenuItem href="#lanes">四路交鋒動態演練</MenuItem>
@@ -82,7 +82,7 @@ export function EntryScreen() {
       {/* 底部資訊條 */}
       <div className="relative z-10 border-t border-rule-soft bg-ink/80">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-2 px-5 py-3">
-          <Meta label="Build" value={`Windows ZIP · ${buildStatusText(windows)}`} />
+          <Meta label="Build" value={`Windows／macOS ZIP · ${buildStatusText(windows)}`} />
           <Meta label="Engine" value={`${GAME_FACTS.engine} · Forward+`} />
           <Meta label="Cards" value={`${GAME_FACTS.cards} 種 + ${GAME_FACTS.tokens} 衍生物`} />
           <Meta label="Lanes" value={String(GAME_FACTS.lanes)} />

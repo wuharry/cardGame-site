@@ -5,12 +5,10 @@ function formatDate(iso: string | null) {
   return iso.replaceAll("-", ".");
 }
 
-/**
- * Windows 是主要平台，做成一塊有份量的金屬牌；其餘平台排成一列規格，
- * 之後多一個平台就是 BUILDS 多一筆，版面自己長出來。
- */
+/** 可下載的平台一起放在頂部，未提供的平台另列。 */
 export function DownloadPanel() {
-  const [featured, ...others] = BUILDS;
+  const available = BUILDS.filter((build) => downloadUrl(build));
+  const others = BUILDS.filter((build) => !downloadUrl(build));
 
   return (
     <section id="download" className="border-t border-rule-soft bg-board">
@@ -28,7 +26,9 @@ export function DownloadPanel() {
           </p>
         </header>
 
-        <FeaturedBuild build={featured} />
+        <div className="mt-10 grid items-start gap-6 sm:grid-cols-2">
+          {available.map((build) => <FeaturedBuild key={build.id} build={build} />)}
+        </div>
 
         <div className="mt-10 border-y border-rule-soft py-2">
           {[
@@ -78,8 +78,8 @@ function FeaturedBuild({ build }: { build: Build }) {
   const releaseHref = releasePageUrl(build);
 
   return (
-    <div className="plate notch mt-12 md:mt-14">
-      <div className="flex flex-col gap-8 border-b border-rule px-6 py-8 md:flex-row md:items-center md:justify-between md:px-10 md:py-10">
+    <div className="plate notch min-w-0">
+      <div className="flex flex-col gap-6 border-b border-rule px-6 py-7">
         <div>
           <p className="flex items-baseline gap-3">
             <span
@@ -101,7 +101,7 @@ function FeaturedBuild({ build }: { build: Build }) {
         {href ? (
           <a
             href={href}
-            className="notch shrink-0 border border-brass bg-brass px-10 py-5 text-center text-ink transition-colors hover:bg-brass-hi"
+            className="notch border border-brass bg-brass px-6 py-4 text-center text-ink transition-colors hover:bg-brass-hi"
           >
             <span
               className="block text-lg tracking-[0.2em] uppercase"
@@ -111,7 +111,7 @@ function FeaturedBuild({ build }: { build: Build }) {
             </span>
           </a>
         ) : (
-          <div aria-disabled="true" className="notch shrink-0 border border-brass-dim px-10 py-5 text-center">
+          <div aria-disabled="true" className="notch border border-brass-dim px-6 py-4 text-center">
             <span
               className="block text-lg tracking-[0.2em] text-brass-dim uppercase"
               style={{ fontFamily: "var(--font-hud)", fontWeight: 700 }}
@@ -129,7 +129,7 @@ function FeaturedBuild({ build }: { build: Build }) {
       </div>
 
       {releaseHref && (
-        <p className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem] md:px-10">
+        <p className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
           下載無反應？到{" "}
           <a href={releaseHref} className="text-brass-hi underline underline-offset-4 hover:text-parchment">
             GitHub 版本頁
@@ -139,7 +139,7 @@ function FeaturedBuild({ build }: { build: Build }) {
         </p>
       )}
 
-      <dl className="grid grid-cols-2 md:grid-cols-4">
+      <dl className="grid grid-cols-2">
         <Spec label="Version" value={build.version ?? "—"} />
         <Spec label="File size" value={build.size ?? "—"} />
         <Spec label="Updated" value={formatDate(build.updated)} />
@@ -147,12 +147,12 @@ function FeaturedBuild({ build }: { build: Build }) {
       </dl>
 
       {build.note && (
-        <p className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem] md:px-10">
+        <p className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
           {build.note}
         </p>
       )}
       {href && build.sha256 && (
-        <p className="body-cjk break-all border-t border-rule px-6 py-4 text-[0.78rem] md:px-10">
+        <p className="body-cjk break-all border-t border-rule px-6 py-4 text-[0.78rem]">
           SHA-256：<code>{build.sha256}</code>
         </p>
       )}
@@ -162,7 +162,7 @@ function FeaturedBuild({ build }: { build: Build }) {
 
 function Spec({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-t border-rule px-6 py-4 md:border-l md:px-10 md:first:border-l-0">
+    <div className="border-t border-rule px-6 py-4 odd:border-r">
       <dt className="hud-label">{label}</dt>
       <dd className="hud-value mt-1 text-base">{value}</dd>
     </div>
