@@ -22,6 +22,8 @@ export interface Build {
   note?: string;
   /** 版本化 ZIP 的實際 SHA-256；未產生成品時不填假值。 */
   sha256?: string;
+  /** 可讓單一平台更新，不把其他平台連到不存在的新附件。 */
+  releaseBase?: string;
 }
 
 export const BUILDS: Build[] = [
@@ -30,14 +32,15 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · 64-bit",
     status: "available",
-    file: "TwilightCodex-Windows-20261013-R5.zip",
-    version: "2026.10.13-R5",
+    file: "TwilightCodex-Windows-20261013-Analytics.zip",
+    releaseBase: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.13-analytics",
+    version: "2026.10.13-R5-Analytics",
     size: "622.2 MiB",
-    bytes: 652424282,
+    bytes: 652393310,
     updated: "2026-10-13",
-    sha256: "eceb590e3173b735895959a3574632fe0101be591803d83e5d03a7175f0a2028",
+    sha256: "b9125d909485bf4a58964f6afc2af45da8e4da00107590e79a194effcd78375b",
     requirement: "64 位元 Windows · 滑鼠與鍵盤",
-    note: "解壓縮後執行 TwilightCodex.exe，不需安裝 Godot。本輪尚未在 Windows 原生系統實測啟動。",
+    note: "解壓縮後執行 TwilightCodex.exe。新增匿名遊玩統計，可在設定關閉；不傳收藏或牌組。尚未在 Windows 原生系統實測啟動。",
   },
   {
     id: "macos",
@@ -51,7 +54,7 @@ export const BUILDS: Build[] = [
     updated: "2026-10-13",
     sha256: "70085c66199e32e119cbcc445290e718a6dfca60335cd4c666ca31baecf2927f",
     requirement: "Apple Silicon / Intel · 滑鼠與鍵盤",
-    note: "ad-hoc 簽章、尚未 Apple 公證，首次開啟會被系統攔下，開啟方式見下方說明。",
+    note: "此 R5 版尚無匿名遊玩統計。ad-hoc 簽章、尚未 Apple 公證，首次開啟方式見下方說明。",
   },
   {
     id: "linux",
@@ -81,7 +84,7 @@ export const BUILDS: Build[] = [
 export function downloadUrl(build: Build): string | null {
   if (build.status !== "available" || !build.file || !RELEASE_BASE) return null;
   try {
-    const url = new URL(`${RELEASE_BASE.replace(/\/+$/, "")}/${encodeURIComponent(build.file)}`);
+    const url = new URL(`${(build.releaseBase ?? RELEASE_BASE).replace(/\/+$/, "")}/${encodeURIComponent(build.file)}`);
     return url.protocol === "https:" ? url.href : null;
   } catch {
     return null;
