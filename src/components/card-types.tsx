@@ -80,7 +80,7 @@ export function CardTypeShowcase() {
             </div>
 
             <p className="body-cjk mt-6 border-l border-crimson-dim pl-4 text-[0.82rem] text-faint">
-              💡 伏印埋設後，我方整排卡槽都會發出紅色警戒脈動。對手看得到危險預警，但無法確定伏印藏在誰的腳下！
+              💡 進攻類伏印依卡文顯示警戒；防守類伏印不向對手提示。揭示詢問與私密紀錄只給擁有者，霧幕替身隱藏後也不會出現在對手場上。
             </p>
           </div>
 

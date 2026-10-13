@@ -1,9 +1,9 @@
 /**
  * 下載成品與程式開發紀錄分開維護。
- * 本機可先備妥新版部署稿；公開附件可下載、檢查碼與啟動驗收通過後才部署。
+ * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.11-r5";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.13-r5";
 
 export type BuildStatus = "available" | "preparing" | "planned";
 
@@ -30,25 +30,28 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · 64-bit",
     status: "available",
-    file: "TwilightCodex-Windows-20261011-R5.zip",
-    version: "2026.10.11-R5",
-    size: "594.1 MiB",
-    bytes: 622950365,
-    updated: "2026-10-11",
-    sha256: "8b1dbfedfdc3fce01586ac270420e1629c1972d8b14f79b0ea698298b9d7f053",
+    file: "TwilightCodex-Windows-20261013-R5.zip",
+    version: "2026.10.13-R5",
+    size: "622.2 MiB",
+    bytes: 652424282,
+    updated: "2026-10-13",
+    sha256: "eceb590e3173b735895959a3574632fe0101be591803d83e5d03a7175f0a2028",
     requirement: "64 位元 Windows · 滑鼠與鍵盤",
-    note: "R5 收錄 109 張重繪卡圖，開放新手額度未用完時組牌與合法六十張對戰，組牌可直接閱讀效果，並加入像素風 3D 骰子及連線 PvP 回合計時。請完整解壓縮後執行 TwilightCodex.exe，不需另外安裝 Godot；連線雙方與伺服器都需更新至 R5（協定 14）。",
+    note: "10 月 13 日封裝更新 112 張卡圖、霧幕替身與隱藏同步、防守伏印提示隱私、隨機先手及後手後援。完整解壓縮後執行 TwilightCodex.exe，不需安裝 Godot。成品資源與封裝連線測試通過，本輪尚未在 Windows 原生系統啟動；請與朋友一起使用這輪新包（協定 16）。",
   },
   {
     id: "macos",
     platform: "macOS",
-    en: "ZIP",
-    status: "planned",
-    file: null,
-    version: null,
-    size: null,
-    updated: null,
-    requirement: "Apple Silicon / Intel · 尚未提供驗證完成的下載包",
+    en: "ZIP · Universal",
+    status: "available",
+    file: "TwilightCodex-macOS-20261013-R5.zip",
+    version: "2026.10.13-R5",
+    size: "644.1 MiB",
+    bytes: 675349629,
+    updated: "2026-10-13",
+    sha256: "70085c66199e32e119cbcc445290e718a6dfca60335cd4c666ca31baecf2927f",
+    requirement: "Apple Silicon / Intel · 滑鼠與鍵盤",
+    note: "解壓縮後開啟「暮色秘典.app」。原生執行檔背景啟動與簽章檢查通過；此測試版採 ad-hoc 簽章，尚未 Apple 公證，首次開啟可能被系統攔下。與 Windows 版使用相同連線協定 16。",
   },
   {
     id: "linux",
@@ -110,6 +113,18 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "2026.10.13-R5",
+    date: "2026-10-13",
+    title: "Windows／macOS 同步，替身隱藏不洩漏",
+    changes: [
+      "Windows 與 macOS 試玩 ZIP 同步提供；macOS 同一份包支援 Intel 與 Apple Silicon。正式線上伺服器已更新為協定 16，舊 R5 包無法連線，雙方請一起下載本輪新包。",
+      "112 張遊戲卡圖以冰霜女巫統一像素表現，並對照原 sprite 保留角色辨識。官網卡圖預覽同步更新，既有場景截圖保留原擷取版本。",
+      "霧幕替身被擊破後，原宿主隱藏回位；擁有者看見半透明宿主，對手看不見。揭示／保留詢問、防守伏印提示與私密紀錄只給擁有者。",
+      "先手改為隨機決定，後手取得一次性後援；自然抽牌時若空手則抽兩張。雙方可見的像素 3D 骰子與 PvP 回合倒數保留。",
+      "遊戲內版本標籤沿用 2026.10.11-R5，請以下載檔名中的 20261013 識別新版。成品資源、封裝 ENet 與正式外網大廳測試通過；兩個正式帳號的真人完整對局仍待實測。",
+    ],
+  },
   {
     version: "2026.10.11-R5",
     date: "2026-10-11",

@@ -1,18 +1,22 @@
 [
   {
+    "kind": "cards",
+    "slug": "knight",
     "source": "assets/ui/card_art/knight_themed_card_art.png",
     "resource": "data/cards/knight.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "53232657a387246ab6ffefe1e4db3cf74b9c839510c958261ab1c1c5957684ac",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "8795abd35b78e980d921d6ab963709f3b0c76ee715a637f0b1726502eee4ba95",
     "width": 720,
     "height": 507,
     "output": "/media/cards/knight.webp",
-    "outputSha256": "a6d74ec13acfba78a17605716666a02b35d3907a5d0e022a7f67ace946654296"
+    "outputSha256": "3fac7cdecb013b801c11412e08613d76ba2bb9d88416199a4a5d1550742d0b42"
   },
   {
+    "kind": "cards",
+    "slug": "treant_guardian",
     "source": "assets/ui/card_art/treant_guardian_themed_card_art.png",
     "resource": "data/cards/treant_guardian.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "bcca5aad6d99f89b32be61e1f80663f127f3dcde70300fafe14120c88007317b",
     "width": 720,
     "height": 507,
@@ -20,9 +24,11 @@
     "outputSha256": "f83765658e799edb1253a9abf489e04efab7131f10c4a8721f89021b1f76be61"
   },
   {
+    "kind": "cards",
+    "slug": "necromancer",
     "source": "assets/ui/card_art/necromancer_themed_card_art.png",
     "resource": "data/cards/necromancer.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "233a2e394bb0b07b7a6942c867c41a62342d6a68a2e2ccde0ac18c1f4e99b7e5",
     "width": 720,
     "height": 507,
@@ -30,9 +36,11 @@
     "outputSha256": "a00e69dffc33dd6f256977dec35989c2ea4013aad3ab7857741ab1ad790b18ff"
   },
   {
+    "kind": "cards",
+    "slug": "catfolk_rogue",
     "source": "assets/ui/card_art/catfolk_rogue_themed_card_art.png",
     "resource": "data/cards/catfolk_rogue.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "70250bb9eac90fe746ef3595807127b441d4fa23ec3ce2ca397ce388c7516bca",
     "width": 720,
     "height": 480,
@@ -40,19 +48,23 @@
     "outputSha256": "477ba6c48517a7a445ab09b7b5b5c58cb4c8bffcfe3b398a24fa7b9c25db5c5d"
   },
   {
+    "kind": "cards",
+    "slug": "gargoyle_sentinel",
     "source": "assets/ui/card_art/gargoyle_sentinel_themed_card_art.png",
     "resource": "data/cards/gargoyle_sentinel.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "73ec47c6d5322a05b4ce5e5f2d83929e2f295fbccd3c9b865f5e895232355e7e",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "15dd2b0aebe7a1beeab4dba46818d7d2ca376e363130dd39b2fa2317e7186520",
     "width": 720,
-    "height": 507,
+    "height": 581,
     "output": "/media/cards/gargoyle_sentinel.webp",
-    "outputSha256": "f15d9ad475cbb579ce74d2cf8b15e55c1b3d7fc527ad02a956069f9eb43d74f8"
+    "outputSha256": "52f86f7906e8f3deed0145aa1a5aa4a19060352cd2d3f857af80ead629b5cb3e"
   },
   {
+    "kind": "cards",
+    "slug": "harpy_hunter",
     "source": "assets/ui/card_art/harpy_hunter_themed_card_art.png",
     "resource": "data/cards/harpy_hunter.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "fb08eed6306a08e6ba83589cfa79f249134653731d4d8b3d7522cd658a263476",
     "width": 720,
     "height": 507,
@@ -60,9 +72,11 @@
     "outputSha256": "bf76aab5410c82be3db7d6cdf2fe2753ebd6d6b477400c81500f99c31e19bd87"
   },
   {
+    "kind": "cards",
+    "slug": "pirate_captain",
     "source": "assets/ui/card_art/pirate_captain_themed_card_art.png",
     "resource": "data/cards/pirate_captain.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "2c3eae7431d498febd12b2d57fca077b63fda6db4841e0b5cbfe5229f80c9514",
     "width": 720,
     "height": 480,
@@ -70,9 +84,11 @@
     "outputSha256": "819cf21f281a8f7bf8cbcc9051615271819c5b550e2c413504eda3b466f9b738"
   },
   {
+    "kind": "cards",
+    "slug": "mushroom_mage",
     "source": "assets/ui/card_art/mushroom_mage_themed_card_art.png",
     "resource": "data/cards/mushroom_mage.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "9bb8248b1259b73d67e18ca973741ab50e6d35f9fcb192879023aec2e8305168",
     "width": 720,
     "height": 507,
@@ -80,19 +96,23 @@
     "outputSha256": "3fbcb83b631768c29748bdc4c3aeca800ce15d6812b55fd32f0c34102d6cf73b"
   },
   {
+    "kind": "cards",
+    "slug": "ratfolk_plague_doctor",
     "source": "assets/ui/card_art/ratfolk_plague_doctor_themed_card_art.png",
     "resource": "data/cards/ratfolk_plague_doctor.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "14078bb2fbbafe9b89dc7e67deb5f585d793ab69524143fc02ce9c75ece337c7",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "9042ad0af7b738ba79fa4e41c0e78bddc802a7a618951a5260f259ef5124f8f9",
     "width": 720,
-    "height": 480,
+    "height": 584,
     "output": "/media/cards/ratfolk_plague_doctor.webp",
-    "outputSha256": "a3f81eab751f714df9c92d4c54c8953ebdbc744fd3801dd6c7b90021d12ec26e"
+    "outputSha256": "13d284c263dd3f36669a8a0bc6b7f2385bddf5b31f66c0856aa900b65d654e22"
   },
   {
+    "kind": "cards",
+    "slug": "dwarf_smith",
     "source": "assets/ui/card_art/dwarf_smith_themed_card_art.png",
     "resource": "data/cards/dwarf_smith.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "fb8145d2677f97d21f3f6b423f2a96510ad98604d717b8640b71911bf729a747",
     "width": 720,
     "height": 509,
@@ -100,9 +120,11 @@
     "outputSha256": "f81090b09ba255014a5ed081ac898bf251d49b10b75be5983f3ea9e6f09d77ea"
   },
   {
+    "kind": "cards",
+    "slug": "lizard_warrior",
     "source": "assets/ui/card_art/lizard_warrior_themed_card_art.png",
     "resource": "data/cards/lizard_warrior.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "f2e7b6e911c879160cb8b66b83d7fe1e922c92a563388a619058da9d5bd581d9",
     "width": 720,
     "height": 505,
@@ -110,9 +132,11 @@
     "outputSha256": "6757a0a343cf041dedc6bd54a3176d9c6e1f0aa5f57f01d6ddb2884280e91385"
   },
   {
+    "kind": "cards",
+    "slug": "wandering_bard",
     "source": "assets/ui/card_art/wandering_bard_themed_card_art.png",
     "resource": "data/cards/wandering_bard.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "9ee783472daa66d54a7dc2c60e9473bff01fda4ab9c3b1d784c086fa5e39db7a",
     "width": 720,
     "height": 507,
@@ -120,39 +144,47 @@
     "outputSha256": "b00ce9442fdca6d646ee7e096ddce63ca9aa595cf1deaa523f1f7023af72c74b"
   },
   {
+    "kind": "cards",
+    "slug": "arcana_fireblast",
     "source": "assets/ui/card_art/arcana_fireblast_themed_card_art.png",
     "resource": "data/cards/arcana_fireblast.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "51f782ed7bb596a8de2d3c5f74b1ee97c110b843b12d1af9c8472ac70087e495",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "fb95f6a29d542bcdda8ff7a8c4e54595feeabb4332e2f0f6283b068c4179ec54",
     "width": 720,
     "height": 507,
     "output": "/media/cards/arcana_fireblast.webp",
-    "outputSha256": "5aa4a7102a2c44e3fcbfa486135b85d6bc4f9e84b75f7e1b2ab3b33bc1285fb1"
+    "outputSha256": "487df2eb770432dca0b30ef5b90322253529c5066d9ad2da94fe56996eedd76f"
   },
   {
+    "kind": "cards",
+    "slug": "arcana_frost_shackles",
     "source": "assets/ui/card_art/arcana_frost_shackles_themed_card_art.png",
     "resource": "data/cards/arcana_frost_shackles.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "93329b9b18c1bc34f0aba9e5312fc12a52d3b60a09b1cdd2c1bf26125d42fab3",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "86a5e0138250fa5a7c9abacd965a1c6e654e8245577a48ad2ac06dc734f59e4f",
     "width": 720,
-    "height": 480,
+    "height": 584,
     "output": "/media/cards/arcana_frost_shackles.webp",
-    "outputSha256": "9ac31dbf34e5ab06afc53d61f2f63b84ac1d40aa0576cdc56b4a73ac3440e880"
+    "outputSha256": "68d9f55e8af859ace9f27d3b2da056ab5ed0da15f79e40dda455bc1ed3e5eb58"
   },
   {
+    "kind": "cards",
+    "slug": "arcana_star_tempest",
     "source": "assets/ui/card_art/arcana_star_tempest_themed_card_art.png",
     "resource": "data/cards/arcana_star_tempest.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "bf44e713e70072ddcacfc73f0f8c24f7c5f6ef6f3cfdaaa66d8d53b1826c578a",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "f840a52687aed4064f8b8bd778aa153acb3df76f5f8d1273a14d1c69e7a83da0",
     "width": 720,
-    "height": 480,
+    "height": 584,
     "output": "/media/cards/arcana_star_tempest.webp",
-    "outputSha256": "07c073edddffdbc6a3b893c0ca051dc209ab5eeef8e35a28e40370d029815a70"
+    "outputSha256": "01e26da79fcf595843add9cb3083b81ba15477c5734696642d2008543c5d27bf"
   },
   {
+    "kind": "cards",
+    "slug": "quick_void_rebuke",
     "source": "assets/ui/card_art/quick_void_rebuke_themed_card_art.png",
     "resource": "data/cards/quick_void_rebuke.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "ebc60487f9de331e764587e9596a85fdb146427ec766e13abdec4e2109738226",
     "width": 720,
     "height": 480,
@@ -160,9 +192,11 @@
     "outputSha256": "5d50798fe0892e9da56dab1f9bf08443ff80a2dfa9df7086b4de6fa8a042a22c"
   },
   {
+    "kind": "cards",
+    "slug": "quick_reversal_edict",
     "source": "assets/ui/card_art/quick_reversal_edict_themed_card_art.png",
     "resource": "data/cards/quick_reversal_edict.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "1b8781526efa907ca046395f8ac5d3e59b464db19af9c2dde0e2c4d521805782",
     "width": 720,
     "height": 480,
@@ -170,19 +204,23 @@
     "outputSha256": "0d7799eb6e81622297a762315cf4cc857b7601b9fc4cbbb662bf22ea202e5da9"
   },
   {
+    "kind": "cards",
+    "slug": "equip_mithril_plate",
     "source": "assets/ui/card_art/equip_mithril_plate_themed_card_art.png",
     "resource": "data/cards/equip_mithril_plate.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "70096ae10690999de4ecbe89de2e21844c7252c0dff07d4ae054db0a065692e4",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "655a68cb629f43afc2b9aca13aba85d914b5f0721c83b436528b523a5062a405",
     "width": 720,
-    "height": 480,
+    "height": 584,
     "output": "/media/cards/equip_mithril_plate.webp",
-    "outputSha256": "341989c4658d26efca8eaab972e3eec26445608385a950f27ea4f94a87afdc1f"
+    "outputSha256": "953999f374e76687aacc8984db1f97af0f3b57ebc3ec0ae7fd0c8d19aadc1e16"
   },
   {
+    "kind": "cards",
+    "slug": "ward_thorn_sigil",
     "source": "assets/ui/card_art/ward_thorn_sigil_themed_card_art.png",
     "resource": "data/cards/ward_thorn_sigil.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "c36f863530a139a7f5142c66fa85f22b75e1b5941ab314aae262569379f11697",
     "width": 720,
     "height": 507,
@@ -190,9 +228,11 @@
     "outputSha256": "a5090555ec8dd3ea79eb49b1028284e3fa332e48cf3bd68ce1827afc73866583"
   },
   {
+    "kind": "cards",
+    "slug": "ward_blast_sigil",
     "source": "assets/ui/card_art/ward_blast_sigil_themed_card_art.png",
     "resource": "data/cards/ward_blast_sigil.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "471192c7818ec0fc21714af40d2398de660fdcc4abfaaaa896ea9fdc4fde12e9",
     "width": 720,
     "height": 507,
@@ -200,9 +240,11 @@
     "outputSha256": "69eb6a871cc33c0ac4e45a6963fa835fb0e4d1abe0bf74231f85939aa2480d0a"
   },
   {
+    "kind": "cards",
+    "slug": "frost_witch",
     "source": "assets/ui/card_art/Frost_Witch_CardArt.png",
     "resource": "data/cards/frost_witch.tres",
-    "sourceVersion": "2026.10.11-R3",
+    "sourceVersion": "2026.10.11-R5",
     "sourceSha256": "bcdf8c20699df9b7ad9a99809f81ea826687e6fb845bab780b42a29521f3ee54",
     "width": 720,
     "height": 507,
@@ -210,24 +252,28 @@
     "outputSha256": "303115aa952e52934c23fe06a722540076d2f16fdb9e19271408720499680902"
   },
   {
+    "kind": "cards",
+    "slug": "armored_axeman",
     "source": "assets/ui/card_art/armored_axeman_themed_card_art.png",
     "resource": "data/cards/armored_axeman.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "b5d856f71d16eda1f380d2c1ec74de2f8d8b026f4066ec6e31f70e9bfe820d5b",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "865d173623ff1253ee89f61c95f01fcbed9c94ae66b9f20454c452f3a682fea9",
     "width": 720,
-    "height": 507,
+    "height": 584,
     "output": "/media/cards/armored_axeman.webp",
-    "outputSha256": "771049d7ffcab5187f17bdd17a6ca4c25578ee4e0320d4e9be3f0b48c403b5f1"
+    "outputSha256": "4418bf8f4149ab0ef0921b2c52ffb293db93abd7e52a7174a08fd2e574312b83"
   },
   {
+    "kind": "cards",
+    "slug": "domain_fairy_forest",
     "source": "assets/ui/card_art/magecraft/domain_fairy_forest.png",
     "resource": "data/cards/domain_fairy_forest.tres",
-    "sourceVersion": "2026.10.11-R3",
-    "sourceSha256": "d944a9527394c37089ce4f4f6e31ad85bd20012e0486257c74620e9b3a48c3fe",
+    "sourceVersion": "2026.10.11-R5",
+    "sourceSha256": "0a55baaf3ae0ffcc21e521c517355a3837ae2f07d1b6c8062cb0fa13b1203f25",
     "width": 720,
-    "height": 502,
+    "height": 505,
     "output": "/media/cards/domain_fairy_forest.webp",
-    "outputSha256": "8ffb58ecf164b3bc0a32b90962ec8465b40aa0ff044b0fd783130d267f491763"
+    "outputSha256": "52e1d387047f3e45d3d55308e627f458a168fc4e9a28581d55a915d04cf2bef1"
   },
   {
     "sourceVersion": "2026.10.11-R3",

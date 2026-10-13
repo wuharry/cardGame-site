@@ -8,7 +8,7 @@ export const GAME_FACTS = {
   cards: 244,
   tokens: 21,
   aiPresets: 19,
-  protocol: 14,
+  protocol: 16,
 } as const;
 
 export interface LaneUnit {
@@ -170,7 +170,7 @@ export const CARD_TYPES: CardType[] = [
   {
     id: "ward", zh: "伏印", en: "Ward",
     rule: "蓋在從者底下的陷阱，不佔卡槽，符合條件才觸發。",
-    detail: "一般埋在我方從者底下，一名宿主最多一張；【屍變伏印】則埋在敵方從者底下。埋設時只公開有伏印，觸發後才揭露卡名與效果。",
+    detail: "一般埋在我方從者底下，一名宿主最多一張；【屍變伏印】則埋在敵方從者底下。進攻類依卡文顯示警戒與觸發；防守類不向對手提示，揭示詢問與私密紀錄只給擁有者。",
     timing: "主要階段埋設 · 依卡文觸發", art: "/media/cards/ward_thorn_sigil.webp", artAlt: "伏印卡「荊棘伏印」的卡圖",
   },
   {
@@ -197,6 +197,8 @@ export const ACTION_RULES: SystemRule[] = [
 ];
 
 export const RESOURCE_RULES: SystemRule[] = [
+  { label: "Opening order", value: "隨機先手", note: "開局隨機決定先後手；後手取得一次性後援，可依遊戲提示在自己的回合使用。" },
+  { label: "Natural draw", value: "空手抽 2", note: "自然抽牌時通常抽一張；若抽牌前沒有手牌，改為抽兩張。其他抽牌效果依卡文處理。" },
   { label: "Mana", value: "+1 / turn", note: "輪到自己的回合時，自然魔力上限 +1 並回滿，最高 10。" },
   { label: "Carry over", value: "refill", note: "剩餘魔力可供守方反應使用；下次自己的回合重新回滿，不累加。" },
   { label: "Deck", value: "60", note: "同名卡最多 3 張，並且必須持有足夠份數。抽完不再抽，沒有疲勞傷害。" },

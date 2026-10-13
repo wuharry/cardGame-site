@@ -21,9 +21,10 @@ export function DownloadPanel() {
             下載暮色秘典
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            Windows 版以 ZIP 提供，下載後解壓即可執行。
+            Windows 與 macOS 版都以 ZIP 提供，下載後完整解壓即可執行。
             保存並選用合法持有的六十張牌組，即可進入單人 AI 練習，不必抽完新手額度。
             正式線上對戰請先登入並同步帳號收藏，再加入公開房，或開一間雙人房邀朋友對戰。
+            本輪封裝日期為 2026.10.13，遊戲內版本標籤沿用 2026.10.11-R5；請以檔名中的 20261013 識別新版。
           </p>
         </header>
 
@@ -33,7 +34,7 @@ export function DownloadPanel() {
           {[
             {
               title: "下載後怎麼開始？",
-              body: "將整個 ZIP 解壓縮到資料夾，再執行 TwilightCodex.exe。請保留包內其他檔案，不要直接在壓縮檔裡啟動。新手額度未用完，也能從主選單用持有卡組牌；保存並選用完整六十張、每卡最多三張且持有量足夠的牌組即可對戰，剩餘抽數可稍後領取。組牌時選卡即可閱讀效果。單人練習不限時；正式線上對戰請先登入並同步帳號收藏。",
+              body: "將整個 ZIP 解壓縮到資料夾；Windows 執行 TwilightCodex.exe，macOS 開啟「暮色秘典.app」。請保留包內其他檔案，不要直接在壓縮檔裡啟動。新手額度未用完，也能從主選單用持有卡組牌；保存並選用完整六十張、每卡最多三張且持有量足夠的牌組即可對戰，剩餘抽數可稍後領取。單人練習不限時；正式線上對戰請先登入並同步帳號收藏。",
             },
             {
               title: "建立房間按鈕不能按？",
@@ -45,7 +46,7 @@ export function DownloadPanel() {
             },
             {
               title: "下載完成卻打不開，或連不上朋友？",
-              body: "先確認雙方都使用本頁的最新版本，並記下 Windows 版本和錯誤畫面。正式對戰需登入帳號、同步收藏並選用合法持有的六十張牌組；公開房滿兩人就無法再加入，私人房需輸入房碼，雙方準備完成才開局。區網對戰請從「進階／區網」進入，兩台電腦需在同一網路並允許遊戲通過防火牆。",
+              body: "先確認雙方都使用本頁 20261013 的新包；舊 R5 與新版伺服器的連線協定不同。記下作業系統版本和錯誤畫面。正式對戰需登入帳號、同步收藏並選用合法持有的六十張牌組；公開房滿兩人就無法再加入，私人房需輸入房碼，雙方準備完成才開局。區網對戰請從「進階／區網」進入，兩台電腦需在同一網路並允許遊戲通過防火牆。",
             },
           ].map((item) => (
             <details key={item.title} className="border-b border-rule-soft py-4 last:border-0">
@@ -194,7 +195,7 @@ function BuildRow({ build }: { build: Build }) {
           className="border border-brass-dim px-3 py-1 text-[0.7rem] tracking-[0.16em] text-brass-hi uppercase transition-colors hover:border-brass"
           style={{ fontFamily: "var(--font-hud)" }}
         >
-          Download
+          下載 {build.platform} 版
         </a>
       ) : (
         <span
@@ -203,6 +204,17 @@ function BuildRow({ build }: { build: Build }) {
         >
           {buildStatusText(build)}
         </span>
+      )}
+      {href && (
+        <p className="basis-full text-[0.78rem] text-quill">
+          {build.version} · 更新於 {formatDate(build.updated)}
+        </p>
+      )}
+      {build.note && <p className="body-cjk basis-full text-[0.82rem]">{build.note}</p>}
+      {href && build.sha256 && (
+        <p className="body-cjk min-w-0 basis-full break-all text-[0.72rem] text-faint">
+          SHA-256：<code>{build.sha256}</code>
+        </p>
       )}
     </li>
   );
