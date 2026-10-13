@@ -132,7 +132,7 @@ export default function AdminConsole() {
         setMessage("登入或管理權限已失效，請重新登入。");
       }} />
       <section className={styles.summary}>
-        <div><span>已註冊帳號</span><strong>{list?.registered ?? "—"}</strong></div>
+        <div><span>Auth 帳號（含管理者）</span><strong>{list?.registered ?? "—"}</strong></div>
         <div><span>本次搜尋結果</span><strong>{list?.total ?? "—"}</strong></div>
         <div><span>管理權限</span><strong>{session.access_level === "operator" ? "查詢與管理" : "唯讀查詢"}</strong></div>
       </section>
