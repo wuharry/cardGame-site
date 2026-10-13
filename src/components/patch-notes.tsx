@@ -2,7 +2,7 @@ import { RELEASE_NOTES } from "@/data/releases";
 
 /**
  * 開發更新紀錄；日期與下載成品資訊分開維護。
- * 不是卡片列表，也不做展開收合——這種東西應該一眼掃完。
+ * 只攤開最新一版：七版全開會在頁尾堆出上千字，沒有人會掃完。舊版收進 details，紀錄不丟。
  */
 export function PatchNotes() {
   return (
@@ -10,7 +10,7 @@ export function PatchNotes() {
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <header className="flex flex-wrap items-baseline justify-between gap-4">
           <div>
-            <p className="eyebrow">IX — Log</p>
+            <p className="eyebrow">VIII — Log</p>
             <h2 className="section-title mt-4 text-3xl sm:text-4xl">開發更新紀錄</h2>
           </div>
           <p className="hud-label">
@@ -18,12 +18,8 @@ export function PatchNotes() {
           </p>
         </header>
 
-        <p className="body-cjk mt-5 max-w-2xl text-[0.9rem]">
-          以下記錄目前程式的開發進度。可下載的版本、大小與發佈日期以下載區為準。
-        </p>
-
-        <ol className="mt-12 md:mt-14">
-          {RELEASE_NOTES.map((note, index) => (
+        <ol className="mt-10 md:mt-12">
+          {RELEASE_NOTES.slice(0, 1).map((note, index) => (
             <li
               key={`${note.date}-${note.title}`}
               className="border-t border-rule-soft py-8 md:grid md:grid-cols-[10rem_minmax(0,1fr)] md:gap-10"
@@ -61,6 +57,42 @@ export function PatchNotes() {
             </li>
           ))}
         </ol>
+
+        <details className="mt-6 border-t border-rule-soft pt-4">
+          <summary
+            className="cursor-pointer text-sm text-quill transition-colors hover:text-parchment"
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
+            以前的 {RELEASE_NOTES.length - 1} 版更新紀錄
+          </summary>
+          <ol className="mt-4">
+            {RELEASE_NOTES.slice(1).map((note) => (
+              <li
+                key={`${note.date}-${note.title}`}
+                className="border-t border-rule-soft py-6 md:grid md:grid-cols-[10rem_minmax(0,1fr)] md:gap-10"
+              >
+                <div className="flex items-baseline gap-3 md:block">
+                  <p className="text-xl tabular-nums text-faint" style={{ fontFamily: "var(--font-display)" }}>
+                    {note.version}
+                  </p>
+                  <p className="hud-label md:mt-2">{note.date.replaceAll("-", ".")}</p>
+                </div>
+                <div className="mt-3 md:mt-0">
+                  <h3 className="text-base text-parchment" style={{ fontFamily: "var(--font-serif)" }}>
+                    {note.title}
+                  </h3>
+                  <ul className="mt-2 space-y-1.5">
+                    {note.changes.map((change) => (
+                      <li key={change} className="body-cjk pl-5 text-[0.86rem] text-quill">
+                        {change}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </details>
       </div>
     </section>
   );

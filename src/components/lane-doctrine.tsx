@@ -129,7 +129,7 @@ export function LaneDoctrine() {
                   }}
                   className={`${
                     isCurrent ? "flex" : "hidden"
-                  } flex-col justify-center py-6 md:flex md:min-h-[75svh] md:py-8`}
+                  } flex-col justify-center py-6 md:flex md:min-h-[50svh] md:py-8`}
                 >
                   <div
                     className={`transition-all duration-300 ${
@@ -166,13 +166,9 @@ export function LaneDoctrine() {
                     {/* 核心口訣卡片 */}
                     <div className="plate notch mt-3 border-l-2 border-brass bg-panel p-3">
                       <p className="text-[0.84rem] font-semibold text-brass-hi leading-snug">
-                        ⚡ 核心原則：{step.summary}
+                        {step.summary}
                       </p>
                     </div>
-
-                    <p className="body-cjk mt-4 text-[0.92rem] leading-relaxed text-quill">
-                      {step.body}
-                    </p>
                   </div>
                 </li>
               );

@@ -14,15 +14,13 @@ export function DownloadPanel() {
     <section id="download" className="border-t border-rule-soft bg-board">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <header className="max-w-2xl">
-          <p className="eyebrow">VIII — Download</p>
+          <p className="eyebrow">I — Download</p>
           <h2 className="section-title mt-4 text-3xl sm:text-4xl">
             下載暮色秘典
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            Windows 與 macOS 版都以 ZIP 提供，下載後完整解壓即可執行。
-            保存並選用合法持有的六十張牌組，即可進入單人 AI 練習，不必抽完新手額度。
-            正式線上對戰請先登入並同步帳號收藏，再加入公開房，或開一間雙人房邀朋友對戰。
-            本輪封裝日期為 2026.10.13，遊戲內版本標籤沿用 2026.10.11-R5；請以檔名中的 20261013 識別新版。
+            Windows 與 macOS 都是 ZIP，完整解壓縮後直接執行。要和朋友連線，兩邊都要用檔名含
+            20261013 的這一輪新包。
           </p>
         </header>
 
@@ -34,19 +32,19 @@ export function DownloadPanel() {
           {[
             {
               title: "下載後怎麼開始？",
-              body: "將整個 ZIP 解壓縮到資料夾；Windows 執行 TwilightCodex.exe，macOS 開啟「暮色秘典.app」。請保留包內其他檔案，不要直接在壓縮檔裡啟動。新手額度未用完，也能從主選單用持有卡組牌；保存並選用完整六十張、每卡最多三張且持有量足夠的牌組即可對戰，剩餘抽數可稍後領取。單人練習不限時；正式線上對戰請先登入並同步帳號收藏。",
+              body: "整包解壓縮到資料夾再執行，不要在壓縮檔裡直接開。Windows 跑 TwilightCodex.exe，macOS 開「暮色秘典.app」。第一次進遊戲先點主選單的「新手教學」。",
             },
             {
-              title: "建立房間按鈕不能按？",
-              body: "本機訪客可以瀏覽正式大廳，請按畫面中的「電子郵件登入」，登入並同步帳號收藏後，再保存與選用合法持有的六十張自訂牌組。訪客收藏與雲端收藏分開，不會自動搬移。同步中或上次抽卡尚未確認時，依提示完成同步或重試；不需要抽完新手 150 次額度才能開房。",
+              title: "macOS 說無法打開、來源不明？",
+              body: "這個測試版是 ad-hoc 簽章，還沒送 Apple 公證，第一次開會被系統攔下。先雙擊一次讓它被擋掉，再到「系統設定 → 隱私權與安全性」往下找這個 app，按旁邊允許打開的按鈕。新版 macOS 用右鍵「打開」已經繞不過去了。",
             },
             {
-              title: "Windows 顯示不明發行者怎麼辦？",
-              body: "新發佈或尚未建立信譽的程式可能被 Windows 顯示警告，ZIP 也不會消除這種提示。請先確認檔案來自本頁的下載連結；若系統回報具體威脅，先停止執行並回報，無須關閉防毒保護。",
+              title: "Windows 顯示不明發行者？",
+              body: "新程式還沒建立信譽就會跳這個警告，ZIP 也不會消除它。確認檔案來自本頁的下載連結即可；若防毒回報具體威脅，先停止執行並回報，不要關掉防毒。",
             },
             {
-              title: "下載完成卻打不開，或連不上朋友？",
-              body: "先確認雙方都使用本頁 20261013 的新包；舊 R5 與新版伺服器的連線協定不同。記下作業系統版本和錯誤畫面。正式對戰需登入帳號、同步收藏並選用合法持有的六十張牌組；公開房滿兩人就無法再加入，私人房需輸入房碼，雙方準備完成才開局。區網對戰請從「進階／區網」進入，兩台電腦需在同一網路並允許遊戲通過防火牆。",
+              title: "連不上朋友？",
+              body: "兩邊都要用本頁 20261013 的新包，舊 R5 的連線協定不同。區網從「進階／區網」進入，兩台電腦要在同一個網路，房主要允許遊戲通過防火牆。",
             },
           ].map((item) => (
             <details key={item.title} className="border-b border-rule-soft py-4 last:border-0">
@@ -135,7 +133,6 @@ function FeaturedBuild({ build }: { build: Build }) {
             GitHub 版本頁
           </a>
           {" "}的 Assets 選擇 <code className="break-all">{build.file}</code>，勿選 Source code。
-          此入口仍使用相同 GitHub 附件來源，無法繞過附件網域封鎖。
         </p>
       )}
 

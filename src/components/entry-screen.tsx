@@ -68,14 +68,18 @@ export function EntryScreen() {
           </span>
         </div>
 
+        <p className="mt-5 text-[0.82rem] text-quill">
+          規則不用在這裡讀完 —— 遊戲主選單有八章圖解的「新手教學」。
+        </p>
+
         {/* 遊戲主選單文字導航 */}
         <nav className="mt-10 w-[min(24rem,84vw)]">
           <MenuItem href="#download" primary>
             {downloadUrl(windows) ? "下載 Windows／macOS 版" : "遊戲下載資訊"}
           </MenuItem>
-          <MenuItem href="#flow">30 秒掌握遊戲流程</MenuItem>
-          <MenuItem href="#lanes">四路交鋒動態演練</MenuItem>
-          <MenuItem href="#cards">六種卡型與三卡武裝</MenuItem>
+          <MenuItem href="#flow">一回合四步</MenuItem>
+          <MenuItem href="#lanes">四路交鋒演練</MenuItem>
+          <MenuItem href="#cards">六種卡型</MenuItem>
         </nav>
       </div>
 

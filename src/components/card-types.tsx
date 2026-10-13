@@ -33,8 +33,7 @@ export function CardTypeShowcase() {
             場上的一個單位，是三張牌疊出來的
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            牌組裡共有六種卡型：從者站上路線交鋒，靈裝武裝其身，伏印暗伏其底；
-            秘術於己方回合發難，瞬咒於反制時機插隊，結界則為全族提供持續庇護。
+六種卡型；場上一個單位可以疊到三張：從者 + 靈裝 + 伏印。
           </p>
         </header>
 
@@ -59,7 +58,7 @@ export function CardTypeShowcase() {
                   <span className="text-sm font-bold text-parchment">👤 {minion.zh} ({minion.en}) · 中層</span>
                   <span className="hud-label text-brass-hi">{minion.timing}</span>
                 </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{minion.detail}</p>
+                <p className="body-cjk mt-2 text-[0.84rem]">{minion.rule}</p>
               </div>
 
               <div className="plate p-3.5 border-l-2 border-brass-dim">
@@ -67,7 +66,7 @@ export function CardTypeShowcase() {
                   <span className="text-sm font-bold text-parchment">🗡️ {equip.zh} ({equip.en}) · 頂層</span>
                   <span className="hud-label text-quill">{equip.timing}</span>
                 </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{equip.detail}</p>
+                <p className="body-cjk mt-2 text-[0.84rem]">{equip.rule}</p>
               </div>
 
               <div className="plate p-3.5 border-l-2 border-crimson">
@@ -75,13 +74,9 @@ export function CardTypeShowcase() {
                   <span className="text-sm font-bold text-crimson-hi">💣 {ward.zh} ({ward.en}) · 底層</span>
                   <span className="hud-label text-crimson-hi">{ward.timing}</span>
                 </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{ward.detail}</p>
+                <p className="body-cjk mt-2 text-[0.84rem]">{ward.rule}</p>
               </div>
             </div>
-
-            <p className="body-cjk mt-6 border-l border-crimson-dim pl-4 text-[0.82rem] text-faint">
-              💡 進攻類伏印依卡文顯示警戒；防守類伏印不向對手提示。揭示詢問與私密紀錄只給擁有者，霧幕替身隱藏後也不會出現在對手場上。
-            </p>
           </div>
 
           {/* ============ B: 兩張法術，兩個時機 ============ */}
@@ -142,7 +137,7 @@ export function CardTypeShowcase() {
                   <span className="text-sm font-bold text-parchment">📜 {arcana.zh} ({arcana.en})</span>
                   <span className="hud-label text-brass-hi">{arcana.timing}</span>
                 </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{arcana.detail}</p>
+                <p className="body-cjk mt-2 text-[0.84rem]">{arcana.rule}</p>
               </div>
 
               <div className="plate p-3.5 border-l-2 border-steel">
@@ -150,40 +145,10 @@ export function CardTypeShowcase() {
                   <span className="text-sm font-bold text-steel">⚡ {quick.zh} ({quick.en})</span>
                   <span className="hud-label text-steel">{quick.timing}</span>
                 </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{quick.detail}</p>
+                <p className="body-cjk mt-2 text-[0.84rem]">{quick.rule}</p>
               </div>
             </div>
 
-            {/* 卡型速查表 */}
-            <dl className="mt-8 border-t border-rule-soft">
-              {CARD_TYPES.map((type) => (
-                <div
-                  key={type.id}
-                  className="flex items-baseline justify-between gap-4 border-b border-rule-soft py-2"
-                >
-                  <dt className="flex items-baseline gap-2">
-                    <span
-                      className="text-sm text-parchment font-medium"
-                      style={{ fontFamily: "var(--font-serif)" }}
-                    >
-                      {type.zh}
-                    </span>
-                    <span
-                      className="text-[0.62rem] tracking-[0.2em] text-faint uppercase"
-                      style={{ fontFamily: "var(--font-hud)" }}
-                    >
-                      {type.en}
-                    </span>
-                  </dt>
-                  <dd
-                    className="text-right text-[0.78rem] text-quill"
-                    style={{ fontFamily: "var(--font-serif)" }}
-                  >
-                    {type.timing}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
         </div>
 
@@ -202,13 +167,11 @@ export function CardTypeShowcase() {
           <div className="self-center">
             <SubHead mark="C" title="全場結界，種族連攜核心" tag="領域光環" />
             <div className="mt-4 max-w-2xl">
-              <CardNote zh={domain.zh} en={domain.en} rule={domain.detail} />
+              <CardNote zh={domain.zh} en={domain.en} rule={domain.rule} />
             </div>
             <p className="body-cjk mt-3 max-w-2xl text-[0.86rem] text-faint">
-              💡 結界每側最多存在一張（不佔從者卡槽）。打出新結界會將舊結界置入墓地。
-              妖精、風暴城、矮人、龍、潮汐與獸人各有專屬領域，可大幅強化種族體系！
-            </p>
-          </div>
+              💡 每側最多一張，打出新的會把舊的送進墓地。
+            </p>          </div>
         </div>
       </div>
     </section>

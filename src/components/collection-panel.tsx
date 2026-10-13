@@ -12,9 +12,7 @@ export function CollectionPanel() {
             構築專屬牌組 · 勝者掠奪戰利
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            全卡池共有 {GAME_FACTS.cards} 種正式卡牌與 {GAME_FACTS.tokens} 種衍生物。
-            新玩家享有 150 次免費新手自選額度，自由調配合法 60 張牌組即可開局；
-            而在正式真人對決中，勝利者更將獲得掠奪敗者手牌的至高特權。
+            {GAME_FACTS.cards} 種卡 + {GAME_FACTS.tokens} 種衍生物。新帳號有 150 次新手抽卡，湊滿 60 張就能開打。
           </p>
         </header>
 
@@ -26,10 +24,10 @@ export function CollectionPanel() {
                 <span className="border border-brass bg-brass/20 px-2 py-0.5 text-[0.68rem] font-bold text-brass-hi" style={{ fontFamily: "var(--font-hud)" }}>
                   硬派對決 · ANTE RULES
                 </span>
-                <span className="text-xs text-crimson-hi font-bold">高懸念博弈</span>
+                
               </div>
               <h3 className="section-title mt-2 text-2xl sm:text-3xl">
-                🏆 勝利者的掠奪之權：勝者挑一張，敗者真切失去
+                🏆 贏了可以從對方牌組拿走一張
               </h3>
             </div>
             <div className="rounded border border-brass-dim bg-ink px-4 py-2 text-center shrink-0">
@@ -41,8 +39,7 @@ export function CollectionPanel() {
           </div>
 
           <p className="body-cjk mt-5 text-[0.94rem] leading-relaxed">
-            在正式真人 PvP 對戰中獲勝，勝者將獲准直接從敗者「本局起始牌組」中挑選任意一張心儀卡牌，永久納入個人收藏！
-            這並非虛擬的數值增減，而是真正的所有權奪取。若敗者原牌組因此缺卡，需重新調整補齊才可出戰。
+            這是真的轉移收藏，不是結算畫面上的數字。敗者牌組因此缺卡，要補齊才能再出戰。
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -60,7 +57,7 @@ export function CollectionPanel() {
           </div>
 
           <p className="mt-4 text-[0.74rem] text-faint">
-            🔒 公平保護條款：勝者若已持有 3 張上限則不可重複挑選；AI 單人練習、訪客模式或斷線棄賽均不產生奪卡結算。
+            🔒 勝者已滿 3 張的卡不能再挑。
           </p>
         </div>
 
@@ -75,7 +72,7 @@ export function CollectionPanel() {
             className="h-auto w-full object-cover"
           />
           <figcaption className="body-cjk px-3 py-3 text-[0.8rem] text-quill">
-            暮色秘典主選單：新手 150 次額度隨心領取，未抽完亦可隨時用持有卡組牌開戰；AI 提供 19 副專屬預組隨時切磋。
+            主選單：新手額度、組牌入口與「新手教學」都在這裡。
           </figcaption>
         </figure>
 

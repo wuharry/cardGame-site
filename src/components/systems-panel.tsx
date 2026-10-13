@@ -16,8 +16,7 @@ export function SystemsPanel() {
             一回合能做的事，就這麼多
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            每個從者每回合最多一次普攻與一次技能；標示「普攻擇一」的技能會用掉普攻機會。
-            自然魔力逐回合成長，回收手牌則能換取超過上限的暫時魔力。
+            每個從者每回合一次普攻 + 一次技能，魔力每回合 +1。
           </p>
         </header>
 
@@ -38,7 +37,7 @@ export function SystemsPanel() {
               className="ml-auto text-[0.78rem] text-quill"
               style={{ fontFamily: "var(--font-serif)" }}
             >
-              回合開始 +1、回滿至上限；沒用完的不留到下回合。
+              每回合 +1 並回滿，沒用完的不留到下回合。
             </p>
           </div>
 
@@ -75,7 +74,7 @@ export function SystemsPanel() {
               className="text-[0.78rem] text-quill"
               style={{ fontFamily: "var(--font-serif)" }}
             >
-              滿手時抽到的第 9 張直接入墓，雙方都看得到那張牌。
+              滿手時抽到的第 9 張直接入墓。
             </p>
           </div>
         </div>

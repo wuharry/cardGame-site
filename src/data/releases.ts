@@ -37,7 +37,7 @@ export const BUILDS: Build[] = [
     updated: "2026-10-13",
     sha256: "eceb590e3173b735895959a3574632fe0101be591803d83e5d03a7175f0a2028",
     requirement: "64 位元 Windows · 滑鼠與鍵盤",
-    note: "10 月 13 日封裝更新 112 張卡圖、霧幕替身與隱藏同步、防守伏印提示隱私、隨機先手及後手後援。完整解壓縮後執行 TwilightCodex.exe，不需安裝 Godot。成品資源與封裝連線測試通過，本輪尚未在 Windows 原生系統啟動；請與朋友一起使用這輪新包（協定 16）。",
+    note: "解壓縮後執行 TwilightCodex.exe，不需安裝 Godot。本輪尚未在 Windows 原生系統實測啟動。",
   },
   {
     id: "macos",
@@ -51,7 +51,7 @@ export const BUILDS: Build[] = [
     updated: "2026-10-13",
     sha256: "70085c66199e32e119cbcc445290e718a6dfca60335cd4c666ca31baecf2927f",
     requirement: "Apple Silicon / Intel · 滑鼠與鍵盤",
-    note: "解壓縮後開啟「暮色秘典.app」。原生執行檔背景啟動與簽章檢查通過；此測試版採 ad-hoc 簽章，尚未 Apple 公證，首次開啟可能被系統攔下。與 Windows 版使用相同連線協定 16。",
+    note: "ad-hoc 簽章、尚未 Apple 公證，首次開啟會被系統攔下，開啟方式見下方說明。",
   },
   {
     id: "linux",
