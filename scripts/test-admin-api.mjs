@@ -48,6 +48,13 @@ try {
   replies.push({ body: { access_token: "refreshed", refresh_token: "next-refresh", expires_in: 3600 } }, { body: { players: [] } });
   await api.rpc("tcg_admin_players", {});
   check(calls.at(-2).url.includes("grant_type=refresh_token") && calls.at(-1).headers.Authorization === "Bearer refreshed", "Session refresh stays in memory and updates the JWT");
+  Date.now = () => now + 7200000;
+  const refreshBefore = calls.filter(c => c.url.includes("grant_type=refresh_token")).length;
+  replies.push({ body: { access_token: "shared-refresh", refresh_token: "shared-next", expires_in: 3600 } },
+    { body: { counts: {} } }, { body: { players: [] } });
+  await Promise.all([api.rpc("tcg_admin_play_dashboard", { p_days: 28 }), api.rpc("tcg_admin_guest_players", { p_page: 0 })]);
+  check(calls.filter(c => c.url.includes("grant_type=refresh_token")).length === refreshBefore + 1,
+    "Concurrent chart/list requests share one token refresh");
   Date.now = originalNow;
   replies.push({ body: {} }); await api.signOut();
   const before = calls.length;

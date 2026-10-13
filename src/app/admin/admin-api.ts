@@ -18,6 +18,7 @@ export class AdminAPI {
   private refresh = "";
   private expiresAt = 0;
   private epoch = 0;
+  private refreshing: Promise<void> | null = null;
 
   private async request(path: string, body: unknown, token = ""): Promise<unknown> {
     let response: Response;
@@ -67,13 +68,18 @@ export class AdminAPI {
     const current = this.epoch;
     if (!this.access) throw new AdminError("請先登入。", false, 401);
     if (Date.now() > this.expiresAt - 60000) {
-      const refreshed = await this.request("/auth/v1/token?grant_type=refresh_token", {
-        refresh_token: this.refresh,
-      }) as { access_token: string; refresh_token: string; expires_in: number };
-      if (current !== this.epoch) throw new AdminError("已登出，取消舊請求。");
-      if (!refreshed.access_token || !refreshed.refresh_token) throw new AdminError("請重新登入。", false, 401);
-      this.access = refreshed.access_token; this.refresh = refreshed.refresh_token;
-      this.expiresAt = Date.now() + refreshed.expires_in * 1000;
+      if (!this.refreshing) {
+        this.refreshing = (async () => {
+          const refreshed = await this.request("/auth/v1/token?grant_type=refresh_token", {
+            refresh_token: this.refresh,
+          }) as { access_token: string; refresh_token: string; expires_in: number };
+          if (current !== this.epoch) throw new AdminError("已登出，取消舊請求。");
+          if (!refreshed.access_token || !refreshed.refresh_token) throw new AdminError("請重新登入。", false, 401);
+          this.access = refreshed.access_token; this.refresh = refreshed.refresh_token;
+          this.expiresAt = Date.now() + refreshed.expires_in * 1000;
+        })().finally(() => { this.refreshing = null; });
+      }
+      await this.refreshing;
     }
     const result = await this.request(`/rest/v1/rpc/${name}`, body, this.access);
     if (current !== this.epoch) throw new AdminError("已登出，取消舊請求。");

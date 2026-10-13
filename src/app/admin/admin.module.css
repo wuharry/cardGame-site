@@ -47,4 +47,17 @@
 .confirmation { padding: 20px; margin-top: 15px; border: 1px solid #dbc486; border-radius: 8px; background: #29332f; }
 .confirmation button { margin-top: 15px; }
 .footnote { text-align: center; color: #94aaa7; font-size: 12px; padding: 24px 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 16px 0; }
+.kpis > div { background: #172328; border: 1px solid #35484a; border-radius: 9px; padding: 18px; }
+.kpis span { display: block; color: #aebfbb; margin-bottom: 10px; }
+.kpis strong { font-size: 27px; font-weight: 650; }
+.chartGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.chartGrid .panel { min-width: 0; margin: 8px 0; }
+.chartGrid svg { width: 100%; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 12px 0; }
+.root details { margin: 18px 0 0; }
+.root summary { color: #dcc58c; cursor: pointer; margin-bottom: 12px; }
+.modeRow { margin: 18px 0; }
+.stacked { display: flex; background: #263740; min-height: 12px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+@media (max-width: 1000px) { .chartGrid { grid-template-columns: 1fr; } }
 @media (max-width: 760px) { .header, .toolbar { flex-direction: column; align-items: flex-start; } .summary { grid-template-columns: 1fr; gap: 8px; } .summary div { display: flex; align-items: center; justify-content: space-between; padding: 14px; } .summary strong { font-size: 20px; } .summary span { margin: 0; } .panel { padding: 16px; } .login { margin: 35px auto; padding: 24px; } }

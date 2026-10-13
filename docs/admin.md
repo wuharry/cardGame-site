@@ -19,3 +19,11 @@ npm run build
 ```
 
 SQL regression 使用假帳號、單一交易與回滾。正式登入的驗證碼應由管理者自行輸入，不複製到聊天或原始碼。
+# 遊玩統計（2026-10-13）
+
+- `/admin` 登入後提供累計試玩指標、近 28 日趨勢、近 24 小時主機連線曲線、每位正式玩家勝敗率與分頁遊客資料。
+- 依賴 `20261013_play_analytics.sql`；各讀取 RPC 仍檢查既有管理者名單。不增加管理者或暴露 service key。
+- 遊客是匿名裝置回報，沒有姓名／Email／收藏／牌組；清除存檔可能重計，離線直到連網才收到。正式戰績只讀 server match_results。
+- 主機 45 秒、遊客活動 90 秒期限。缺失／過期主機心跳顯示待確認；圖線缺少分鐘時中斷，不補成零。兩類在線指標可能重疊，不相加。
+- 新主機 publisher 才能產生在線曲線；新客戶端才有遊客回報。舊版歷史不回填。
+- `node scripts/test-play-analytics.mjs` 驗證 7 項：新鮮零值、過期、缺值、缺口與 SVG／數據表；`node scripts/test-admin-api.mjs` 涵蓋並行 token refresh。

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AdminAPI, AdminError, type AdminSession, type Change, type PlayerDetail, type PlayerList } from "./admin-api";
 import cards from "./card-names.json";
 import styles from "./admin.module.css";
+import PlayAnalytics from "./play-analytics";
 
 const date = (value?: string | null) => value ? new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "—";
 const name = (id: string) => (cards as Record<string, string>)[id] ?? id;
@@ -12,7 +13,7 @@ const actions = { grant_tickets: "補發包券", grant_card: "補發卡牌", sus
 const outcome = { win: "勝", loss: "敗", draw: "平手" };
 
 export default function AdminConsole() {
-  const api = useRef(new AdminAPI());
+  const [api] = useState(() => new AdminAPI());
   const lock = useRef(false);
   const [session, setSession] = useState<AdminSession | null>(null);
   const [email, setEmail] = useState("");
@@ -35,7 +36,7 @@ export default function AdminConsole() {
   const journalKey = (id: string) => `twilight-admin-pending:${id}`;
 
   const loadList = async (page = 0) => {
-    const data = await api.current.rpc<PlayerList>("tcg_admin_players", { p_search: search.trim(), p_page: page, p_page_size: 25 });
+    const data = await api.rpc<PlayerList>("tcg_admin_players", { p_search: search.trim(), p_page: page, p_page_size: 25 });
     setList(data);
   };
 
@@ -46,20 +47,20 @@ export default function AdminConsole() {
     catch (error) {
       setMessage(error instanceof Error ? error.message : "操作失敗，請稍後重試。");
       if (error instanceof AdminError && error.status === 401) {
-        await api.current.signOut(); setSession(null); setDetail(null); setList(null); setPending(null);
+        await api.signOut(); setSession(null); setDetail(null); setList(null); setPending(null);
       }
     } finally { lock.current = false; setBusy(false); }
   };
 
   const login = async () => {
-    const s = await api.current.signIn(email.trim(), code.trim());
+    const s = await api.signIn(email.trim(), code.trim());
     setSession(s); setCode(""); await loadList();
     const saved = sessionStorage.getItem(journalKey(s.account_id));
     if (saved) {
       try {
         const change = JSON.parse(saved) as Change;
         if (!change.p_request || !change.p_account || !Object.hasOwn(actions, change.p_action)) throw new Error("invalid journal");
-        setDetail(await api.current.rpc<PlayerDetail>("tcg_admin_player", { p_account: change.p_account }));
+        setDetail(await api.rpc<PlayerDetail>("tcg_admin_player", { p_account: change.p_account }));
         setPending(change); setAttempted(true);
         setMessage("找到一筆尚未確認的操作，請重試同一筆以確認結果。");
       } catch (error) { throw new AdminError(error instanceof Error ? `待確認操作無法恢復：${error.message}` : "待確認操作無法恢復。"); }
@@ -83,7 +84,7 @@ export default function AdminConsole() {
     sessionStorage.setItem(journalKey(session!.account_id), JSON.stringify(pending));
     setAttempted(true);
     try {
-      await api.current.rpc("tcg_admin_change", pending);
+      await api.rpc("tcg_admin_change", pending);
     } catch (error) {
       // Network ambiguity retains the exact request and UUID. Recognized business rejection is final.
       if (error instanceof AdminError && !error.uncertain) {
@@ -95,7 +96,7 @@ export default function AdminConsole() {
     sessionStorage.removeItem(journalKey(session!.account_id));
     setPending(null); setReason("");
     setMessage("操作完成並已留下紀錄。");
-    setDetail(await api.current.rpc<PlayerDetail>("tcg_admin_player", { p_account: target }));
+    setDetail(await api.rpc<PlayerDetail>("tcg_admin_player", { p_account: target }));
     await loadList(list?.page ?? 0);
   };
 
@@ -105,7 +106,7 @@ export default function AdminConsole() {
         <p>正式帳號、收藏與對戰紀錄</p></div>
       <div className={styles.headerRight}><Link href="/">回官網</Link>{session && <>
         <span>{session.email}</span><button disabled={busy || !!pending} onClick={() => void work(async () => {
-          await api.current.signOut(); setSession(null); setList(null); setDetail(null); setSent(false);
+          await api.signOut(); setSession(null); setList(null); setDetail(null); setSent(false);
         })}>登出</button></>}</div>
     </header>
     {message && <p role="status" className={styles.message}>{message}</p>}
@@ -114,7 +115,7 @@ export default function AdminConsole() {
       <p>輸入已授權的 Email，使用信箱驗證碼登入。一般玩家帳號無法查閱其他人的資料。</p>
       <form onSubmit={(event) => { event.preventDefault(); void work(sent ? login : async () => {
         if (Date.now() < resendAt) { setMessage("請等一分鐘再寄送驗證碼。"); return; }
-        await api.current.sendCode(email.trim()); setSent(true); setResendAt(Date.now() + 60000);
+        await api.sendCode(email.trim()); setSent(true); setResendAt(Date.now() + 60000);
         setMessage("驗證碼已寄出，請查看信箱。");
       }); }}>
         <label>Email<input type="email" autoComplete="email" required value={email} disabled={busy || sent}
@@ -126,6 +127,10 @@ export default function AdminConsole() {
       </form>
       <p className={styles.note}>此頁查詢正式雲端資料。未註冊的本機訪客不列入註冊玩家。</p>
     </section> : <>
+      <PlayAnalytics api={api} disabled={busy || !!pending} onExpired={() => {
+        void api.signOut(); setSession(null); setList(null); setDetail(null); setPending(null);
+        setMessage("登入或管理權限已失效，請重新登入。");
+      }} />
       <section className={styles.summary}>
         <div><span>已註冊帳號</span><strong>{list?.registered ?? "—"}</strong></div>
         <div><span>本次搜尋結果</span><strong>{list?.total ?? "—"}</strong></div>
@@ -142,7 +147,7 @@ export default function AdminConsole() {
             <td>{player.email_confirmed_at ? "已驗證" : "未驗證"}</td><td>{player.has_wallet ? `${player.card_types} 種 · ${player.card_copies} 張` : "尚未初始化"}</td>
             <td>{player.pack_tickets ?? "—"} ／ {player.starter_draws_remaining ?? "—"}</td><td>{player.suspended ? "停權" : "正常"}</td>
             <td><button disabled={busy || !!pending} onClick={() => void work(async () => {
-              setDetail(await api.current.rpc<PlayerDetail>("tcg_admin_player", { p_account: player.id }));
+              setDetail(await api.rpc<PlayerDetail>("tcg_admin_player", { p_account: player.id }));
               setTab("collection"); setReason("");
             })}>查看資料</button></td></tr>)}</tbody></table></div>
         {list?.players.length === 0 && <p className={styles.empty}>沒有符合條件的註冊玩家。</p>}
