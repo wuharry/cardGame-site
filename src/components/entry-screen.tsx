@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BUILDS, buildStatusText, downloadUrl } from "@/data/releases";
+import { BUILDS, downloadUrl } from "@/data/releases";
 import { GAME_FACTS } from "@/data/game";
 import { mediaUrl } from "@/data/media";
 
@@ -9,7 +9,8 @@ import { mediaUrl } from "@/data/media";
  * 主選單氛圍：暗場景 + 羊皮紙色明體 + 3大核心戰略亮點速覽。
  */
 export function EntryScreen() {
-  const windows = BUILDS[0];
+  const available = BUILDS.filter((build) => downloadUrl(build));
+  const platforms = available.map((build) => build.platform).join("／");
 
   return (
     <section className="vignette grain relative flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden">
@@ -17,7 +18,7 @@ export function EntryScreen() {
         src={mediaUrl("/media/screens/hero-battlefield.webp")}
         alt="遊戲實機畫面：四條路線的前後排戰場與卡牌手牌"
         fill
-        priority
+        preload
         sizes="100vw"
         className="object-cover opacity-60"
       />
@@ -75,7 +76,7 @@ export function EntryScreen() {
         {/* 遊戲主選單文字導航 */}
         <nav className="mt-10 w-[min(24rem,84vw)]">
           <MenuItem href="#download" primary>
-            {downloadUrl(windows) ? "下載 Windows／macOS 版" : "遊戲下載資訊"}
+            {available.length > 0 ? "下載遊戲" : "遊戲下載資訊"}
           </MenuItem>
           <MenuItem href="#flow">一回合四步</MenuItem>
           <MenuItem href="#lanes">四路交鋒演練</MenuItem>
@@ -86,8 +87,8 @@ export function EntryScreen() {
       {/* 底部資訊條 */}
       <div className="relative z-10 border-t border-rule-soft bg-ink/80">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-2 px-5 py-3">
-          <Meta label="Build" value={`Windows／macOS ZIP · ${buildStatusText(windows)}`} />
-          <Meta label="Engine" value={`${GAME_FACTS.engine} · Forward+`} />
+          <Meta label="Platforms" value={platforms || "版本準備中"} />
+          <Meta label="Engine" value={GAME_FACTS.engine} />
           <Meta label="Cards" value={`${GAME_FACTS.cards} 種 + ${GAME_FACTS.tokens} 衍生物`} />
           <Meta label="Lanes" value={String(GAME_FACTS.lanes)} />
         </div>

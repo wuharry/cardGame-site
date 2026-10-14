@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Barlow, Barlow_Condensed } from "next/font/google";
 import { GAME_FACTS } from "@/data/game";
+import { BUILDS, downloadUrl } from "@/data/releases";
 import { mediaUrl } from "@/data/media";
 import "./globals.css";
 
@@ -29,6 +30,8 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+const availablePlatforms = BUILDS.filter((build) => downloadUrl(build)).map((build) => build.platform).join("／");
+const downloadDescription = availablePlatforms ? `${availablePlatforms} 試玩下載` : "下載版本與開發進度";
 
 export const metadata: Metadata = {
   verification: {
@@ -40,7 +43,7 @@ export const metadata: Metadata = {
     template: "%s — 暮色秘典 Twilight Codex",
   },
   description:
-    `${GAME_FACTS.nameZh} ${GAME_FACTS.nameEn}：HD-2D 回合制卡牌對戰，四路前後排、六種卡型與種族結界，${GAME_FACTS.cards} 種正式卡。合法持有六十張即可對戰，選牌直接閱讀效果。查看 Windows／macOS 版下載資訊及開發進度。`,
+    `${GAME_FACTS.nameZh} ${GAME_FACTS.nameEn}：HD-2D 回合制卡牌對戰，四路前後排、六種卡型與種族結界，${GAME_FACTS.cards} 種正式卡。合法持有六十張即可對戰，選牌直接閱讀效果。查看${downloadDescription}。`,
   keywords: [
     "暮色秘典",
     "Twilight Codex",
@@ -54,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "暮色秘典 Twilight Codex",
     description:
-      `四路前後排、種族結界與自己的六十張。244 種正式卡，Windows／macOS 試玩下載與雙人房間對戰。`,
+      `四路前後排、種族結界與自己的六十張。${GAME_FACTS.cards} 種正式卡，${downloadDescription}與雙人房間對戰。`,
     type: "website",
     locale: "zh_TW",
     images: [{ url: mediaUrl("/media/screens/hero-battlefield.webp"), width: 1280, height: 720, alt: "暮色秘典實機戰場" }],

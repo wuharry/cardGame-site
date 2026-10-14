@@ -1,4 +1,4 @@
-/** 依 canonical Godot 專案 R5 規則核對；下載成品資訊另見 releases.ts。 */
+/** 遊戲規則與介紹；各平台實際下載成品及驗證範圍另見 releases.ts。 */
 export const GAME_FACTS = {
   nameZh: "暮色秘典",
   nameEn: "Twilight Codex",
