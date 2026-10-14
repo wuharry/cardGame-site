@@ -2,9 +2,9 @@
 
 《暮色秘典》的介紹與下載頁。Next.js 16 + TypeScript + Tailwind v4。
 
-遊戲本體在 `/Users/harvey/repo/card-game-demo-4.5--main`（Godot 4.7.2）。目前網站下載資料同步 **2026-10-13 R5 封裝／protocol 16**，提供 Windows x86_64 與 macOS universal ZIP；遊戲內版本標籤沿用 `2026.10.11-R5`，請以附件檔名中的 `20261013` 識別新版。正式伺服器已於台北時間 2026-10-13 12:51:45 更新，外網大廳驗證通過。遊戲本輪的發布與驗收紀錄見 [R5 紀錄](https://github.com/wuharry/card-game-demo-4.5-/blob/deff4730/docs/releases/20261013-r5/README.md)。
+遊戲本體使用 Godot 4.7.2；本機來源為 `E:\card-game-demo(4.5)`。各平台目前可取得的版本、大小、校驗碼與原生驗證限制，以 `src/data/releases.ts` 的 `BUILDS` 為準。下載 UI 依實際可用成品列出平台，不因加入 Linux／Android 說明就宣稱已有下載包；iPhone 暫未提供安裝入口。
 
-網站只放介紹、下載資料與 WebP 預覽。大型遊戲 ZIP 放公開 GitHub Releases，勿加入 `public/`。網站卡圖已從本輪遊戲資源重新匯入；原生場景截圖沿用既有擷取來源，清單保存在 `public/media/import-manifest.json`。
+網站只放介紹、下載資料與 WebP 預覽。大型遊戲 ZIP／APK 放公開 GitHub Releases，勿加入 `public/`。網站卡圖與原生場景截圖的實際來源及擷取版本，保存在 `public/media/import-manifest.json`；改下載 UI 不會更新圖片或宣稱重拍。
 
 ---
 
@@ -25,14 +25,14 @@ npm start
 
 檔案：[src/data/releases.ts](src/data/releases.ts)
 
-1. 把驗證過的 Windows 匯出資料夾完整壓成版本化 ZIP，上傳到公開 GitHub Release 的附件。不要使用 GitHub 自動附的 Source code ZIP，也不要把大型遊戲包放入網站 `public`。
+1. 將各平台經驗證的玩家包上傳到固定版本的公開 GitHub Release。Windows／macOS／Linux 使用完整 ZIP，Android 使用可安裝 APK；不要把匯出專案或 GitHub 自動附的 Source code ZIP 當成玩家包，也不要把大型檔案放入網站 `public`。
 2. 把 `RELEASE_BASE` 填成該次版本的 HTTPS 附件目錄，例如 `https://github.com/<owner>/<releases-repo>/releases/download/<tag>`；`file` 必須與附件檔名相同。
-3. 填入真實的 `version` / `size` / `updated` / `sha256`；先確認同一份 ZIP 解壓、啟動成功，並核對公開附件的檔名與 SHA-256，再把 Windows 的 `status` 改成 `"available"`。網站部署後，另驗收正式下載連結；換版仍需重新執行這些檢查。
+3. 填入真實的 `version` / `bytes` / `size` / `updated` / `sha256` / `build` / `minimumBuild` / `protocol`，核對公開附件檔名、位元組數與 SHA-256 後，才將對應平台的 `status` 改成 `"available"`。`requirement`、`note` 與 `noteEn` 分別說明系統需求、簽章及實際驗證範圍；沒做原生裝置測試就保留未測說明。網站部署後另驗收正式下載連結。
 
 `RELEASE_BASE` 是空字串、不是有效 HTTPS 網址、或 `status` 不是 `available` 時，不會產生下載連結。
-首頁、下載按鈕與狀態欄都使用同一個判定。本輪 Windows／macOS 均已填入版本化附件、大小與 SHA-256。macOS 簽章與原生背景啟動通過；Windows 由同版 Godot editor 驗證封裝內容，尚未在本輪原生 Windows 啟動，驗證範圍於下載區與版本說明明列。Linux 玩家版與 Android 尚未提供。[既有 R4 Release](https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.11-r4) 的標準 R4 ZIP 與檢查碼已公開；先前本機 `-R4-verified.zip` 候選因追加遊戲修正而停止發布，不可將它當作公開附件。
+首頁平台清單、SEO、下載按鈕與安裝說明共用 `downloadUrl()` 的可用判定。`planned`／`preparing` 平台不產生下載連結，也不顯示可安裝的承諾；各平台可用 `releaseBase` 保留不同 tag 的真實成品。Windows 相容模式、macOS 未公證、Linux 執行權限與 Android 安裝來源分開說明，不把 APK 當 ZIP。
 
-本輪附件 tag 為 `v2026.10.13-r5`：Windows ZIP 為 652,424,282 bytes（622.2 MiB），macOS ZIP 為 675,349,629 bytes（644.1 MiB）；真實 SHA-256 見 `src/data/releases.ts` 與公開版本附件 `SHA256SUMS`。公開附件核對完成後才推送網站部署；版本化網址不使用 `latest`。兩名正式帳號真人完整對局仍未於本輪執行。
+`src/data/game-version.ts` 從同一份 `BUILDS` 產生 schema 1 更新資料，`src/app/api/game-version/route.ts` 提供 `/api/game-version` 並保留 `Cache-Control: no-store`。只有完整可用 metadata 才進 API；`build` 必須遞增，`minimumBuild` 不大於 `build`，公開 JSON 的 UTF-8 大小須不超過遊戲更新器的 16 KiB 限制。增加平台也需同步遊戲端 `platform_id()` 與固定來源的檔名格式驗證。線上最低版本只在需要阻擋舊客戶端時調高，不能因 UI 換版隨意更動。
 
 GitHub 私有 repo 的附件也需要權限。給朋友免登入下載時，可另外建只放發佈檔的公開 repo，不必公開遊戲原始碼。
 建議使用固定版本的附件網址，避免 `latest` 換版後，網站上的版本與檔案不一致。
@@ -41,7 +41,25 @@ GitHub 私有 repo 的附件也需要權限。給朋友免登入下載時，可�
 Get-FileHash -LiteralPath '完整路徑\本次版本的Windows包.zip' -Algorithm SHA256
 ```
 
-**新增平台**就是往 `BUILDS` 加一筆，版面自己長出來，不用動 component。
+**新增平台**時，先在 `BUILDS` 記錄真實成品。既有 Windows／macOS／Linux／Android 會自動產生平台入口與對應安裝說明；新增其他平台時，另核對 `download-panel.tsx` 的安裝方式。iOS 匯出專案不等於玩家可安裝版本，沒有有效發行管道時不可放可點擊的下載連結。
+
+目前 Linux 玩家模板在 Ubuntu 24.04 編譯，最低需要 x86_64 與 glibc 2.39；平台需求應寫明 Ubuntu 24.04 或以上，或其他使用 glibc 2.39 或以上的發行版。
+
+Android 目前作為預覽版提供，本次支援基準為 Android 9 或以上與 arm64。此 R9 成品 APK 已用 `aapt` 核對 manifest：`minSdkVersion=24`、`targetSdkVersion=36`，並通過 APK v2／v3 簽章檢查。Android 7／8 不列入本次支援承諾；實機安裝、啟動與觸控驗收均未執行。長按卡牌 0.5 秒開啟完整說明是本次新增操作，不能由封裝檢查推定已在手機驗收。
+
+Android 已知匯出圖示資源警告仍保留，profile 初始化可能略過，實際影響待實機驗證。系統需求與支援基準不代表原生驗收已通過；`note`／`noteEn` 必須分別保留 Windows 最終 ZIP 解壓後本機啟動通過、macOS／Linux／Android 原生驗收未執行，以及朋友電腦和真人外網對局未測的限制。
+
+發布前保留 `/admin` 的匿名遊玩統計、正式帳號權限與 OTP 安全檢查，以及 `public/licenses/`、製作群頁和既有安全 headers。驗證命令：
+
+```bash
+node scripts/test-game-version.mjs
+node scripts/test-admin-api.mjs
+node scripts/test-play-analytics.mjs
+npm run lint
+npm run build
+```
+
+歷史 R4／R5 的包體與驗收紀錄保留於下文，不代表目前各平台的下載版本或本輪已完成的測試。
 
 ### 改更新紀錄
 
@@ -69,7 +87,7 @@ Get-FileHash -LiteralPath '完整路徑\本次版本的Windows包.zip' -Algorith
 
 ### 建議部署方式
 
-網站使用 Vercel 的 Next.js 預設建置；遊戲 ZIP 放 GitHub Releases，下載按鈕直接導向附件，不經過網站 API 轉送。
+網站使用 Vercel 的 Next.js 預設建置；遊戲 ZIP／APK 放 GitHub Releases，下載按鈕直接導向附件，不經過網站 API 轉送。
 網站與遊戲檔可各自更新。參考 [Vercel 的 Next.js 部署](https://vercel.com/docs/frameworks/full-stack/nextjs)、[GitHub Release 附件連結](https://docs.github.com/en/repositories/releasing-projects-on-github/linking-to-releases)。
 
 分享預覽圖的網址會優先使用部署設定 `SITE_URL`，在 Vercel 也會自動使用正式網域；其他主機請設定 `SITE_URL` 為網站的完整 HTTPS 網址。

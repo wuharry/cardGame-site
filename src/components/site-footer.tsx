@@ -3,7 +3,7 @@ import { GAME_FACTS } from "@/data/game";
 
 /** 掛名與技術事實。CC-BY 的素材必須署名，這裡是它該待的地方。 */
 const CREDITS = [
-  { label: "Engine", value: `${GAME_FACTS.engine} · GDScript · Forward+` },
+  { label: "Engine", value: `${GAME_FACTS.engine} · GDScript` },
   { label: "Type", value: "Noto Serif TC · Cinzel · Barlow" },
   { label: "Icons", value: "Icons by Andrey Kalyuzhnyy (CC BY 4.0)" },
   { label: "Icons / source", value: "Matt Firth (shikashipx) · game-icons.net · CC BY 3.0 / 4.0" },
