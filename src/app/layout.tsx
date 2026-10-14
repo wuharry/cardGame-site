@@ -31,6 +31,9 @@ const barlowCondensed = Barlow_Condensed({
 const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
 
 export const metadata: Metadata = {
+  verification: {
+    google: "PKJXLoQy0VwSEQOSFLZfBSNhxVWk0PgPVjLETktDAv4",
+  },
   metadataBase: new URL(process.env.SITE_URL ?? (productionHost ? `https://${productionHost}` : "http://localhost:3100")),
   title: {
     default: "暮色秘典 Twilight Codex — 四路前後排的回合制卡牌對戰",

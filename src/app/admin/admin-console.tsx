@@ -112,15 +112,17 @@ export default function AdminConsole() {
     {message && <p role="status" className={styles.message}>{message}</p>}
     {!session ? <section className={styles.login}>
       <span className={styles.badge}>管理者登入</span><h2>用遊戲帳號登入</h2>
-      <p>輸入已授權的 Email，使用信箱驗證碼登入。一般玩家帳號無法查閱其他人的資料。</p>
+      <p>輸入已授權的 Email，使用暮色秘典寄出的數字驗證碼登入。一般玩家帳號無法查閱其他人的資料。</p>
+      <p id="admin-login-help" className={styles.note}>此頁僅使用 Email 一次性驗證碼。請勿輸入 Google、Steam 或信箱密碼。</p>
       <form onSubmit={(event) => { event.preventDefault(); void work(sent ? login : async () => {
         if (Date.now() < resendAt) { setMessage("請等一分鐘再寄送驗證碼。"); return; }
         await api.sendCode(email.trim()); setSent(true); setResendAt(Date.now() + 60000);
         setMessage("驗證碼已寄出，請查看信箱。");
       }); }}>
-        <label>Email<input type="email" autoComplete="email" required value={email} disabled={busy || sent}
+        <label>Email<input type="email" name="email" autoComplete="email" required value={email} disabled={busy || sent}
           onChange={(event) => setEmail(event.target.value)} /></label>
-        {sent && <label>驗證碼<input autoComplete="one-time-code" inputMode="numeric" required value={code}
+        {sent && <label>Email 數字驗證碼<input type="text" name="verification-code" autoComplete="one-time-code" inputMode="numeric"
+          pattern="[0-9]{6,10}" minLength={6} maxLength={10} aria-describedby="admin-login-help" required value={code}
           onChange={(event) => setCode(event.target.value)} /></label>}
         <button className={styles.primary} disabled={busy}>{busy ? "處理中…" : sent ? "登入管理後台" : "寄送驗證碼"}</button>
         {sent && <button type="button" disabled={busy} onClick={() => { setSent(false); setCode(""); }}>修改 Email／重新寄送</button>}

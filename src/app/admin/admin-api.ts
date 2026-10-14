@@ -53,7 +53,12 @@ export class AdminAPI {
   }
 
   async signIn(email: string, code: string) {
-    const result = await this.request("/auth/v1/verify", { email, token: code, type: "email" }) as {
+    const token = code.trim();
+    // Email OTP supports 6–10 digits. Reject passwords before making an Auth request.
+    if (!/^[0-9]{6,10}$/.test(token)) {
+      throw new AdminError("請輸入信中的 6 至 10 位數字驗證碼。此處不接受信箱或其他服務的密碼。");
+    }
+    const result = await this.request("/auth/v1/verify", { email, token, type: "email" }) as {
       access_token?: string; refresh_token?: string; expires_in?: number;
     };
     if (!result.access_token || !result.refresh_token) throw new AdminError("登入回覆不完整。");

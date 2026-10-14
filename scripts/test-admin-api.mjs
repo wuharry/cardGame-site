@@ -20,6 +20,11 @@ let checks = 0;
 const check = (value, label) => { assert.ok(value, label); checks++; console.log("PASS", label); };
 try {
   const api = new AdminAPI();
+  for (const invalid of ["not-an-email-code", "12345", "12345678901", "12345a"]) {
+    await assert.rejects(() => api.signIn("owner@example.test", invalid),
+      (error) => error instanceof AdminError && error.message.includes("數字驗證碼"));
+  }
+  check(calls.length === 0, "Passwords and malformed OTPs are rejected before any Auth request");
   replies.push({ body: {} }); await api.sendCode("owner@example.test");
   check(calls.at(-1).body.create_user === true, "First login may register an Auth account, with no client-supplied management role");
   check(!calls.at(-1).body.data && !calls.at(-1).body.access_level, "Signup cannot request an administrator role");
@@ -66,6 +71,12 @@ try {
   await assert.rejects(() => outsider.signIn("player@example.test", "000000"), (e) => e.message.includes("管理權限"));
   await assert.rejects(() => outsider.rpc("tcg_admin_players", {}), (e) => e.status === 401);
   check(calls.at(-1).url.includes("/logout"), "An ordinary authenticated player is rejected and its browser session is cleared");
+  const longerCode = new AdminAPI();
+  replies.push({ body: { access_token: "longer-code-access", refresh_token: "longer-code-refresh", expires_in: 3600 } },
+    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "viewer" } });
+  await longerCode.signIn("owner@example.test", " 12345678 ");
+  check(calls.at(-2).body.token === "12345678", "Configured longer numeric OTPs remain valid and surrounding whitespace is trimmed");
+  replies.push({ body: {} }); await longerCode.signOut();
   check(replies.length === 0, "All scripted HTTP outcomes were consumed");
   console.log(`Admin API: ${checks} checks PASS`);
 } finally { globalThis.fetch = originalFetch; Date.now = originalNow; }
