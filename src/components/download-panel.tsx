@@ -19,8 +19,7 @@ export function DownloadPanel() {
             下載暮色秘典
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            Windows 與 macOS 都是 ZIP，完整解壓縮後直接執行。要和朋友連線，兩邊都要用檔名含
-            20261013 的這一輪新包。
+            Windows 與 macOS 都是 ZIP，完整解壓縮後直接執行。要和朋友連線，兩邊都要使用本頁提供的最新玩家包。
           </p>
         </header>
 
@@ -44,7 +43,7 @@ export function DownloadPanel() {
             },
             {
               title: "連不上朋友？",
-              body: "兩邊都要用本頁 20261013 的新包，舊 R5 的連線協定不同。區網從「進階／區網」進入，兩台電腦要在同一個網路，房主要允許遊戲通過防火牆。",
+              body: "先確認兩邊都已更新至本頁提供的最新玩家包。區網從「進階／區網」進入，兩台電腦要在同一個網路，房主要允許遊戲通過防火牆。",
             },
           ].map((item) => (
             <details key={item.title} className="border-b border-rule-soft py-4 last:border-0">
