@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.14-r7";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.14-r8";
 
 export type BuildStatus = "available" | "preparing" | "planned";
 
@@ -37,36 +37,36 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · 64-bit",
     status: "available",
-    file: "TwilightCodex-Windows-20261014-R7.zip",
-    version: "2026.10.14-R7",
-    size: "441.4 MiB",
-    bytes: 462837030,
+    file: "TwilightCodex-Windows-20261014-R8.zip",
+    version: "2026.10.14-R8",
+    size: "438.0 MiB",
+    bytes: 459246702,
     updated: "2026-10-14",
-    sha256: "5bdbdcbc71728d710e6e5a70e4a447ff3a43dd50db657e5e60df9e9931950e23",
-    build: 2026101402,
+    sha256: "81ac0bbfa06c693dcad3c78065b5649cefba13182915fac4a159106dd1a0061c",
+    build: 2026101403,
     minimumBuild: 2026101402,
     protocol: 16,
     requirement: "64 位元 Windows · 滑鼠與鍵盤",
-    note: "解壓縮後執行 TwilightCodex.exe；附相容模式及診斷工具。正式連線需 R7 以上；含新版檢查與匿名遊玩統計（可關閉）。尚未在 Windows 原生系統實測。",
-    noteEn: "R7 or later required for official online play. Update checks, optional anonymous play statistics and startup diagnostics. Extract the ZIP before running. Native Windows testing is pending.",
+    note: "解壓縮後執行 TwilightCodex.exe；附相容模式及診斷工具。正式連線需 R7 以上；加入資源封裝保護；含新版檢查與匿名遊玩統計（可關閉）。尚未在 Windows 原生系統實測。",
+    noteEn: "R7 or later required for official online play. Protected player resources, update checks, optional anonymous play statistics and startup diagnostics. Extract the ZIP before running. Native Windows testing is pending.",
   },
   {
     id: "macos",
     platform: "macOS",
     en: "ZIP · Universal",
     status: "available",
-    file: "TwilightCodex-macOS-20261014-R7.zip",
-    version: "2026.10.14-R7",
-    size: "463.3 MiB",
-    bytes: 485754773,
+    file: "TwilightCodex-macOS-20261014-R8.zip",
+    version: "2026.10.14-R8",
+    size: "457.6 MiB",
+    bytes: 479874185,
     updated: "2026-10-14",
-    sha256: "08fc20d57d9b4a4ee7489abdb78055ba4fbadaea107d55f9a89d88c9ac81b8fe",
-    build: 2026101402,
+    sha256: "dfbf651ad552e9cb8ae0245f331663177a2649dbfb0ae3a284354097751e92b7",
+    build: 2026101403,
     minimumBuild: 2026101402,
     protocol: 16,
-    requirement: "Apple Silicon / Intel · 滑鼠與鍵盤",
-    note: "Apple Silicon／Intel 通用版。正式連線需 R7 以上；含新版檢查與匿名遊玩統計（可關閉）。ad-hoc 簽章，尚未 Apple 公證。",
-    noteEn: "Universal Apple Silicon / Intel build. R7 or later required for official online play. Update checks and optional anonymous play statistics. Ad-hoc signed; not Apple-notarized.",
+    requirement: "macOS 13.0+ · Apple Silicon / Intel · 滑鼠與鍵盤",
+    note: "Apple Silicon／Intel 通用版。正式連線需 R7 以上；加入資源封裝保護；含新版檢查與匿名遊玩統計（可關閉）。ad-hoc 簽章，尚未 Apple 公證。",
+    noteEn: "macOS 13.0+ universal Apple Silicon / Intel build with protected player resources. R7 or later required for official online play. Update checks and optional anonymous play statistics. Ad-hoc signed; not Apple-notarized.",
   },
   {
     id: "linux",
@@ -128,6 +128,17 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "2026.10.14-R8",
+    date: "2026-10-14",
+    title: "玩家包保護與連線安全",
+    changes: [
+      "Windows／macOS 玩家包加入選擇性 PCK 加密，保護專案程式、卡牌資料與核對過的生成素材；第三方、開放授權與待釐清素材保留可讀。加密提高直接解包門檻，不能保證無法逆向。",
+      "保留原作者署名、第三方授權與著作權聲明；排除伺服器程式、開發原稿、製作紀錄與金鑰。舊 R6／R7 未加密公開附件暫時收回並保留為草稿；更新檔只提供玩家包。",
+      "伺服器增加行動限速、受限快照回覆與未握手連線回收；修正極大非法序號阻斷後續正常操作。協定維持 16、正式連線最低版號維持 R7，舊玩家可取得 R8 更新提醒。",
+      "兩平台各通過 327 項加密成品資源與主選單背景檢查；macOS 實際執行檔無畫面啟動及簽章核對通過。Windows 原生系統與有畫面的真人對局仍待實測。macOS 需 13.0 以上，尚未 Apple 公證。",
+    ],
+  },
   {
     version: "2026.10.14-R7",
     date: "2026-10-14",
