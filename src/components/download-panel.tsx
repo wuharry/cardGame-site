@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BUILDS, buildStatusText, downloadUrl, releasePageUrl, type Build } from "@/data/releases";
 
 function formatDate(iso: string | null) {
@@ -128,7 +129,7 @@ function FeaturedBuild({ build }: { build: Build }) {
               className="block text-lg tracking-[0.2em] uppercase"
               style={{ fontFamily: "var(--font-hud)", fontWeight: 700 }}
             >
-              下載 {build.platform} 版
+              {build.id === "android" ? "下載 Android APK" : `下載 ${build.platform} 版`}
             </span>
           </a>
         ) : (
@@ -147,16 +148,34 @@ function FeaturedBuild({ build }: { build: Build }) {
             </span>
           </div>
         )}
+
+        {href && build.id === "android" && (
+          <div className="space-y-3">
+            <Link
+              href="/install/android"
+              className="block border border-brass-dim px-5 py-3 text-center text-base text-brass-hi transition-colors hover:border-brass hover:text-parchment"
+            >
+              已下載？查看安裝教學
+            </Link>
+            <p className="body-cjk text-sm leading-7">
+              下載完成後，開啟 Chrome「下載」或「檔案 → Downloads」，點選
+              <code className="break-all">{build.file}</code>，再依系統畫面安裝。沒有跳出安裝視窗時，請先手動開啟這個 APK。
+            </p>
+          </div>
+        )}
       </div>
 
       {releaseHref && (
-        <p className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
-          下載無反應？到{" "}
-          <a href={releaseHref} className="text-brass-hi underline underline-offset-4 hover:text-parchment">
-            GitHub 版本頁
-          </a>
-          {" "}的 Assets 選擇 <code className="break-all">{build.file}</code>，勿選 Source code。
-        </p>
+        <details className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
+          <summary className="cursor-pointer text-brass-hi">下載沒開始？查看備用入口</summary>
+          <p className="mt-3">
+            到{" "}
+            <a href={releaseHref} className="text-brass-hi underline underline-offset-4 hover:text-parchment">
+              GitHub 版本頁
+            </a>
+            {" "}的 Assets 選擇 <code className="break-all">{build.file}</code>，勿選 Source code。
+          </p>
+        </details>
       )}
 
       <dl className="grid grid-cols-2">
@@ -167,14 +186,16 @@ function FeaturedBuild({ build }: { build: Build }) {
       </dl>
 
       {build.note && (
-        <p className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
-          {build.note}
-        </p>
+        <details className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
+          <summary className="cursor-pointer text-parchment">版本說明與驗收範圍</summary>
+          <p className="mt-3">{build.note}</p>
+        </details>
       )}
       {href && build.sha256 && (
-        <p className="body-cjk break-all border-t border-rule px-6 py-4 text-[0.78rem]">
-          SHA-256：<code>{build.sha256}</code>
-        </p>
+        <details className="body-cjk border-t border-rule px-6 py-4 text-[0.78rem]">
+          <summary className="cursor-pointer text-parchment">檔案校驗碼（SHA-256）</summary>
+          <p className="mt-3 break-all"><code>{build.sha256}</code></p>
+        </details>
       )}
     </div>
   );

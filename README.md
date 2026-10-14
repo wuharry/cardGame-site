@@ -49,10 +49,17 @@ Android 目前作為預覽版提供，本次支援基準為 Android 9 或以上�
 
 Android 已知匯出圖示資源警告仍保留，profile 初始化可能略過，實際影響待實機驗證。系統需求與支援基準不代表原生驗收已通過；`note`／`noteEn` 必須分別保留 Windows 最終 ZIP 解壓後本機啟動通過、macOS／Linux／Android 原生驗收未執行，以及朋友電腦和真人外網對局未測的限制。
 
+Android 下載卡直接連到同一份官方 APK，並提供明顯的「安裝教學」入口 `/install/android`。教學從 `BUILDS` 讀取目前版本、檔名、大小、需求與校驗碼，不另外硬寫版本；步驟是下載完成後到 Chrome「下載」或檔案管理員 Downloads 開啟 APK，再由 Android 安裝。沒有自動跳出安裝畫面和系統拒絕安裝分開處理，不要求關閉 Play 安全防護或解除安裝既有遊戲。
+
+下載頁與教學使用伺服器呈現的文字和原始附件連結，不以網站 API／`fetch`／Blob 轉送大型 APK，也不顯示猜測的下載進度、完成狀態或自動安裝承諾。四平台的長篇驗收說明及 SHA-256 放在可展開區塊，系統需求、版本、大小與下載動作仍直接顯示。網站 UX 改善不代表 GitHub 附件傳輸已加速；下載速度需另以實際檔案傳輸驗證。
+
+CDN 尚未開通；已整理[下載傳輸方案](docs/download-delivery-plan.md)，包含 R2 正式網域鏡像、GitHub 備援、遊戲內更新網址限制與部署驗收。涉及網域、帳號、開通或費用時，先取得使用者對具體方案的同意。
+
 發布前保留 `/admin` 的匿名遊玩統計、正式帳號權限與 OTP 安全檢查，以及 `public/licenses/`、製作群頁和既有安全 headers。驗證命令：
 
 ```bash
 node scripts/test-game-version.mjs
+node scripts/test-android-install-guide.mjs
 node scripts/test-admin-api.mjs
 node scripts/test-play-analytics.mjs
 npm run lint
