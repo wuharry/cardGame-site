@@ -2,7 +2,7 @@
 export const GAME_FACTS = {
   nameZh: "暮色秘典",
   nameEn: "Twilight Codex",
-  version: "2026.10.11-R5",
+  version: "2026.10.14-R6",
   engine: "Godot 4.7",
   lanes: 4,
   cards: 244,

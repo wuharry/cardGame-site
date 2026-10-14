@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.13-r5";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.14-r6";
 
 export type BuildStatus = "available" | "preparing" | "planned";
 
@@ -22,6 +22,11 @@ export interface Build {
   note?: string;
   /** 版本化 ZIP 的實際 SHA-256；未產生成品時不填假值。 */
   sha256?: string;
+  /** Monotonic client build and minimum build permitted for official online play. */
+  build?: number;
+  minimumBuild?: number;
+  protocol?: number;
+  noteEn?: string;
   /** 可讓單一平台更新，不把其他平台連到不存在的新附件。 */
   releaseBase?: string;
 }
@@ -32,29 +37,36 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · 64-bit",
     status: "available",
-    file: "TwilightCodex-Windows-20261013-Analytics.1.zip",
-    releaseBase: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.13-analytics",
-    version: "2026.10.13-R5-Analytics.1",
-    size: "622.2 MiB",
-    bytes: 652393550,
-    updated: "2026-10-13",
-    sha256: "3524d9cd4a8079a02beb62d7792f3e04de6c772b5a88a33dca2f8879e425713a",
+    file: "TwilightCodex-Windows-20261014-R6.zip",
+    version: "2026.10.14-R6",
+    size: "441.4 MiB",
+    bytes: 462836884,
+    updated: "2026-10-14",
+    sha256: "bf58002ba08fc41f975a1a49ac3dc2ec1438ed52e72b263c05c4b08222efab65",
+    build: 2026101401,
+    minimumBuild: 2026101401,
+    protocol: 16,
     requirement: "64 位元 Windows · 滑鼠與鍵盤",
-    note: "解壓縮後執行 TwilightCodex.exe。新增匿名遊玩統計，可在設定關閉；不傳收藏或牌組。尚未在 Windows 原生系統實測啟動。",
+    note: "解壓縮後執行 TwilightCodex.exe；附相容模式及診斷工具。含新版檢查與匿名遊玩統計（可關閉）。尚未在 Windows 原生系統實測。",
+    noteEn: "Update checks, optional anonymous play statistics and startup diagnostics. Extract the ZIP before running. Native Windows testing is pending.",
   },
   {
     id: "macos",
     platform: "macOS",
     en: "ZIP · Universal",
     status: "available",
-    file: "TwilightCodex-macOS-20261013-R5.zip",
-    version: "2026.10.13-R5",
-    size: "644.1 MiB",
-    bytes: 675349629,
-    updated: "2026-10-13",
-    sha256: "70085c66199e32e119cbcc445290e718a6dfca60335cd4c666ca31baecf2927f",
+    file: "TwilightCodex-macOS-20261014-R6.zip",
+    version: "2026.10.14-R6",
+    size: "463.3 MiB",
+    bytes: 485754992,
+    updated: "2026-10-14",
+    sha256: "98515701b207c0efa673e790fd46ece805e2e2cc0ab83f7f46de5d272c6ca260",
+    build: 2026101401,
+    minimumBuild: 2026101401,
+    protocol: 16,
     requirement: "Apple Silicon / Intel · 滑鼠與鍵盤",
-    note: "此 R5 版尚無匿名遊玩統計。ad-hoc 簽章、尚未 Apple 公證，首次開啟方式見下方說明。",
+    note: "Apple Silicon／Intel 通用版。含新版檢查與匿名遊玩統計（可關閉）。ad-hoc 簽章，尚未 Apple 公證。",
+    noteEn: "Universal Apple Silicon / Intel build with update checks and optional anonymous play statistics. Ad-hoc signed; not Apple-notarized.",
   },
   {
     id: "linux",
@@ -116,6 +128,17 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "2026.10.14-R6",
+    date: "2026-10-14",
+    title: "更新提醒與玩家包隔離",
+    changes: [
+      "Windows／macOS 玩家包同步更新。移除專用伺服器程式、未採用卡圖、開發原稿與製作紀錄；公開版本附件不再提供伺服器部署包。",
+      "主選單會背景檢查新版，並提供官方下載入口；最低版號或協定要求更新時，先更新再進行正式連線。離線練習與本機收藏、牌組保留。舊版需要先手動更新這一次。",
+      "兩平台成品各通過 325 項資源與主選單檢查；macOS 簽章驗證通過。Windows 原生系統啟動及新版真人對局仍待測試。",
+      "下載包加入著作權聲明、第三方授權與 Windows 相容啟動／診斷工具。連線協定保持 16；本輪尚未加入 PCK 加密。",
+    ],
+  },
   {
     version: "2026.10.13-R5",
     date: "2026-10-13",
