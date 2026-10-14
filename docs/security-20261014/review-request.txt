@@ -1,0 +1,11 @@
+這是我們自行開發的卡牌遊戲「暮色秘典 Twilight Codex」官方網站。/admin 是管理本遊戲玩家資料的入口，使用本遊戲 Supabase 帳號服務寄出的 Email 一次性數字驗證碼，並非 Google、Steam 或其他服務的登入頁面。
+
+Search Console 顯示「在使用者登入時偵測到疑似網路詐騙內容」，網址示例為不適用。管理者回報輸入 Email 與本遊戲驗證碼後出現警告。
+
+2026-10-14 已部署以下修補（正式網站 commit 680161f）：
+1. 明確標示僅輸入暮色秘典 Email 一次性驗證碼，提醒勿輸入 Google、Steam 或信箱密碼。驗證碼欄位使用 one-time-code，且登入請求送出前只接受 Supabase 支援的 6–10 位數字，拒絕密碼與格式錯誤內容。
+2. Next.js 更新到 16.3.8，sharp 最低版本更新到 0.35.5，修補正式執行依賴中的已知漏洞。npm audit --omit=dev 檢查結果為 0 項已知漏洞；此結果不代表所有開發工具均無漏洞。
+3. 增加 X-Content-Type-Options、X-Frame-Options、Referrer-Policy，以及限制 frame-ancestors、object-src、base-uri、form-action 的基本 CSP。
+4. 唯讀檢查目前正式首頁、管理頁與管理頁載入的九份 JavaScript：script 均由本站提供，HTML 無 iframe，未發現密碼輸入欄位或額外外部登入表單。正常驗證 TLS 的請求取得 HTTP 200。這些檢查範圍有限，並非完整無入侵證明。
+
+我們未找到冒充其他服務登入的內容，請重新審查本遊戲的合法 Email 驗證碼登入流程；若仍有可疑內容，請提供具體頁面或內容以便進一步排查。

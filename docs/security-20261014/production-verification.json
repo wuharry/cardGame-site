@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-14",
+  "commit": "680161f",
+  "host": "https://twilight-codex.vercel.app",
+  "pages": [
+    {
+      "route": "/",
+      "https_verified": true,
+      "verification_meta_present": true,
+      "security_headers": {
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "referrer-policy": "no-referrer",
+        "content-security-policy": "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'"
+      }
+    },
+    {
+      "route": "/admin",
+      "https_verified": true,
+      "verification_meta_present": true,
+      "security_headers": {
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "referrer-policy": "no-referrer",
+        "content-security-policy": "base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'"
+      },
+      "otp_login_guidance_present": true
+    }
+  ]
+}
