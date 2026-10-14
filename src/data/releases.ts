@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.14-r6";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.14-r7";
 
 export type BuildStatus = "available" | "preparing" | "planned";
 
@@ -37,36 +37,36 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · 64-bit",
     status: "available",
-    file: "TwilightCodex-Windows-20261014-R6.zip",
-    version: "2026.10.14-R6",
+    file: "TwilightCodex-Windows-20261014-R7.zip",
+    version: "2026.10.14-R7",
     size: "441.4 MiB",
-    bytes: 462836884,
+    bytes: 462837030,
     updated: "2026-10-14",
-    sha256: "bf58002ba08fc41f975a1a49ac3dc2ec1438ed52e72b263c05c4b08222efab65",
-    build: 2026101401,
-    minimumBuild: 2026101401,
+    sha256: "5bdbdcbc71728d710e6e5a70e4a447ff3a43dd50db657e5e60df9e9931950e23",
+    build: 2026101402,
+    minimumBuild: 2026101402,
     protocol: 16,
     requirement: "64 位元 Windows · 滑鼠與鍵盤",
-    note: "解壓縮後執行 TwilightCodex.exe；附相容模式及診斷工具。含新版檢查與匿名遊玩統計（可關閉）。尚未在 Windows 原生系統實測。",
-    noteEn: "Update checks, optional anonymous play statistics and startup diagnostics. Extract the ZIP before running. Native Windows testing is pending.",
+    note: "解壓縮後執行 TwilightCodex.exe；附相容模式及診斷工具。正式連線需 R7 以上；含新版檢查與匿名遊玩統計（可關閉）。尚未在 Windows 原生系統實測。",
+    noteEn: "R7 or later required for official online play. Update checks, optional anonymous play statistics and startup diagnostics. Extract the ZIP before running. Native Windows testing is pending.",
   },
   {
     id: "macos",
     platform: "macOS",
     en: "ZIP · Universal",
     status: "available",
-    file: "TwilightCodex-macOS-20261014-R6.zip",
-    version: "2026.10.14-R6",
+    file: "TwilightCodex-macOS-20261014-R7.zip",
+    version: "2026.10.14-R7",
     size: "463.3 MiB",
-    bytes: 485754992,
+    bytes: 485754773,
     updated: "2026-10-14",
-    sha256: "98515701b207c0efa673e790fd46ece805e2e2cc0ab83f7f46de5d272c6ca260",
-    build: 2026101401,
-    minimumBuild: 2026101401,
+    sha256: "08fc20d57d9b4a4ee7489abdb78055ba4fbadaea107d55f9a89d88c9ac81b8fe",
+    build: 2026101402,
+    minimumBuild: 2026101402,
     protocol: 16,
     requirement: "Apple Silicon / Intel · 滑鼠與鍵盤",
-    note: "Apple Silicon／Intel 通用版。含新版檢查與匿名遊玩統計（可關閉）。ad-hoc 簽章，尚未 Apple 公證。",
-    noteEn: "Universal Apple Silicon / Intel build with update checks and optional anonymous play statistics. Ad-hoc signed; not Apple-notarized.",
+    note: "Apple Silicon／Intel 通用版。正式連線需 R7 以上；含新版檢查與匿名遊玩統計（可關閉）。ad-hoc 簽章，尚未 Apple 公證。",
+    noteEn: "Universal Apple Silicon / Intel build. R7 or later required for official online play. Update checks and optional anonymous play statistics. Ad-hoc signed; not Apple-notarized.",
   },
   {
     id: "linux",
@@ -128,6 +128,17 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "2026.10.14-R7",
+    date: "2026-10-14",
+    title: "線上對戰統一玩家版本",
+    changes: [
+      "正式伺服器在大廳及對局入座檢查最低玩家版號，現在連線需 R7（BUILD 2026101402）以上；過舊或沒有版號的玩家會收到更新提示。連線協定維持 16。",
+      "R6 主選單會取得新版通知；更早版本請從官網重新下載。完整解壓縮後啟動，既有帳號、本機收藏及牌組保留。",
+      "Windows／macOS 玩家包各通過 326 項成品資源檢查；已使用兩平台成品驗證新版允許、舊 R6 拒絕的連線流程。macOS 簽章驗證通過；Windows 原生系統與新版真人完整對局仍待實測。",
+      "延用玩家包資源白名單，排除專用伺服器腳本、未採用卡圖與開發原稿；伺服器封裝僅經私人管道部署。本輪尚未加入 PCK 加密。",
+    ],
+  },
   {
     version: "2026.10.14-R6",
     date: "2026-10-14",
