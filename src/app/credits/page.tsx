@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function CreditsPage() {
   return (
     <>
-      <main className="mx-auto max-w-4xl px-5 py-16 sm:py-24">
+      <main id="main-content" className="mx-auto max-w-4xl px-5 py-16 sm:py-24">
         <Link href="/" className="text-sm text-brass-hi underline underline-offset-4">返回官網</Link>
         <p className="hud-label mt-10">Credits &amp; licenses</p>
         <h1 className="mt-3 text-3xl text-parchment sm:text-4xl" style={{ fontFamily: "var(--font-serif)" }}>製作群與素材授權</h1>

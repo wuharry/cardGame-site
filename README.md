@@ -174,58 +174,42 @@ node scripts/shoot.mjs          out/                 # 含四路戰場的逐步�
 
 ---
 
-## 設計系統
+## 官網設計（2026-10-15）
 
-全部集中在 [src/app/globals.css](src/app/globals.css) 的 `@theme`，來源是遊戲本身：
+首頁以遊戲畫面、卡圖與簡短介紹帶玩家認識遊戲，再進入下載；完整規則與歷史更新各有獨立頁面。
 
-| 角色 | 值 | 為什麼 |
-|---|---|---|
-| 地 | `--color-ink` `#0d0b09` | 暖調暗木，不是純黑 |
-| 字 | `--color-parchment` `#e8dec8` | 羊皮紙，不是白 |
-| 主色 | `--color-brass` `#c8a23c` | 卡框、魔力、我方陣線 |
-| 輔助色 | `--color-crimson` `#b0362b` | 伏印警戒、攻擊、危險 |
-| 敵方 | `--color-steel` `#667281` | 中性冷色，只用來分敵我 |
+| 頁面 | 內容與來源 |
+|---|---|
+| `/` | 主視覺 → 最新消息 → 四路玩法 → 六種卡型 → 戰場畫面 → 模式 → 下載 → 試玩回饋 |
+| `/guide` | 保留回合流程、四路互動演練、三層卡牌、資源、組牌與奪卡、對戰模式 |
+| `/news` | `RELEASE_NOTES` 的完整歷史；`BUILDS` 中暫停的平台另以目前狀態提示 |
+| `/credits` | 原作者、素材來源與完整授權聲明 |
 
-字體：`Cinzel`（銘刻感，只給徽標與段落編號）、`Noto Serif TC`（遊戲自己的明體，
-標題與中文）、`Barlow` / `Barlow Condensed`（內文與 HUD 數值）。
+### 參考與設計取捨
 
-**圓角刻意清掉 Tailwind 的預設**（`--radius-*: initial`），只留 `0 / 2px / 3px`，
-逼每一處自己決定——這裡的東西是金屬板、卡牌、規則書，不是 SaaS 卡片。
+- [闇影詩章 WB 官方網站](https://shadowverse-wb.com/cht/?op=skip)：參考主視覺優先、最新消息、卡牌／角色展示與持續可見的遊玩入口。
+- [爐石戰記官方網站](https://hearthstone.blizzard.com/zh-tw)：參考簡短玩法賣點、各遊玩模式介紹與清楚的下載引導。
+- 使用暮色秘典現有卡圖與實機截圖，未搬用參考站的品牌、圖片、文案或程式。卡圖展示與實機畫面分別標明；畫廊保留各截圖的實際擷取版本，冰原舊圖不宣稱是現行四路畫面。
+- 深藍黑、書頁米白與金色交替建立段落層次。手機有可收合的完整導覽，卡型選擇排成兩列；沒有自動輪播或自動播放影片。按鈕可用鍵盤操作，選單支援 Escape，尊重減少動態設定。
 
-材質靠 `.plate`（內陰影模擬受光的金屬板）、`.card-frame`（雙線印刷邊）、
-`.notch`（切角）、`.grain`（紙／石顆粒）。全站只有一處大面積漸層：`.vignette`，
-它模擬鏡頭暗角，不是裝飾。
+### 維護位置
 
-動作只有三個，每個都對應一條遊戲規則：`.ward-alert`（伏印埋設後的紅色脈動）、
-`.animate-mana-fill`（魔力每回合 +1、上限 10）、`.animate-card-play`（卡片落到卡槽）。
+- `src/app/marketing.css`：官網首頁、導覽、頁尾與新子頁標題。樣式以公開網站 class 限定；保留 `globals.css` 的原規則圖解與後台基底。
+- `EntryScreen`、`home-sections.tsx`：Server Components，組合既有遊戲和版本資料。
+- `SiteHeader`、`CardDiscovery`、`ArenaGallery`：分別管理手機選單、卡型、戰場的切換；指南沿用原本的互動元件。
+- `src/data/site.ts`：公開 Google 試玩表單連結。頁面只提供連結，不另蒐集回饋或登入資料。
+- 下載連結、平台顯示、系統需求與停用狀態沿用 `BUILDS`／`downloadUrl()`。不由視覺元件硬寫下載網址，Android 暫停時仍無 APK 下載或安裝入口。
+- 舊首頁 `#lanes`、`#cards`、`#systems`、`#collection`、`#modes`、`#download` 保留對應簡介；`#flow`、`#changelog` 指到玩法與新訊，完整內容由該區連入指南／更新頁。
 
----
+### 驗證
 
-## 版面
+```bash
+npm run lint
+npm run build
+node scripts/test-game-version.mjs
+node scripts/test-android-install-guide.mjs
+node scripts/test-admin-api.mjs
+node scripts/test-play-analytics.mjs
+```
 
-段落順序照玩家的認知順序排，每一段回答一個問題——不為了填版面加段落。
-
-| # | 段落 | 回答什麼 |
-|---|---|---|
-| I | 入口 | 這是什麼、怎麼拿 |
-| II | 四路前後排 | 站位與攻擊目標如何決定 |
-| III | 六種卡型 | 牌組裡有什麼 |
-| IV | 規則帳 | 一回合能做多少事 |
-| V | 收藏與組牌 | 如何建立自己的牌組 |
-| VI | 戰場與陣容 | 打起來長什麼樣、有誰 |
-| VII | 對戰模式 | 跟誰打 |
-| VIII | 下載 | 怎麼拿到 |
-| IX | 開發更新 | 程式最近改了什麼 |
-
-只有兩個 client component，各自只有一個真的 state：
-
-- `LaneDoctrine` — 捲到第幾步（IntersectionObserver）
-- `CardTypeShowcase` — 伏印翻開沒有
-
-其餘都是 Server Component，動畫走 CSS。沒有裝 Framer Motion。
-
-### 手機版不是把桌機版壓扁
-
-四條路線在桌機與手機都保留雙方前後排，並用框線與說明標示攻擊者、目標和保護關係。
-桌機可捲動或按步驟；手機按步驟顯示對應說明，棋盤不固定覆蓋文字。
-卡牌數值依目前 `.tres` 資料，嘲諷示範使用具有該關鍵字的重甲斧兵。
+版面另外以瀏覽器驗證桌面與窄螢幕：手機選單開關／Escape／點選後收合、六種卡型與三個戰場、指南與消息路由、下載錨點、暫停平台無下載連結、回饋連結及頁面水平溢位。測試表單連結不送出回覆，下載驗證不重抓大型遊戲包。

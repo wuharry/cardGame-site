@@ -4,6 +4,7 @@ import { GAME_FACTS } from "@/data/game";
 import { BUILDS, downloadUrl } from "@/data/releases";
 import { mediaUrl } from "@/data/media";
 import "./globals.css";
+import "./marketing.css";
 
 /* 銘刻感的羅馬碑刻體：只給徽標與段落編號，維持「金屬牌」的印象。 */
 const cinzel = Cinzel({

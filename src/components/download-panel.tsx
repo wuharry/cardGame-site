@@ -16,9 +16,9 @@ export function DownloadPanel() {
     <section id="download" className="border-t border-rule-soft bg-board">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <header className="max-w-2xl">
-          <p className="eyebrow">I — Download</p>
+          <p className="eyebrow">YOUR NEXT MATCH STARTS HERE</p>
           <h2 className="section-title mt-4 text-3xl sm:text-4xl">
-            下載暮色秘典
+            準備好，翻開你的第一頁。
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
             選擇符合裝置的平台，依下方說明解壓縮或安裝。和朋友連線前，請各自更新至對應平台的最新玩家包；系統需求與實測範圍列在每份下載旁。
@@ -34,7 +34,7 @@ export function DownloadPanel() {
           )}
         </header>
 
-        <div className="mt-10 grid items-start gap-6 sm:grid-cols-2">
+        <div className="mt-10 grid items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
           {available.map((build) => <FeaturedBuild key={build.id} build={build} />)}
         </div>
 

@@ -10,7 +10,7 @@ export function PatchNotes() {
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <header className="flex flex-wrap items-baseline justify-between gap-4">
           <div>
-            <p className="eyebrow">VIII — Log</p>
+            <p className="eyebrow">DEVELOPMENT LOG</p>
             <h2 className="section-title mt-4 text-3xl sm:text-4xl">開發更新紀錄</h2>
           </div>
           <p className="hud-label">
