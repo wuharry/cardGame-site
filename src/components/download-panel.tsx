@@ -214,7 +214,7 @@ function BuildRow({ build }: { build: Build }) {
   const href = downloadUrl(build);
 
   return (
-    <li className="flex flex-wrap items-baseline gap-x-6 gap-y-1 border-b border-rule-soft py-4">
+    <li id={`download-${build.id}`} className="flex scroll-mt-24 flex-wrap items-baseline gap-x-6 gap-y-1 border-b border-rule-soft py-4">
       <span
         className="w-24 text-base text-parchment"
         style={{ fontFamily: "var(--font-display)" }}
@@ -239,12 +239,14 @@ function BuildRow({ build }: { build: Build }) {
           下載 {build.platform} 版
         </a>
       ) : (
-        <span
+        <button
+          type="button"
+          disabled
           className="border border-rule px-3 py-1 text-[0.7rem] tracking-[0.16em] text-faint uppercase"
           style={{ fontFamily: "var(--font-hud)" }}
         >
-          {buildStatusText(build)}
-        </span>
+          {build.id === "android" ? "下載 Android APK · " : ""}{buildStatusText(build)}
+        </button>
       )}
       {href && (
         <p className="basis-full text-[0.78rem] text-quill">

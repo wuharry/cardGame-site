@@ -37,16 +37,26 @@ async function renderGuide(builds) {
   return renderToStaticMarkup(createElement(component.default));
 }
 
-const actual = releases.BUILDS.find((build) => build.id === "android");
-check(Boolean(actual && releases.downloadUrl(actual)), "Actual Android metadata must provide a verified download");
-const panel = await renderPanel(releases.BUILDS);
+const current = releases.BUILDS.find((build) => build.id === "android");
+check(Boolean(current && (current.status !== "available" || releases.downloadUrl(current))), "Actual available Android metadata must provide a verified download");
+if (current.status !== "available") {
+  const currentPanel = await renderPanel(releases.BUILDS);
+  const currentGuide = await renderGuide(releases.BUILDS);
+  check(!/href="[^"]+\.apk"/.test(currentPanel + currentGuide) && !currentPanel.includes('href="/install/android"'), "Actual unavailable Android metadata offers no APK link or install flow");
+  check(/<button\b[^>]*disabled/.test(currentPanel) && currentPanel.includes("下載 Android APK"), "Unavailable Android download button is visibly disabled");
+}
+
+// 可下載流程用 available fixture 驗證，不受目前是否暫停下載影響。
+const actual = { ...current, status: "available" };
+const publishedBuilds = releases.BUILDS.map((build) => build.id === "android" ? actual : build);
+const panel = await renderPanel(publishedBuilds);
 check(/<a\b[^>]*href="[^"]+\.apk"[^>]*>[\s\S]*?下載 Android APK/.test(panel), "Android download action explicitly says APK");
 check(panel.includes('href="/install/android"'), "Android card has a prominent installation guide");
 check(panel.includes("下載完成後") && panel.includes("Downloads") && panel.includes(actual.file), "Instructions locate the actual downloaded APK before and after clicking");
 check(panel.includes(`href="${releases.downloadUrl(actual)}"`), "Android card preserves the exact official direct asset URL");
 check(panel.includes("版本說明與驗收範圍") && panel.includes(actual.note), "Dense version notes remain available under an explicit disclosure");
 
-const guide = await renderGuide(releases.BUILDS);
+const guide = await renderGuide(publishedBuilds);
 for (const value of [actual.file, actual.version, actual.size, actual.requirement]) {
   check(guide.includes(value), "Guide uses current shared release metadata: " + value);
 }
@@ -63,12 +73,17 @@ for (const value of [future.file, future.version, future.size, future.requiremen
 }
 check(!changed.includes(actual.file), "Guide does not retain the old release filename");
 
-for (const status of ["planned", "preparing"]) {
-  const unavailable = { ...future, status };
+for (const status of ["planned", "preparing", "suspended"]) {
+  const unavailable = { ...future, status, note: "fixture-suspension-reason" };
   const page = await renderGuide([unavailable]);
   const card = await renderPanel([unavailable]);
-  check(!page.includes(`href="${releases.downloadUrl(future)}"`) && !card.includes('href="/install/android"'), status + " Android build cannot offer a download or active card installation flow");
-  check(page.includes("目前尚未提供可下載的 Android APK"), status + " guide shows unavailable status clearly");
+  check(!page.includes(`href="${releases.downloadUrl(future)}"`) && !card.includes(`href="${releases.downloadUrl(future)}"`) && !card.includes('href="/install/android"'), status + " Android build cannot offer a download or active card installation flow");
+  if (status === "suspended") {
+    check(page.includes("Android APK 暫停下載") && page.includes(unavailable.note), "suspended guide shows the pause and its reason");
+    check(card.includes("暫停下載") && card.includes(unavailable.note), "suspended card shows the pause and its reason");
+  } else {
+    check(page.includes("目前尚未提供可下載的 Android APK"), status + " guide shows unavailable status clearly");
+  }
 }
 const desktop = await renderPanel(releases.BUILDS.filter((build) => build.id !== "android"));
 check(!desktop.includes('href="/install/android"') && !desktop.includes("下載 Android APK"), "Desktop-only panel has no Android installation action");

@@ -5,7 +5,8 @@
  */
 export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.14-r9";
 
-export type BuildStatus = "available" | "preparing" | "planned";
+/** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
+export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
 
 export interface Build {
   id: string;
@@ -90,7 +91,7 @@ export const BUILDS: Build[] = [
     id: "android",
     platform: "Android",
     en: "APK · arm64 · Preview",
-    status: "available",
+    status: "suspended",
     file: "TwilightCodex-Android-20261014-R9.apk",
     version: "2026.10.14-R9",
     size: "442.3 MiB",
@@ -101,8 +102,8 @@ export const BUILDS: Build[] = [
     minimumBuild: 2026101402,
     protocol: 16,
     requirement: "本次支援基準：Android 9+ · arm64（64 位元 ARM）",
-    note: "Android 預覽版，已簽署 arm64 APK；本次支援基準為 Android 9 以上。此 APK manifest 最低 API 24、target API 36，本次不承諾支援 Android 7／8。長按卡牌 0.5 秒可查看完整說明；尚未在 Android 實機安裝、啟動或驗收觸控。已知匯出圖示資源警告保留，profile 初始化可能略過，實際影響待實機驗證。保留選擇性資源加密、完整第三方授權文字與匿名遊玩統計（可關閉）。正式連線最低仍為 R7；APK 不適用 iPhone。",
-    noteEn: "Android preview: signed arm64 APK with an Android 9+ support baseline. Its manifest minimum is API 24 and target is API 36; this release does not claim Android 7/8 support. A 0.5-second card press opens full details. Installation, native startup and touch input have not been tested on an Android device. A known exporter icon-resource warning remains, and profile initialization may be skipped; device impact is unverified. Selective resource encryption, full third-party license texts and optional anonymous play statistics are retained. R7 remains the minimum online build. This APK does not install on iPhone.",
+    note: "暫停下載：2026-10-15 實機試玩發現嚴重問題，修正前暫停提供 R9 Android APK。進入對局後嚴重卡頓、記憶體占用過高，手機可能卡住；遊戲內無法截圖，畫面模糊；操作仍是電腦版介面，出現捲軸且無法用手指滑動。已安裝 R9 APK 的玩家請等待修正版。",
+    noteEn: "Download paused: on-device testing on 2026-10-15 found severe issues, so the R9 Android APK is unavailable until fixed. Matches lag heavily and use so much memory the phone can freeze; in-game screenshots are blocked and the display is blurry; the UI still behaves like the desktop version, with scrollbars that cannot be swiped. If you already installed the R9 APK, please wait for the fixed build.",
   },
 ];
 
@@ -130,6 +131,7 @@ export function releasePageUrl(build: Build): string | null {
 
 export function buildStatusText(build: Build): string {
   if (downloadUrl(build)) return "可下載";
+  if (build.status === "suspended") return "暫停下載";
   return build.status === "planned" ? "尚未提供" : "新版準備中";
 }
 

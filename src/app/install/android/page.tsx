@@ -12,11 +12,15 @@ export default function AndroidInstallPage() {
   const href = android ? downloadUrl(android) : null;
 
   if (!android || !href || !android.file) {
+    const suspended = android?.status === "suspended";
     return (
       <main className="mx-auto max-w-3xl px-5 py-16">
         <Link href="/#download" className="text-brass-hi underline underline-offset-4">返回下載頁</Link>
         <h1 className="mt-8 text-3xl text-parchment">Android APK 安裝教學</h1>
-        <p className="body-cjk mt-6">目前尚未提供可下載的 Android APK，請以官網下載頁的狀態為準。</p>
+        <p className="body-cjk mt-6">
+          {suspended ? "Android APK 暫停下載，修正版發布前不提供安裝。" : "目前尚未提供可下載的 Android APK，請以官網下載頁的狀態為準。"}
+        </p>
+        {suspended && android.note && <p className="body-cjk mt-4 leading-7">{android.note}</p>}
       </main>
     );
   }
