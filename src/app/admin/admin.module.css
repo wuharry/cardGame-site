@@ -11,8 +11,8 @@
 .root button:hover:not(:disabled) { background: #304346; }
 .root button:disabled { opacity: .42; cursor: default; }
 .root button.primary { color: #161e20; background: #dbc486; border-color: #dbc486; font-weight: 650; }
-.root input, .root select { width: 100%; border: 1px solid #3b4b50; border-radius: 7px; padding: 10px 12px; color: #e4e8e5; background: #101c20; font: inherit; min-width: 0; }
-.root input:focus, .root select:focus, .root button:focus-visible { outline: 2px solid #dbc486; outline-offset: 2px; }
+.root input, .root select, .root textarea { width: 100%; border: 1px solid #3b4b50; border-radius: 7px; padding: 10px 12px; color: #e4e8e5; background: #101c20; font: inherit; min-width: 0; }
+.root input:focus, .root select:focus, .root textarea:focus, .root button:focus-visible { outline: 2px solid #dbc486; outline-offset: 2px; }
 .root label { display: flex; flex-direction: column; gap: 7px; color: #aebfbb; }
 .login { margin: 70px auto; max-width: 470px; padding: 32px; border: 1px solid #35484a; border-radius: 12px; background: #172328; }
 .login form { display: grid; gap: 16px; margin: 24px 0; }

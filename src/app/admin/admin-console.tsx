@@ -2,14 +2,14 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { AdminAPI, AdminError, type AdminSession, type Change, type PlayerDetail, type PlayerList } from "./admin-api";
+import { AdminAPI, AdminError, type AdminSession, type Change, type PlayerDetail, type PlayerList, type PlayerMailList } from "./admin-api";
 import cards from "./card-names.json";
 import styles from "./admin.module.css";
 import PlayAnalytics from "./play-analytics";
 
 const date = (value?: string | null) => value ? new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "—";
 const name = (id: string) => (cards as Record<string, string>)[id] ?? id;
-const actions = { grant_tickets: "補發包券", grant_card: "補發卡牌", suspend: "停權對戰", restore: "恢復對戰" };
+const actions = { grant_tickets: "補發包券", grant_card: "補發卡牌", send_mail: "寄送禮物信件", suspend: "停權對戰", restore: "恢復對戰" };
 const outcome = { win: "勝", loss: "敗", draw: "平手" };
 
 export default function AdminConsole() {
@@ -32,6 +32,15 @@ export default function AdminConsole() {
   const [reason, setReason] = useState("");
   const [pending, setPending] = useState<Change | null>(null);
   const [attempted, setAttempted] = useState(false);
+  const [mailTitle, setMailTitle] = useState("");
+  const [mailBody, setMailBody] = useState("");
+  const [mail, setMail] = useState<PlayerMailList | null>(null);
+  const [mailOffset, setMailOffset] = useState(0);
+
+  const loadMail = async (account: string, offset = 0) => {
+    setMail(await api.rpc<PlayerMailList>("tcg_admin_player_mail", { p_account: account, p_offset: offset }));
+    setMailOffset(offset);
+  };
 
   const journalKey = (id: string) => `twilight-admin-pending:${id}`;
 
@@ -69,12 +78,16 @@ export default function AdminConsole() {
 
   const prepareChange = () => {
     if (!detail || pending || reason.trim().length < 3) return;
-    if (["grant_tickets", "grant_card"].includes(action) && (!Number.isInteger(amount) || amount < 1 || amount > (action === "grant_card" ? 3 : 100))) {
+    if (["grant_tickets", "grant_card", "send_mail"].includes(action) && (!Number.isInteger(amount) || amount < 1 || amount > (action === "grant_card" ? 3 : 100))) {
       setMessage("請填有效的整數數量。"); return;
+    }
+    if (action === "send_mail" && (!mailTitle.trim() || !mailBody.trim() || mailTitle.trim().length > 80 || mailBody.trim().length > 2000)) {
+      setMessage("請填信件標題（最多 80 字）及內容（最多 2000 字）。"); return;
     }
     setAttempted(false);
     setPending({ p_request: crypto.randomUUID(), p_account: detail.user.id, p_action: action,
-      p_payload: action === "grant_card" ? { amount, card_id: cardId } : action === "grant_tickets" ? { amount } : {},
+      p_payload: action === "send_mail" ? { amount, title: mailTitle.trim(), body: mailBody.trim() }
+        : action === "grant_card" ? { amount, card_id: cardId } : action === "grant_tickets" ? { amount } : {},
       p_reason: reason.trim() });
   };
 
@@ -84,7 +97,7 @@ export default function AdminConsole() {
     sessionStorage.setItem(journalKey(session!.account_id), JSON.stringify(pending));
     setAttempted(true);
     try {
-      await api.rpc("tcg_admin_change", pending);
+      await api.change(pending);
     } catch (error) {
       // Network ambiguity retains the exact request and UUID. Recognized business rejection is final.
       if (error instanceof AdminError && !error.uncertain) {
@@ -97,6 +110,10 @@ export default function AdminConsole() {
     setPending(null); setReason("");
     setMessage("操作完成並已留下紀錄。");
     setDetail(await api.rpc<PlayerDetail>("tcg_admin_player", { p_account: target }));
+    if (pending.p_action === "send_mail") {
+      await loadMail(target); setTab("mail"); setMailTitle(""); setMailBody("");
+      setMessage("禮物信件已寄出。玩家須在遊戲信箱領取後，包券才會入帳。");
+    }
     await loadList(list?.page ?? 0);
   };
 
@@ -150,7 +167,7 @@ export default function AdminConsole() {
             <td>{player.pack_tickets ?? "—"} ／ {player.starter_draws_remaining ?? "—"}</td><td>{player.suspended ? "停權" : "正常"}</td>
             <td><button disabled={busy || !!pending} onClick={() => void work(async () => {
               setDetail(await api.rpc<PlayerDetail>("tcg_admin_player", { p_account: player.id }));
-              setTab("collection"); setReason("");
+              setTab("collection"); setReason(""); setMail(null); setMailOffset(0);
             })}>查看資料</button></td></tr>)}</tbody></table></div>
         {list?.players.length === 0 && <p className={styles.empty}>沒有符合條件的註冊玩家。</p>}
         <footer className={styles.pagination}><button disabled={busy || !!pending || !list || list.page === 0}
@@ -168,8 +185,24 @@ export default function AdminConsole() {
         </div>
         {detail.restriction.reason && <p>停權／恢復原因：{detail.restriction.reason}</p>}
         <nav aria-label="玩家資料分類" className={styles.tabs}>{[
-          ["collection", "持有卡牌"], ["receipts", "抽卡紀錄"], ["matches", "對局紀錄"], ["deck", "最近對局牌組"], ["audit", "管理操作紀錄"],
-        ].map(([key, label]) => <button aria-pressed={tab === key} onClick={() => setTab(key)} key={key}>{label}</button>)}</nav>
+          ["collection", "持有卡牌"], ["receipts", "抽卡紀錄"], ["matches", "對局紀錄"], ["deck", "最近對局牌組"], ["audit", "管理操作紀錄"], ["mail", "禮物信件"],
+        ].map(([key, label]) => <button disabled={busy} aria-pressed={tab === key} onClick={() => {
+          setTab(key); if (key === "mail") void work(() => loadMail(detail.user.id));
+        }} key={key}>{label}</button>)}</nav>
+        {tab === "mail" && <div>
+          <p className={styles.note}>寄信不立即補發；玩家領取時才入帳。同一封信只能領一次，遊客不接收雲端禮物。</p>
+          <div className={styles.tableScroll}><table><thead><tr><th>時間／標題</th><th>內容／附件</th><th>領取狀態</th><th>原因／發送者</th></tr></thead><tbody>
+            {mail?.items.map((m) => <tr key={m.id}><td>{date(m.created_at)}<small>{m.title}</small><small>{m.id}</small></td>
+              <td>{m.body}<small>卡包券 × {m.pack_tickets}</small></td>
+              <td>{m.claimed_at ? `已領取 ${date(m.claimed_at)}` : "待玩家領取"}<small>{m.claimed_at && `${m.tickets_before} → ${m.tickets_after} 包券`}</small></td>
+              <td>{m.reason}<small>{m.sender_id}</small></td></tr>)}</tbody></table></div>
+          {mail?.total === 0 && <p className={styles.empty}>尚無禮物信件。</p>}
+          <footer className={styles.pagination}>
+            <button disabled={busy || mailOffset === 0} onClick={() => void work(() => loadMail(detail.user.id, Math.max(0, mailOffset - 20)))}>上一頁信件</button>
+            <span>共 {mail?.total ?? "—"} 封 · 第 {mailOffset / 20 + 1} 頁</span>
+            <button disabled={busy || !mail || mailOffset + 20 >= mail.total} onClick={() => void work(() => loadMail(detail.user.id, mailOffset + 20))}>下一頁信件</button>
+          </footer>
+        </div>}
         {tab === "collection" && <><p className={styles.note}>雲端持有量，不是玩家端自行回報。</p><div className={styles.cardGrid}>
           {Object.entries(detail.collection).sort((a, b) => name(a[0]).localeCompare(name(b[0]), "zh-TW")).map(([id, copies]) =>
             <div key={id}><span>{name(id)}<small>{id}</small></span><strong>×{copies}</strong></div>)}</div>
@@ -193,6 +226,7 @@ export default function AdminConsole() {
           {pending ? <div className={styles.confirmation}>
             <strong>確認對 {detail.user.email} 執行「{actions[pending.p_action]}」</strong>
             <p>{pending.p_payload.card_id && `${name(pending.p_payload.card_id)} · `}{pending.p_payload.amount && `${pending.p_payload.amount} 份`} · {pending.p_reason}</p>
+            {pending.p_action === "send_mail" && <><strong>{pending.p_payload.title}</strong><p>{pending.p_payload.body}</p><p>附件：卡包券 × {pending.p_payload.amount}，玩家領取後入帳。</p></>}
             <small>操作編號：{pending.p_request}</small>
             <button className={styles.primary} disabled={busy} onClick={() => void work(commitChange)}>{busy ? "處理中…" : "確認／重試同一筆操作"}</button>
             {!attempted && <button disabled={busy} onClick={() => setPending(null)}>取消</button>}
@@ -202,7 +236,11 @@ export default function AdminConsole() {
               {Object.entries(actions).map(([key, label]) => <option value={key} key={key}>{label}</option>)}</select></label>
             {action === "grant_card" && <label>卡牌<select value={cardId} disabled={busy} onChange={(e) => setCardId(e.target.value)}>
               {Object.entries(cards).map(([id, label]) => <option value={id} key={id}>{label}</option>)}</select></label>}
-            {["grant_tickets", "grant_card"].includes(action) && <label>數量<input type="number" min={1} max={action === "grant_card" ? 3 : 100} value={amount}
+            {action === "send_mail" && <>
+              <label>信件標題<input required maxLength={80} value={mailTitle} onChange={(e) => setMailTitle(e.target.value)} disabled={busy} /></label>
+              <label className={styles.reason}>信件內容<textarea required maxLength={2000} rows={4} value={mailBody} onChange={(e) => setMailBody(e.target.value)} disabled={busy} /></label>
+            </>}
+            {["grant_tickets", "grant_card", "send_mail"].includes(action) && <label>數量<input type="number" min={1} max={action === "grant_card" ? 3 : 100} value={amount}
               onChange={(e) => setAmount(Number(e.target.value))} disabled={busy} required /></label>}
             <label className={styles.reason}>原因<input minLength={3} maxLength={300} required value={reason} onChange={(e) => setReason(e.target.value)} disabled={busy} /></label>
             <button disabled={busy || (["grant_tickets", "grant_card"].includes(action) && !detail.wallet)}>檢查操作內容</button>

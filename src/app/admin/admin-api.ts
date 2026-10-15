@@ -9,8 +9,8 @@ export class AdminError extends Error {
 
 export type Change = {
   p_request: string; p_account: string;
-  p_action: "grant_tickets" | "grant_card" | "suspend" | "restore";
-  p_payload: { amount?: number; card_id?: string }; p_reason: string;
+  p_action: "grant_tickets" | "grant_card" | "suspend" | "restore" | "send_mail";
+  p_payload: { amount?: number; card_id?: string; title?: string; body?: string }; p_reason: string;
 };
 
 export class AdminAPI {
@@ -41,7 +41,9 @@ export class AdminAPI {
         : raw.includes("wallet not initialized") ? "玩家尚未初始化收藏，請先讓他在遊戲登入並同步收藏。"
         : raw.includes("request conflict") ? "操作編號已用於不同內容，請查核操作紀錄。"
         : response.status === 401 ? "登入已到期，請重新登入。" : raw;
-      throw new AdminError(message, response.status >= 500, response.status);
+      // Auth/rate-limit/schema failures cannot disprove a previous committed attempt.
+      // Only a recognized business rejection may discard a persisted mutation UUID.
+      throw new AdminError(message, !["22023", "23514"].includes(error.code ?? ""), response.status);
     }
     return data;
   }
@@ -96,7 +98,23 @@ export class AdminAPI {
     this.epoch++; this.access = ""; this.refresh = ""; this.expiresAt = 0;
     if (token) { try { await this.request("/auth/v1/logout?scope=local", {}, token); } catch { /* Local session is already gone. */ } }
   }
+
+  async change(change: Change) {
+    if (change.p_action === "send_mail") {
+      return this.rpc("tcg_admin_send_mail", {
+        p_request: change.p_request, p_account: change.p_account, p_title: change.p_payload.title,
+        p_body: change.p_payload.body, p_tickets: change.p_payload.amount, p_reason: change.p_reason,
+      });
+    }
+    return this.rpc("tcg_admin_change", change);
+  }
 }
+
+export type PlayerMail = {
+  id: string; title: string; body: string; pack_tickets: number; sender_id: string; reason: string;
+  created_at: string; claimed_at: string | null; tickets_before: number | null; tickets_after: number | null;
+};
+export type PlayerMailList = { items: PlayerMail[]; total: number };
 
 export type AdminSession = { account_id: string; email: string; access_level: "viewer" | "operator" };
 export type Player = {
