@@ -20,6 +20,7 @@ export default function AndroidInstallPage() {
         <p className="body-cjk mt-6">
           {suspended ? "Android APK 暫停下載，修正版發布前不提供安裝。" : "目前尚未提供可下載的 Android APK，請以官網下載頁的狀態為準。"}
         </p>
+        <p className="body-cjk mt-3">R10 Android 測試包正等待 Samsung Galaxy S24 FE 實機安裝、啟動與對戰驗收，完成前暫停公開下載。</p>
         {suspended && android.note && <p className="body-cjk mt-4 leading-7">{android.note}</p>}
       </main>
     );

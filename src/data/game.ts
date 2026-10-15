@@ -2,7 +2,7 @@
 export const GAME_FACTS = {
   nameZh: "王牌戰線",
   nameEn: "Deckmarch",
-  version: "2026.10.14-R9",
+  version: "2026.10.15-R10",
   engine: "Godot 4.7",
   lanes: 4,
   cards: 244,

@@ -44,6 +44,7 @@ if (current.status !== "available") {
   const currentGuide = await renderGuide(releases.BUILDS);
   check(!/href="[^"]+\.apk"/.test(currentPanel + currentGuide) && !currentPanel.includes('href="/install/android"'), "Actual unavailable Android metadata offers no APK link or install flow");
   check(/<button\b[^>]*disabled/.test(currentPanel) && currentPanel.includes("下載 Android APK"), "Unavailable Android download button is visibly disabled");
+  check(currentPanel.includes("Galaxy S24 FE") && currentGuide.includes("Galaxy S24 FE"), "Current Android gate names the pending actual-device acceptance");
 }
 
 // 可下載流程用 available fixture 驗證，不受目前是否暫停下載影響。
