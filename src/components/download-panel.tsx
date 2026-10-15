@@ -238,7 +238,7 @@ function BuildRow({ build }: { build: Build }) {
         {build.requirement}
       </span>
       <span className="hud-value ml-auto text-sm">
-        {build.size ?? "—"}
+        {href ? (build.size ?? "—") : "—"}
       </span>
       {href ? (
         <a
