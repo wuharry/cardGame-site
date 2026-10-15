@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import AdminConsole from "./admin-console";
 
 export const metadata: Metadata = {
-  title: "玩家管理 · 暮色秘典",
+  title: "玩家管理 · 王牌戰線",
   robots: { index: false, follow: false },
 };
 

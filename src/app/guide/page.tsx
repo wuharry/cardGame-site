@@ -11,7 +11,7 @@ import { SiteFooter } from "@/components/site-footer";
 
 export const metadata: Metadata = {
   title: "新手指南",
-  description: "從第一副六十張牌開始，認識暮色秘典的四路站位、六種卡型、反制時機與正式對戰奪卡規則。",
+  description: "從第一副六十張牌開始，認識王牌戰線的四路站位、六種卡型、反制時機與正式對戰奪卡規則。",
 };
 
 const CHAPTERS = [

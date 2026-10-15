@@ -7,7 +7,7 @@ import { BUILDS } from "@/data/releases";
 
 export const metadata: Metadata = {
   title: "最新消息與更新紀錄",
-  description: "暮色秘典的最新玩家版本、平台下載狀態與歷次開發更新。",
+  description: "王牌戰線的最新玩家版本、平台下載狀態與歷次開發更新。",
 };
 
 export default function NewsPage() {
@@ -18,7 +18,7 @@ export default function NewsPage() {
       <main id="main-content">
         <header className="subpage-heading content-width">
           <p className="overline">NEWS & UPDATES</p>
-          <h1>秘典新訊</h1>
+          <h1>戰線新訊</h1>
           <p>每一次調整，每一頁進展。歷史紀錄保留發行當時的資訊；目前可取得的平台請以下載區為準。</p>
           <Link className="text-link" href="/#download">查看目前下載版本 →</Link>
           {suspended.map((build) => (

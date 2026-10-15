@@ -65,14 +65,14 @@ export function CollectionPanel() {
         <figure className="mt-14 max-w-4xl border border-rule bg-board p-1.5 shadow-md">
           <Image
             src={mediaUrl("/media/screens/main-menu.webp")}
-            alt="暮色秘典主選單畫面，顯示 150 次新手抽卡額度與組牌入口"
-            width={1282}
-            height={752}
+            alt="王牌戰線主選單，顯示引導練習、開始遊戲與卡包收藏入口"
+            width={1280}
+            height={720}
             sizes="(max-width: 1024px) 100vw, 896px"
             className="h-auto w-full object-cover"
           />
           <figcaption className="body-cjk px-3 py-3 text-[0.8rem] text-quill">
-            主選單：新手額度、組牌入口與「新手教學」都在這裡。
+            主選單：引導練習、對戰準備與卡包收藏入口。此圖擷取自更名後的開發版本。
           </figcaption>
         </figure>
 

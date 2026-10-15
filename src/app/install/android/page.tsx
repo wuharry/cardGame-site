@@ -4,7 +4,7 @@ import { BUILDS, downloadUrl } from "@/data/releases";
 
 export const metadata: Metadata = {
   title: "Android APK 安裝教學",
-  description: "下載暮色秘典 APK 後，從 Chrome 下載清單或 Downloads 開啟檔案，並依 Android 系統畫面安裝。",
+  description: "下載王牌戰線 APK 後，從 Chrome 下載清單或 Downloads 開啟檔案，並依 Android 系統畫面安裝。",
 };
 
 export default function AndroidInstallPage() {
@@ -65,7 +65,7 @@ export default function AndroidInstallPage() {
           </li>
           <li className="border-l-2 border-brass-dim pl-4">
             <h3 className="text-lg text-parchment">4. 完成後從手機開啟遊戲</h3>
-            <p className="body-cjk mt-2 leading-7">系統顯示安裝完成後，按「開啟」或到應用程式清單找到「暮色秘典」。本版 Android 實機安裝、啟動與觸控仍未完成驗收，遇到問題請保留完整訊息。</p>
+            <p className="body-cjk mt-2 leading-7">系統顯示安裝完成後，按「開啟」或到應用程式清單找到「王牌戰線」。本版 Android 實機安裝、啟動與觸控仍未完成驗收，遇到問題請保留完整訊息。</p>
           </li>
         </ol>
       </section>

@@ -6,9 +6,16 @@ function formatDate(iso: string | null) {
   return iso.replaceAll("-", ".");
 }
 
+const FIRST_DECKMARCH_BUILD = 2026101501;
+
+function usesLegacyBrand(build: Build): boolean {
+  return build.build !== undefined && build.build < FIRST_DECKMARCH_BUILD;
+}
+
 /** 可下載的平台一起放在頂部，未提供的平台另列。 */
 export function DownloadPanel() {
   const available = BUILDS.filter((build) => downloadUrl(build));
+  const legacyVersions = [...new Set(available.filter(usesLegacyBrand).map((build) => build.version))].join("、");
   const others = BUILDS.filter((build) => !downloadUrl(build));
   const help = available.flatMap((build) => installationHelp(build));
 
@@ -18,11 +25,14 @@ export function DownloadPanel() {
         <header className="max-w-2xl">
           <p className="eyebrow">YOUR NEXT MATCH STARTS HERE</p>
           <h2 className="section-title mt-4 text-3xl sm:text-4xl">
-            準備好，翻開你的第一頁。
+            選好平台，準備開戰。
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
             選擇符合裝置的平台，依下方說明解壓縮或安裝。和朋友連線前，請各自更新至對應平台的最新玩家包；系統需求與實測範圍列在每份下載旁。
           </p>
+          {legacyVersions && <p className="body-cjk mt-4 text-sm">
+            遊戲已更名為「王牌戰線 Deckmarch」。目前提供的 {legacyVersions} 玩家包仍顯示舊名「暮色秘典」，下載檔名沿用 TwilightCodex；新版名稱會隨之後的玩家包更新。
+          </p>}
           {available.length > 0 && (
             <nav aria-label="可下載的平台" className="mt-5 flex flex-wrap gap-2">
               {available.map((build) => (
@@ -83,7 +93,7 @@ function installationHelp(build: Build): { title: string; body: string }[] {
       ];
     case "macos":
       return [
-        { title: "macOS ZIP 怎麼開啟？", body: "完整解壓縮後，開啟「暮色秘典.app」。請先確認下載旁的 macOS 版本需求，Intel 與 Apple Silicon 使用同一份 Universal 包。" },
+        { title: "macOS ZIP 怎麼開啟？", body: `完整解壓縮後，開啟包內的 .app${usesLegacyBrand(build) ? "（舊版檔名為「暮色秘典.app」）" : ""}。請先確認下載旁的 macOS 版本需求，Intel 與 Apple Silicon 使用同一份 Universal 包。` },
         { title: "macOS 說無法打開、來源不明？", body: "目前測試版採 ad-hoc 簽章，尚未 Apple 公證。確認來源後，先嘗試開啟一次，再到「系統設定 → 隱私權與安全性」查看該 app 的「仍要打開」選項。若顯示可能損害電腦或檔案已損毀，請停止並回報完整訊息。" },
       ];
     case "linux":

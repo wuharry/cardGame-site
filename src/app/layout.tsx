@@ -40,14 +40,14 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(process.env.SITE_URL ?? (productionHost ? `https://${productionHost}` : "http://localhost:3100")),
   title: {
-    default: "暮色秘典 Twilight Codex — 四路前後排的回合制卡牌對戰",
-    template: "%s — 暮色秘典 Twilight Codex",
+    default: "王牌戰線 Deckmarch — 四路前後排的回合制卡牌對戰",
+    template: "%s — 王牌戰線 Deckmarch",
   },
   description:
     `${GAME_FACTS.nameZh} ${GAME_FACTS.nameEn}：HD-2D 回合制卡牌對戰，四路前後排、六種卡型與種族結界，${GAME_FACTS.cards} 種正式卡。合法持有六十張即可對戰，選牌直接閱讀效果。查看${downloadDescription}。`,
   keywords: [
-    "暮色秘典",
-    "Twilight Codex",
+    "王牌戰線",
+    "Deckmarch",
     "卡牌遊戲",
     "Godot",
     "HD-2D",
@@ -56,12 +56,12 @@ export const metadata: Metadata = {
     "Windows 遊戲",
   ],
   openGraph: {
-    title: "暮色秘典 Twilight Codex",
+    title: "王牌戰線 Deckmarch",
     description:
       `四路前後排、種族結界與自己的六十張。${GAME_FACTS.cards} 種正式卡，${downloadDescription}與雙人房間對戰。`,
     type: "website",
     locale: "zh_TW",
-    images: [{ url: mediaUrl("/media/screens/hero-battlefield.webp"), width: 1280, height: 720, alt: "暮色秘典實機戰場" }],
+    images: [{ url: mediaUrl("/media/screens/hero-battlefield.webp"), width: 1280, height: 720, alt: "王牌戰線實機戰場" }],
   },
 };
 

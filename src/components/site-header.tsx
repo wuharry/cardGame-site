@@ -24,9 +24,9 @@ export function SiteHeader() {
     }}>
       <a className="skip-link" href="#main-content">跳到主要內容</a>
       <div className="header-inner">
-        <Link href="/#main-content" className="site-brand" aria-label="暮色秘典首頁" onClick={() => setOpen(false)}>
+        <Link href="/#main-content" className="site-brand" aria-label="王牌戰線首頁" onClick={() => setOpen(false)}>
           <span className="brand-mark" aria-hidden="true">✦</span>
-          <span>暮色秘典<small>TWILIGHT CODEX</small></span>
+          <span>王牌戰線<small>DECKMARCH</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="主要導覽">
           {NAV.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}

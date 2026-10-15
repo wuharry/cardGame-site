@@ -5,7 +5,7 @@ import credits from "@/data/credits.json";
 
 export const metadata: Metadata = {
   title: "製作群與素材授權",
-  description: "暮色秘典的素材作者、原始來源、使用方式與授權聲明。",
+  description: "王牌戰線的素材作者、原始來源、使用方式與授權聲明。",
 };
 
 export default function CreditsPage() {

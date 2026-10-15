@@ -18,7 +18,7 @@ export function LatestNews() {
   return (
     <section id="news" className="news-section section-space">
       <div className="content-width">
-        <header id="changelog" className="section-heading"><div><p className="overline">NEWS & UPDATES</p><h2>秘典新訊</h2></div><Link className="text-link" href="/news">所有更新 <span aria-hidden="true">↗</span></Link></header>
+        <header id="changelog" className="section-heading"><div><p className="overline">NEWS & UPDATES</p><h2>戰線新訊</h2></div><Link className="text-link" href="/news">所有更新 <span aria-hidden="true">↗</span></Link></header>
         <div className="news-grid">{items.map((item) => <Link href={item.href} className="news-item" key={item.title}>
           <div className="news-image"><Image src={mediaUrl(item.image)} alt="" fill sizes="(max-width: 700px) 100vw, 33vw" /><span className="news-arrow" aria-hidden="true">↗</span></div>
           <div className="news-meta"><span>{item.tag}</span>{item.date && <time dateTime={item.date}>{item.date.replaceAll("-", ".")}</time>}</div>
@@ -64,7 +64,7 @@ export function PlayerSupport() {
   return (
     <section id="support" className="support-section section-space">
       <div className="content-width support-layout">
-        <div><p className="overline">LET’S MAKE IT BETTER</p><h2>這本秘典，<br />也等你寫下一頁。</h2><p>這是持續開發中的獨立遊戲。好玩的地方、讓你挫折的時刻，或一個不合理的組合，我都想知道。</p><a href={FEEDBACK_URL} className="codex-button" target="_blank" rel="noopener noreferrer">填寫試玩回饋 <span aria-hidden="true">↗</span></a><small>Google 表單・可匿名・也能選填聯絡方式</small></div>
+        <div><p className="overline">LET’S MAKE IT BETTER</p><h2>下一場好對局，<br />從你的回饋開始。</h2><p>這是持續開發中的獨立遊戲。好玩的地方、讓你挫折的時刻，或一個不合理的組合，我都想知道。</p><a href={FEEDBACK_URL} className="codex-button" target="_blank" rel="noopener noreferrer">填寫試玩回饋 <span aria-hidden="true">↗</span></a><small>Google 表單・可匿名・也能選填聯絡方式</small></div>
         <div className="feedback-topics">
           <article><span aria-hidden="true">01</span><div><h3>無法啟動、閃退或卡死</h3><p>留下遊戲版本、裝置與發生前的操作。錯誤訊息或診斷日誌能幫助重現問題。</p></div></article>
           <article><span aria-hidden="true">02</span><div><h3>卡牌平衡與對局 Bug</h3><p>勾選你覺得不合理的卡牌，也可以補充對局情境與原因，幫助我判斷如何調整。</p></div></article>

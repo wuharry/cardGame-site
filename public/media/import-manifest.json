@@ -276,15 +276,15 @@
     "outputSha256": "52e1d387047f3e45d3d55308e627f458a168fc4e9a28581d55a915d04cf2bef1"
   },
   {
-    "sourceVersion": "2026.10.11-R3",
-    "source": "qa/gui-fresh-main-menu.jpg",
-    "sourceRoot": "release-package",
-    "note": "Windows 解壓包實際啟動畫面，包含視窗標題列；已目視確認 R3 品牌、新玩家抽卡與組牌入口。",
-    "sourceSha256": "1dedafb61c004f488a16510aeb6e8ec5f89ba71b5d11d8f2339181557ca69563",
-    "width": 1282,
-    "height": 752,
+    "sourceVersion": "2026.10.15-R10 (source)",
+    "source": "build/deckmarch-rename-20261015/main-menu-zh.png",
+    "sourceRoot": "game-source",
+    "note": "2026-10-15 macOS Forward+ 原始碼隔離測試的主選單；新品牌與引導練習入口，不代表已發布成品。",
+    "sourceSha256": "e227066b307012acaed774917ff5e74f49768f2e0569e1c2c85c16084dbc8486",
+    "width": 1280,
+    "height": 720,
     "output": "/media/screens/main-menu.webp",
-    "outputSha256": "c05b057e9a511b6c7a5baccedc517b04978f84b24445bd14f7c534666ee4dc4d"
+    "outputSha256": "6633344aba0b35aa211e1905f4cf3f1ed6febfcde03c132477cd000d22e86131"
   },
   {
     "sourceVersion": "2026.10.11-R3",

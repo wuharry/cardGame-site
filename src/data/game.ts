@@ -1,7 +1,7 @@
 /** 遊戲規則與介紹；各平台實際下載成品及驗證範圍另見 releases.ts。 */
 export const GAME_FACTS = {
-  nameZh: "暮色秘典",
-  nameEn: "Twilight Codex",
+  nameZh: "王牌戰線",
+  nameEn: "Deckmarch",
   version: "2026.10.14-R9",
   engine: "Godot 4.7",
   lanes: 4,
