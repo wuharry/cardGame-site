@@ -60,5 +60,21 @@ try {
   }
   assert.deepEqual(errors, []);
   assert.deepEqual(externalFonts, []);
-  console.log("PASS mobile navigation, gallery switching, APK gate and no runtime errors");
+  console.log("PASS mobile navigation/history, card and gallery switching, deep links, APK gate and no runtime errors");
+
+  // Measure actual delivery in a fresh context, without the failure fixture.
+  const normal = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await normal.goto(base + "/", { waitUntil: "networkidle" });
+  const firstScreenFonts = await normal.evaluate(() => performance.getEntriesByType("resource")
+    .filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2"))
+    .map(entry => ({ name: entry.name, bytes: entry.encodedBodySize })));
+  assert.equal(firstScreenFonts.length, 1, "First screen must not download the entire Chinese family");
+  assert(firstScreenFonts[0].bytes > 0 && firstScreenFonts[0].bytes <= 120000, "First-screen Chinese font budget is 120 KB");
+  await normal.locator("#support").scrollIntoViewIfNeeded();
+  await normal.waitForLoadState("networkidle");
+  await normal.evaluate(() => document.fonts.ready);
+  assert(await normal.evaluate(() => document.fonts.check('500 40px "Noto Serif TC"', "下一場好對局，從你的回饋開始")), "Deferred sections retain the original Chinese typeface");
+  assert(await normal.evaluate(() => performance.getEntriesByType("resource").filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2")).length > 1), "Scrolling loads the remaining original glyphs instead of dropping them");
+  console.log("PASS cold first-screen font budget and original typeface after scrolling");
+  await normal.close();
 } finally { await browser.close(); }

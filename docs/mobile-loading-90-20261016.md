@@ -49,3 +49,19 @@
 上述逐像素表是第一輪調整的比較；原生延後繪製後，完整長頁擷取會與實際可見範圍不同，另以相同 viewport 的可見區塊檢查完整圖文。第二輪正式部署後再補入同版本重測。原基準：效能 69、FCP 4.0 秒、LCP 5.3 秒、TBT 20 毫秒、CLS 0。
 
 第二輪另以隔離的 `5cc21a7` 原版與目前版本，在同一 Chrome／相同 viewport 對照八個區塊。全部展開後，手機與桌面的完整頁高皆與原版一致；首屏最大 RGB 通道差為手機 1、桌面 2（0–255 範圍），其他區塊包含字形邊緣／次像素與捲動繪製差異，沒有宣稱每個像素都相同。原圖、字重、文案與元件都保留；比較結果在 `/tmp/deckmarch-performance-review/paired-comparison.json`，沒有正式玩家資料。
+
+## 完成結果：三次皆 95 分
+
+`510b05b` 已 push 且 Vercel production 部署成功。以下三次皆測正式首頁、相同版本、Moto G Power 模擬、慢速 4G、首次載入、Lighthouse 13.5.0；數值按 PageSpeed 顯示的精度記錄。
+
+| 測試 | 效能 | FCP | LCP | TBT | CLS | 報告 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 10:27 | 95 | 1.7 秒 | 2.7 秒 | 30 毫秒 | 0 | [第 1 次](https://pagespeed.web.dev/analysis/https-twilight-codex-vercel-app/juaau6y9t1?form_factor=mobile) |
+| 10:28 | 95 | 1.7 秒 | 2.7 秒 | 40 毫秒 | 0 | [第 2 次](https://pagespeed.web.dev/analysis/https-twilight-codex-vercel-app/n42mf5yl89?form_factor=mobile) |
+| 10:30 | 95 | 1.7 秒 | 2.9 秒 | 20 毫秒 | 0 | [第 3 次](https://pagespeed.web.dev/analysis/https-twilight-codex-vercel-app/1jvmrpumvc?form_factor=mobile) |
+
+效能中位數 95、FCP 中位數 1.7 秒、LCP 中位數 2.7 秒，達成這輪 90 分以上的目標。三次 Lighthouse SEO 皆 100、最佳做法皆 100、無障礙自動檢查皆 96；沒有把自動檢查當作完整無障礙驗收。
+
+正式站重驗：SEO 48 項通過；手機／桌面尺寸、字型失敗、卡型／戰場切換、client navigation、返回／前進、四個深層連結、APK 停用與無 runtime error 通過。正常字型載入確認：首屏只下載 108,384 bytes 的中文主要分片，字型已實際載入；捲動後其餘原字元分片會正常下載。新增 120 KB 的首屏中文字型預算，避免頁尾或其他區塊再次拖入整套字型。
+
+限制：這些是實驗室測試，真實使用者 Core Web Vitals 資料仍不足；LCP 2.7–2.9 秒尚未達「良好」的 2.5 秒，95 分不代表每支手機／每條網路都同樣快。CSS 內嵌仍使用本頁已說明的 Next experimental 功能，升級 Next 時需重跑跨頁與返回測試。APK 下載及版本 API 的 Android 項目維持停用，沒有發布新的遊戲包。
