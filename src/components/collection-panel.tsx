@@ -21,7 +21,7 @@ export function CollectionPanel() {
           <div className="flex flex-col gap-4 border-b border-rule pb-6 md:flex-row md:items-center md:justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="border border-brass bg-brass/20 px-2 py-0.5 text-[0.68rem] font-bold text-brass-hi" style={{ fontFamily: "var(--font-hud)" }}>
+                <span className="border border-brass bg-brass/20 px-2 py-0.5 text-[0.68rem] font-bold text-brass-hi font-hud">
                   硬派對決 · ANTE RULES
                 </span>
                 
@@ -32,7 +32,7 @@ export function CollectionPanel() {
             </div>
             <div className="rounded border border-brass-dim bg-ink px-4 py-2 text-center shrink-0">
               <span className="hud-label text-brass-hi">牌庫歸屬移轉</span>
-              <p className="text-lg font-bold text-parchment" style={{ fontFamily: "var(--font-hud)" }}>
+              <p className="text-lg font-bold text-parchment font-hud">
                 勝者 +1 ｜ 敗者 −1
               </p>
             </div>
@@ -46,7 +46,7 @@ export function CollectionPanel() {
             {SPOILS_RULES.map((rule) => (
               <div key={rule.label} className="plate p-4 border border-rule-soft bg-ink/70">
                 <dt className="hud-label text-[0.68rem] text-brass-dim">{rule.label}</dt>
-                <dd className="mt-1 text-base font-bold text-brass-hi" style={{ fontFamily: "var(--font-serif)" }}>
+                <dd className="mt-1 text-base font-bold text-brass-hi font-serif">
                   {rule.value}
                 </dd>
                 <p className="body-cjk mt-2 text-[0.8rem] leading-normal text-quill">
@@ -78,14 +78,14 @@ export function CollectionPanel() {
 
         {/* 收藏與組牌規則速覽 */}
         <div className="mt-14 border-t border-rule pt-8">
-          <h3 className="text-xl font-bold text-parchment" style={{ fontFamily: "var(--font-serif)" }}>
+          <h3 className="text-xl font-bold text-parchment font-serif">
             牌庫構築準則
           </h3>
           <dl className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {COLLECTION_FEATURES.map((feature) => (
               <div key={feature.label} className="plate p-4 border-l-2 border-brass-dim">
                 <dt className="hud-label text-[0.7rem]">{feature.label}</dt>
-                <dd className="mt-1 text-lg font-bold text-brass-hi" style={{ fontFamily: "var(--font-serif)" }}>
+                <dd className="mt-1 text-lg font-bold text-brass-hi font-serif">
                   {feature.value}
                 </dd>
                 <p className="body-cjk mt-2 text-[0.84rem] text-quill leading-relaxed">

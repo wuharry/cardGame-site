@@ -1,21 +1,11 @@
 import { strict as assert } from "node:assert";
-import { readFile } from "node:fs/promises";
-import { createRequire } from "node:module";
-import ts from "typescript";
 import { renderToStaticMarkup } from "react-dom/server";
 import { createElement } from "react";
+import { loadTsModule } from "./lib/load-ts-module.mjs";
 
-const require = createRequire(import.meta.url);
-const compile = async (file) => ts.transpileModule(await readFile(new URL(file, import.meta.url), "utf8"), {
-  compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
-}).outputText;
-const load = (source, imports = {}) => {
-  const exports = {};
-  new Function("require", "exports", source)((name) => imports[name] ?? require(name), exports);
-  return exports;
-};
-const helpers = load(await compile("../src/app/admin/play-analytics-types.ts"));
-const charts = load(await compile("../src/app/admin/play-analytics.tsx"), {
+const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports, { allowNodeModules: true });
+const helpers = await load("../src/app/admin/play-analytics-types.ts");
+const charts = await load("../src/app/admin/play-analytics.tsx", {
   "./play-analytics-types": helpers, "./admin-api": {}, "./admin.module.css": {},
 });
 const now = Date.parse("2026-10-13T08:00:00Z");

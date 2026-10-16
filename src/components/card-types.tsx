@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { CARD_TYPES, type CardType } from "@/data/game";
+import { cardType, type CardType } from "@/data/game";
 import { CardNote, GameCard } from "./game-card";
-
-const byId = (id: string) => CARD_TYPES.find((t) => t.id === id)!;
 
 /**
  * Section 03 — 六種卡型。
@@ -17,12 +15,12 @@ const byId = (id: string) => CARD_TYPES.find((t) => t.id === id)!;
 export function CardTypeShowcase() {
   const [wardRevealed, setWardRevealed] = useState(false);
 
-  const minion = byId("minion");
-  const equip = byId("equip");
-  const ward = byId("ward");
-  const arcana = byId("arcana");
-  const quick = byId("quick");
-  const domain = byId("domain");
+  const minion = cardType("minion");
+  const equip = cardType("equip");
+  const ward = cardType("ward");
+  const arcana = cardType("arcana");
+  const quick = cardType("quick");
+  const domain = cardType("domain");
 
   return (
     <section id="cards" className="grain relative border-t border-rule-soft bg-ink py-20 md:py-28">
@@ -33,7 +31,7 @@ export function CardTypeShowcase() {
             場上的一個單位，是三張牌疊出來的
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-六種卡型；場上一個單位可以疊到三張：從者 + 靈裝 + 伏印。
+            六種卡型；場上一個單位可以疊到三張：從者 + 靈裝 + 伏印。
           </p>
         </header>
 
@@ -53,29 +51,9 @@ export function CardTypeShowcase() {
 
             {/* 三種卡型條列說明 */}
             <div className="mt-10 space-y-4">
-              <div className="plate p-3.5 border-l-2 border-brass">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-parchment">👤 {minion.zh} ({minion.en}) · 中層</span>
-                  <span className="hud-label text-brass-hi">{minion.timing}</span>
-                </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{minion.rule}</p>
-              </div>
-
-              <div className="plate p-3.5 border-l-2 border-brass-dim">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-parchment">🗡️ {equip.zh} ({equip.en}) · 頂層</span>
-                  <span className="hud-label text-quill">{equip.timing}</span>
-                </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{equip.rule}</p>
-              </div>
-
-              <div className="plate p-3.5 border-l-2 border-crimson">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-crimson-hi">💣 {ward.zh} ({ward.en}) · 底層</span>
-                  <span className="hud-label text-crimson-hi">{ward.timing}</span>
-                </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{ward.rule}</p>
-              </div>
+              <CardRule card={minion} icon="👤" layer="中層" frame="border-brass" timingTone="text-brass-hi" />
+              <CardRule card={equip} icon="🗡️" layer="頂層" frame="border-brass-dim" timingTone="text-quill" />
+              <CardRule card={ward} icon="💣" layer="底層" frame="border-crimson" tone="text-crimson-hi" timingTone="text-crimson-hi" />
             </div>
           </div>
 
@@ -109,8 +87,7 @@ export function CardTypeShowcase() {
               </div>
 
               <span
-                className="absolute bottom-[2%] left-0 border border-steel bg-ink px-2.5 py-1 text-[0.68rem] tracking-[0.16em] text-steel font-bold uppercase shadow-sm"
-                style={{ fontFamily: "var(--font-hud)" }}
+                className="absolute bottom-[2%] left-0 border border-steel bg-ink px-2.5 py-1 text-[0.68rem] tracking-[0.16em] text-steel font-bold uppercase shadow-sm font-hud"
               >
                 ⚡ 守方反制窗口
               </span>
@@ -132,23 +109,9 @@ export function CardTypeShowcase() {
             </div>
 
             <div className="mt-6 space-y-4">
-              <div className="plate p-3.5 border-l-2 border-brass-dim">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-parchment">📜 {arcana.zh} ({arcana.en})</span>
-                  <span className="hud-label text-brass-hi">{arcana.timing}</span>
-                </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{arcana.rule}</p>
-              </div>
-
-              <div className="plate p-3.5 border-l-2 border-steel">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-steel">⚡ {quick.zh} ({quick.en})</span>
-                  <span className="hud-label text-steel">{quick.timing}</span>
-                </div>
-                <p className="body-cjk mt-2 text-[0.84rem]">{quick.rule}</p>
-              </div>
+              <CardRule card={arcana} icon="📜" frame="border-brass-dim" timingTone="text-brass-hi" />
+              <CardRule card={quick} icon="⚡" frame="border-steel" tone="text-steel" timingTone="text-steel" />
             </div>
-
           </div>
         </div>
 
@@ -171,7 +134,8 @@ export function CardTypeShowcase() {
             </div>
             <p className="body-cjk mt-3 max-w-2xl text-[0.86rem] text-faint">
               💡 每側最多一張，打出新的會把舊的送進墓地。
-            </p>          </div>
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -234,8 +198,7 @@ function Exploded3DCardStage({
               !isExploded
                 ? "border-brass bg-brass text-ink font-bold"
                 : "border-rule text-quill hover:border-brass-dim"
-            }`}
-            style={{ fontFamily: "var(--font-hud)" }}
+            } font-hud`}
           >
             堆疊模式
           </button>
@@ -246,8 +209,7 @@ function Exploded3DCardStage({
               isExploded
                 ? "border-brass bg-brass text-ink font-bold shadow-[0_0_12px_rgba(200,162,60,0.4)]"
                 : "border-rule text-quill hover:border-brass-dim"
-            }`}
-            style={{ fontFamily: "var(--font-hud)" }}
+            } font-hud`}
           >
             ⚡ 3D 空間拆解
           </button>
@@ -256,8 +218,7 @@ function Exploded3DCardStage({
         <button
           type="button"
           onClick={onToggleWard}
-          className="border border-crimson-dim bg-ink px-2.5 py-1 text-[0.7rem] text-crimson-hi hover:border-crimson hover:bg-crimson/10 cursor-pointer transition-colors"
-          style={{ fontFamily: "var(--font-hud)" }}
+          className="border border-crimson-dim bg-ink px-2.5 py-1 text-[0.7rem] text-crimson-hi hover:border-crimson hover:bg-crimson/10 cursor-pointer transition-colors font-hud"
         >
           {wardRevealed ? "⟲ 蓋回伏印" : "👁 翻開伏印"}
         </button>
@@ -316,8 +277,7 @@ function Exploded3DCardStage({
 
             {isExploded && (
               <span
-                className="absolute -bottom-6 left-0 border border-crimson-dim bg-ink/90 px-1.5 py-0.5 text-[0.62rem] text-crimson-hi whitespace-nowrap"
-                style={{ fontFamily: "var(--font-hud)" }}
+                className="absolute -bottom-6 left-0 border border-crimson-dim bg-ink/90 px-1.5 py-0.5 text-[0.62rem] text-crimson-hi whitespace-nowrap font-hud"
               >
                 底層 01 · 隱秘伏印 (Z: -80px)
               </span>
@@ -350,8 +310,7 @@ function Exploded3DCardStage({
 
             {isExploded && (
               <span
-                className="absolute -top-6 left-0 border border-brass-dim bg-ink/90 px-1.5 py-0.5 text-[0.62rem] text-brass-hi whitespace-nowrap"
-                style={{ fontFamily: "var(--font-hud)" }}
+                className="absolute -top-6 left-0 border border-brass-dim bg-ink/90 px-1.5 py-0.5 text-[0.62rem] text-brass-hi whitespace-nowrap font-hud"
               >
                 中層 02 · 站場從者 (Z: 0px)
               </span>
@@ -382,16 +341,14 @@ function Exploded3DCardStage({
               sizes="(max-width: 1024px) 34vw, 130px"
             />
             <span
-              className="absolute -right-1 -bottom-2 border border-brass bg-ink px-1.5 py-0.5 text-[0.66rem] tabular-nums font-bold text-brass-hi shadow-md"
-              style={{ fontFamily: "var(--font-hud)" }}
+              className="absolute -right-1 -bottom-2 border border-brass bg-ink px-1.5 py-0.5 text-[0.66rem] tabular-nums font-bold text-brass-hi shadow-md font-hud"
             >
               🛡️ +0 / +2
             </span>
 
             {isExploded && (
               <span
-                className="absolute -bottom-6 right-0 border border-brass-dim bg-ink/90 px-1.5 py-0.5 text-[0.62rem] text-brass-hi whitespace-nowrap"
-                style={{ fontFamily: "var(--font-hud)" }}
+                className="absolute -bottom-6 right-0 border border-brass-dim bg-ink/90 px-1.5 py-0.5 text-[0.62rem] text-brass-hi whitespace-nowrap font-hud"
               >
                 頂層 03 · 穿戴靈裝 (Z: +80px)
               </span>
@@ -418,28 +375,47 @@ function SubHead({
 }) {
   return (
     <h3 className="flex items-baseline justify-between border-b border-rule-soft pb-3">
-      <div className="flex items-baseline gap-3">
-        <span
-          className="text-sm font-bold text-brass"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          {mark}
-        </span>
-        <span
-          className="text-lg font-bold text-parchment"
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
-          {title}
-        </span>
-      </div>
+      <span className="flex items-baseline gap-3">
+        <span className="text-sm font-bold text-brass font-display">{mark}</span>
+        <span className="text-lg font-bold text-parchment font-serif">{title}</span>
+      </span>
       {tag && (
         <span
-          className="border border-rule px-2 py-0.5 text-[0.62rem] text-faint"
-          style={{ fontFamily: "var(--font-hud)" }}
+          className="border border-rule px-2 py-0.5 text-[0.62rem] text-faint font-hud"
         >
           {tag}
         </span>
       )}
     </h3>
+  );
+}
+
+/** 卡型規則條：卡型名、出牌時機與一句規則。 */
+function CardRule({
+  card,
+  icon,
+  layer,
+  frame,
+  tone = "text-parchment",
+  timingTone,
+}: {
+  card: CardType;
+  icon: string;
+  /** 從者三層堆疊中的位置。 */
+  layer?: string;
+  frame: string;
+  tone?: string;
+  timingTone: string;
+}) {
+  return (
+    <div className={`plate p-3.5 border-l-2 ${frame}`}>
+      <div className="flex items-center justify-between">
+        <span className={`text-sm font-bold ${tone}`}>
+          {icon} {card.zh} ({card.en}){layer && ` · ${layer}`}
+        </span>
+        <span className={`hud-label ${timingTone}`}>{card.timing}</span>
+      </div>
+      <p className="body-cjk mt-2 text-[0.84rem]">{card.rule}</p>
+    </div>
   );
 }

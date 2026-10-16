@@ -5,6 +5,9 @@ export const GAME_FACTS = {
   version: "2026.10.15-R11",
   engine: "Godot 4.7",
   lanes: 4,
+  heroHp: 20,
+  handLimit: 8,
+  manaCap: 10,
   cards: 244,
   tokens: 21,
   aiPresets: 19,
@@ -165,6 +168,13 @@ export const CARD_TYPES: CardType[] = [
     timing: "主要階段設置 · 依卡文持續觸發", art: "/media/cards/domain_fairy_forest.webp", artAlt: "結界卡「妖精之森」的卡圖",
   },
 ];
+
+/** 依卡型 id 取資料；id 由型別限定，查不到代表資料表漏列，直接報錯。 */
+export function cardType(id: CardTypeId): CardType {
+  const card = CARD_TYPES.find((item) => item.id === id);
+  if (!card) throw new Error(`Unknown card type: ${id}`);
+  return card;
+}
 
 export interface SystemRule {
   label: string;

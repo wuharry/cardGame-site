@@ -11,7 +11,7 @@ export default function CreditsPage() {
       <main id="main-content" className="mx-auto max-w-4xl px-5 py-16 sm:py-24">
         <Link href="/" className="text-sm text-brass-hi underline underline-offset-4">返回官網</Link>
         <p className="hud-label mt-10">Credits &amp; licenses</p>
-        <h1 className="mt-3 text-3xl text-parchment sm:text-4xl" style={{ fontFamily: "var(--font-serif)" }}>製作群與素材授權</h1>
+        <h1 className="mt-3 text-3xl text-parchment sm:text-4xl font-serif">製作群與素材授權</h1>
         <p className="mt-6 leading-8 text-quill">感謝以下作者提供遊戲使用的素材與工具。改作素材仍保留原作者及原授權；購買素材不代表取得其獨占權利。</p>
 
         <section aria-labelledby="copyright" className="mt-12 rounded border border-rule-soft bg-board p-6">

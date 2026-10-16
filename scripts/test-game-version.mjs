@@ -1,18 +1,7 @@
 import { strict as assert } from "node:assert";
-import { readFile } from "node:fs/promises";
-import ts from "typescript";
+import { loadTsModule } from "./lib/load-ts-module.mjs";
 
-async function load(file, imports = {}) {
-  const source = ts.transpileModule(await readFile(new URL(file, import.meta.url), "utf8"), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-  }).outputText;
-  const exports = {};
-  new Function("require", "exports", source)((name) => {
-    if (!(name in imports)) throw new Error(`Unexpected import: ${name}`);
-    return imports[name];
-  }, exports);
-  return exports;
-}
+const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports);
 const releases = await load("../src/data/releases.ts");
 const versions = await load("../src/data/game-version.ts", { "./releases": releases });
 const { GAME_FACTS } = await load("../src/data/game.ts");

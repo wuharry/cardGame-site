@@ -3,12 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { CARD_TYPES, GAME_FACTS } from "@/data/game";
+import { CARD_TYPES, GAME_FACTS, cardType } from "@/data/game";
 import { mediaUrl } from "@/data/media";
 
 export function CardDiscovery() {
   const [selected, setSelected] = useState(CARD_TYPES[0].id);
-  const card = CARD_TYPES.find((item) => item.id === selected)!;
+  const card = cardType(selected);
   return (
     <section id="cards" className="card-discovery section-space" aria-labelledby="cards-title">
       <div className="content-width">

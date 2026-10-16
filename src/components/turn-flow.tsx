@@ -29,28 +29,24 @@ export function TurnFlow() {
             <div key={step.num} className="plate flex flex-col p-5">
               <div className="flex items-center justify-between border-b border-rule-soft pb-3">
                 <span
-                  className="text-2xl font-bold tracking-wider text-brass-hi"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="text-2xl font-bold tracking-wider text-brass-hi font-display"
                 >
                   {step.num}
                 </span>
                 <span
-                  className="border border-rule px-2 py-0.5 text-[0.62rem] tracking-wider text-faint uppercase"
-                  style={{ fontFamily: "var(--font-hud)" }}
+                  className="border border-rule px-2 py-0.5 text-[0.62rem] tracking-wider text-faint uppercase font-hud"
                 >
                   {step.badge}
                 </span>
               </div>
 
               <h3
-                className="mt-4 text-lg font-bold text-parchment"
-                style={{ fontFamily: "var(--font-serif)" }}
+                className="mt-4 text-lg font-bold text-parchment font-serif"
               >
                 {step.phase}
               </h3>
               <p
-                className="text-[0.65rem] tracking-[0.2em] text-quill uppercase"
-                style={{ fontFamily: "var(--font-hud)" }}
+                className="text-[0.65rem] tracking-[0.2em] text-quill uppercase font-hud"
               >
                 {step.en}
               </p>

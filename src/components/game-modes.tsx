@@ -36,14 +36,12 @@ export function GameModes() {
               <div className="px-1 py-7">
                 <p className="flex flex-wrap items-baseline justify-center gap-x-4 gap-y-1">
                   <span
-                    className="text-2xl tracking-[0.2em] text-parchment"
-                    style={{ fontFamily: "var(--font-serif)" }}
+                    className="text-2xl tracking-[0.2em] text-parchment font-serif"
                   >
                     {mode.zh}
                   </span>
                   <span
-                    className="text-[0.66rem] tracking-[0.28em] text-brass uppercase"
-                    style={{ fontFamily: "var(--font-display)" }}
+                    className="text-[0.66rem] tracking-[0.28em] text-brass uppercase font-display"
                   >
                     {mode.en}
                   </span>
@@ -66,8 +64,7 @@ export function GameModes() {
             <div key={note.label}>
               <dt className="hud-label">{note.label}</dt>
               <dd
-                className="mt-1 text-[0.82rem] text-quill"
-                style={{ fontFamily: "var(--font-serif)" }}
+                className="mt-1 text-[0.82rem] text-quill font-serif"
               >
                 {note.value}
               </dd>

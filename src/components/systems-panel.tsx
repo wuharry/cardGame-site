@@ -1,4 +1,4 @@
-import { ACTION_RULES, RESOURCE_RULES, type SystemRule } from "@/data/game";
+import { ACTION_RULES, GAME_FACTS, RESOURCE_RULES, type SystemRule } from "@/data/game";
 import { PixelDice } from "./pixel-dice";
 
 /**
@@ -34,8 +34,7 @@ export function SystemsPanel() {
             </div>
 
             <p
-              className="ml-auto text-[0.78rem] text-quill"
-              style={{ fontFamily: "var(--font-serif)" }}
+              className="ml-auto text-[0.78rem] text-quill font-serif"
             >
               每回合 +1 並回滿，沒用完的不留到下回合。
             </p>
@@ -53,26 +52,18 @@ export function SystemsPanel() {
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-rule px-5 py-4 md:px-8">
             <span className="hud-label">Hand</span>
             <div className="flex items-end gap-1.5">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <span
-                  key={i}
-                  className="block h-8 w-5 border border-brass-dim bg-panel-hi sm:h-10 sm:w-7"
-                  style={{ borderRadius: "var(--radius-card)" }}
-                />
+              {Array.from({ length: GAME_FACTS.handLimit }, (_, i) => (
+                <span key={i} className="block h-8 w-5 rounded-card border border-brass-dim bg-panel-hi sm:h-10 sm:w-7" />
               ))}
               <span className="mx-1 self-center text-faint">|</span>
-              <span
-                className="relative block h-8 w-5 border border-crimson-dim bg-crimson-dim/20 sm:h-10 sm:w-7"
-                style={{ borderRadius: "var(--radius-card)" }}
-              >
+              <span className="relative block h-8 w-5 rounded-card border border-crimson-dim bg-crimson-dim/20 sm:h-10 sm:w-7">
                 <span className="absolute inset-0 flex items-center justify-center text-crimson-hi">
                   ✕
                 </span>
               </span>
             </div>
             <p
-              className="text-[0.78rem] text-quill"
-              style={{ fontFamily: "var(--font-serif)" }}
+              className="text-[0.78rem] text-quill font-serif"
             >
               滿手時抽到的第 9 張直接入墓。
             </p>
@@ -90,9 +81,9 @@ export function SystemsPanel() {
 
 /** 十顆魔力菱形，以每秒一階的節奏填滿再歸零：示範「每回合 +1、上限 10」。 */
 function ManaTrack() {
-  const pips = Array.from({ length: 10 });
+  const pips = Array.from({ length: GAME_FACTS.manaCap });
   return (
-    <span className="relative flex" aria-label="魔力上限 10">
+    <span className="relative flex" aria-label={`魔力上限 ${GAME_FACTS.manaCap}`}>
       <span className="flex gap-1">
         {pips.map((_, i) => (
           <ManaPip key={i} lit={false} />
@@ -132,8 +123,7 @@ function RuleColumn({
     <div className="px-5 py-6 md:px-8 md:py-8">
       <h3 className="flex items-baseline gap-3">
         <span
-          className="text-lg text-parchment"
-          style={{ fontFamily: "var(--font-serif)" }}
+          className="text-lg text-parchment font-serif"
         >
           {title}
         </span>
@@ -148,8 +138,7 @@ function RuleColumn({
           >
             <dt className="hud-label" style={{ color: "var(--color-quill)" }}>{rule.label}</dt>
             <dd
-              className="hud-value text-right text-base text-brass-hi"
-              style={{ fontFamily: "var(--font-hud)" }}
+              className="hud-value text-right text-base text-brass-hi font-hud"
             >
               {rule.value}
             </dd>

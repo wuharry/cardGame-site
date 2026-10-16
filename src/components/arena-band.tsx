@@ -41,14 +41,12 @@ export function ArenaBand() {
             <figcaption className="absolute inset-x-0 bottom-0 bg-ink/85 px-4 py-3">
               <p className="flex items-baseline gap-2.5">
                 <span
-                  className="text-lg text-parchment"
-                  style={{ fontFamily: "var(--font-serif)" }}
+                  className="text-lg text-parchment font-serif"
                 >
                   {arena.zh}
                 </span>
                 <span
-                  className="text-[0.6rem] tracking-[0.26em] text-brass uppercase"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="text-[0.6rem] tracking-[0.26em] text-brass uppercase font-display"
                 >
                   {arena.en}
                 </span>
@@ -63,8 +61,7 @@ export function ArenaBand() {
       <div className="mx-auto max-w-6xl px-5 py-16 md:py-20">
         <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-rule-soft pb-4">
           <h3
-            className="text-lg text-parchment"
-            style={{ fontFamily: "var(--font-serif)" }}
+            className="text-lg text-parchment font-serif"
           >
             站在上面的人
           </h3>
@@ -87,8 +84,7 @@ export function ArenaBand() {
                 />
               </div>
               <p
-                className="mt-1.5 truncate text-[0.72rem] text-quill"
-                style={{ fontFamily: "var(--font-serif)" }}
+                className="mt-1.5 truncate text-[0.72rem] text-quill font-serif"
               >
                 {unit.name}
               </p>

@@ -1,34 +1,22 @@
 import { strict as assert } from "node:assert";
-import { readFile } from "node:fs/promises";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import * as jsxRuntime from "react/jsx-runtime";
-import ts from "typescript";
+import { loadTsModule } from "./lib/load-ts-module.mjs";
 
-async function load(file, imports = {}) {
-  const source = await readFile(new URL(file, import.meta.url), "utf8");
-  const compiled = ts.transpileModule(source, {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
-  }).outputText;
-  const exports = {};
-  const dependencies = { "react/jsx-runtime": jsxRuntime, ...imports };
-  new Function("require", "exports", compiled)((name) => {
-    if (!(name in dependencies)) throw new Error(`Unexpected import: ${name}`);
-    return dependencies[name];
-  }, exports);
-  return exports;
-}
+const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports);
 
-// TypeScript 6 always emits esModuleInterop helpers, so the mock must declare itself an ES module.
+// TypeScript 6 一律產生 esModuleInterop helper，mock 要標明自己是 ES 模組。
 const link = { __esModule: true, default: (props) => createElement("a", props) };
 const releases = await load("../src/data/releases.ts");
 const game = await load("../src/data/game.ts");
+const installHelp = await load("../src/data/install-help.ts");
 let checks = 0;
 function check(condition, message) { assert.ok(condition, message); checks += 1; }
 
 async function renderPanel(builds) {
   const component = await load("../src/components/download-panel.tsx", {
     "@/data/releases": { ...releases, BUILDS: builds }, "next/link": link, "@/data/game": game,
+    "@/data/install-help": installHelp,
   });
   return renderToStaticMarkup(createElement(component.DownloadPanel));
 }

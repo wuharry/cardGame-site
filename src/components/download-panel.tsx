@@ -1,16 +1,11 @@
 import Link from "next/link";
 import { BUILDS, buildStatusText, downloadUrl, releasePageUrl, type Build } from "@/data/releases";
 import { GAME_FACTS } from "@/data/game";
+import { CONNECTION_HELP, FIRST_MATCH_HELP, installationHelp } from "@/data/install-help";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
   return iso.replaceAll("-", ".");
-}
-
-const FIRST_DECKMARCH_BUILD = 2026101501;
-
-function usesLegacyBrand(build: Build): boolean {
-  return build.build !== undefined && build.build < FIRST_DECKMARCH_BUILD;
 }
 
 /** 可下載的平台一起放在頂部，未提供的平台另列。 */
@@ -34,7 +29,7 @@ export function DownloadPanel() {
             選擇符合裝置的平台，依下方說明解壓縮或安裝。和朋友連線前，請各自更新至對應平台的最新玩家包；系統需求與實測範圍列在每份下載旁。
           </p>
           {legacyVersions && <p className="body-cjk mt-4 text-sm">
-            遊戲已更名為「{GAME_FACTS.nameZh} {GAME_FACTS.nameEn}」。目前提供的玩家包仍使用舊名稱：{legacyVersions}。下載檔名沿用 TwilightCodex；「紙鴉牌」會隨之後的玩家包更新。
+            遊戲已更名為「{GAME_FACTS.nameZh} {GAME_FACTS.nameEn}」。目前提供的玩家包仍使用舊名稱：{legacyVersions}。下載檔名沿用 TwilightCodex；「{GAME_FACTS.nameZh}」會隨之後的玩家包更新。
           </p>}
           {available.length > 0 && (
             <nav aria-label="可下載的平台" className="mt-5 flex flex-wrap gap-2">
@@ -52,19 +47,9 @@ export function DownloadPanel() {
         </div>
 
         <div className="mt-10 border-y border-rule-soft py-2">
-          {[
-            {
-              title: "第一次進遊戲怎麼開始？",
-              body: "先閱讀主選單的「新手教學」，再用持有卡建立並選用合法的 60 張牌組。新手免費抽卡可慢慢領，不必抽完才組牌或對戰。",
-            },
-            ...help,
-            {
-              title: "連不上朋友？",
-              body: "先確認兩邊都已更新至本頁提供的最新玩家包。區網從「進階／區網」進入，兩台電腦要在同一個網路，房主要允許遊戲通過防火牆。",
-            },
-          ].map((item) => (
+          {[FIRST_MATCH_HELP, ...help, CONNECTION_HELP].map((item) => (
             <details key={item.title} className="border-b border-rule-soft py-4 last:border-0">
-              <summary className="cursor-pointer text-sm text-parchment" style={{ fontFamily: "var(--font-serif)" }}>
+              <summary className="cursor-pointer text-sm text-parchment font-serif">
                 {item.title}
               </summary>
               <p className="body-cjk mt-3 max-w-3xl text-[0.86rem]">{item.body}</p>
@@ -87,27 +72,6 @@ export function DownloadPanel() {
   );
 }
 
-function installationHelp(build: Build): { title: string; body: string }[] {
-  switch (build.id) {
-    case "windows":
-      return [
-        { title: "Windows ZIP 怎麼開啟？", body: "完整解壓縮到資料夾，再執行 TwilightCodex.exe，不要在壓縮檔裡直接開。若卡在開頭畫面，可用包內的 Start-Compatibility.cmd 改以相容模式啟動，並保留診斷日誌。" },
-        { title: "Windows 顯示不明發行者？", body: "未簽署或尚未建立信譽的測試版可能顯示警告，ZIP 也不會消除它。請核對本頁下載來源與 SHA-256；若防毒回報具體威脅，先停止執行並回報，不要關掉防毒。" },
-      ];
-    case "macos":
-      return [
-        { title: "macOS ZIP 怎麼開啟？", body: `完整解壓縮後，開啟包內的 .app${usesLegacyBrand(build) ? "（舊版檔名為「暮色秘典.app」）" : ""}。請先確認下載旁的 macOS 版本需求，Intel 與 Apple Silicon 使用同一份 Universal 包。` },
-        { title: "macOS 說無法打開、來源不明？", body: "目前測試版採 ad-hoc 簽章，尚未 Apple 公證。確認來源後，先嘗試開啟一次，再到「系統設定 → 隱私權與安全性」查看該 app 的「仍要打開」選項。若顯示可能損害電腦或檔案已損毀，請停止並回報完整訊息。" },
-      ];
-    case "linux":
-      return [{ title: "Linux ZIP 怎麼開啟？", body: "需要 x86_64 處理器，適用 Ubuntu 24.04 或以上，或其他使用 glibc 2.39 或以上的 Linux 發行版。將 ZIP 完整解壓到自己的資料夾，保留執行檔與同包資源。若遊戲執行檔無法啟動，到檔案內容的權限頁允許「作為程式執行」；不同桌面的名稱可能不同。若仍無法開啟，從終端機執行並保留錯誤訊息。" }];
-    case "android":
-      return [{ title: "Android APK 怎麼安裝？", body: "本次支援基準為 Android 9 或以上及 arm64（64 位元 ARM）裝置。在裝置下載並開啟 APK，依系統提示允許此次使用的瀏覽器或檔案管理員安裝應用程式，安裝後可關閉該來源權限。更新請使用本頁同一套簽章的新版，保留既有資料。若裝置政策或 Play 安全防護阻擋，請保留完整訊息回報，不要關閉防護；APK 不能安裝在 iPhone。" }];
-    default:
-      return [];
-  }
-}
-
 function FeaturedBuild({ build }: { build: Build }) {
   const href = downloadUrl(build);
   const releaseHref = releasePageUrl(build);
@@ -118,16 +82,14 @@ function FeaturedBuild({ build }: { build: Build }) {
         <div>
           <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span
-              className="text-3xl tracking-[0.06em] text-parchment sm:text-4xl"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="text-3xl tracking-[0.06em] text-parchment sm:text-4xl font-display"
             >
               {build.platform}
             </span>
             <span className="hud-label">{build.en}</span>
           </p>
           <p
-            className="mt-2 text-[0.86rem] text-quill"
-            style={{ fontFamily: "var(--font-serif)" }}
+            className="mt-2 text-[0.86rem] text-quill font-serif"
           >
             {build.requirement}
           </p>
@@ -139,8 +101,7 @@ function FeaturedBuild({ build }: { build: Build }) {
             className="notch border border-brass bg-brass px-6 py-4 text-center text-ink transition-colors hover:bg-brass-hi"
           >
             <span
-              className="block text-lg tracking-[0.2em] uppercase"
-              style={{ fontFamily: "var(--font-hud)", fontWeight: 700 }}
+              className="block text-lg tracking-[0.2em] uppercase font-hud font-bold"
             >
               {build.id === "android" ? "下載 Android APK" : `下載 ${build.platform} 版`}
             </span>
@@ -148,14 +109,12 @@ function FeaturedBuild({ build }: { build: Build }) {
         ) : (
           <div aria-disabled="true" className="notch border border-brass-dim px-6 py-4 text-center">
             <span
-              className="block text-lg tracking-[0.2em] text-brass-dim uppercase"
-              style={{ fontFamily: "var(--font-hud)", fontWeight: 700 }}
+              className="block text-lg tracking-[0.2em] text-brass-dim uppercase font-hud font-bold"
             >
               下載 {build.platform} 版
             </span>
             <span
-              className="mt-1 block text-[0.72rem] tracking-[0.2em] text-faint uppercase"
-              style={{ fontFamily: "var(--font-hud)" }}
+              className="mt-1 block text-[0.72rem] tracking-[0.2em] text-faint uppercase font-hud"
             >
               {buildStatusText(build)}
             </span>
@@ -229,14 +188,12 @@ function BuildRow({ build }: { build: Build }) {
   return (
     <li id={`download-${build.id}`} className="flex scroll-mt-24 flex-wrap items-baseline gap-x-6 gap-y-1 border-b border-rule-soft py-4">
       <span
-        className="w-24 text-base text-parchment"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="w-24 text-base text-parchment font-display"
       >
         {build.platform}
       </span>
       <span
-        className="text-[0.82rem] text-quill"
-        style={{ fontFamily: "var(--font-serif)" }}
+        className="text-[0.82rem] text-quill font-serif"
       >
         {build.requirement}
       </span>
@@ -246,8 +203,7 @@ function BuildRow({ build }: { build: Build }) {
       {href ? (
         <a
           href={href}
-          className="border border-brass-dim px-3 py-1 text-[0.7rem] tracking-[0.16em] text-brass-hi uppercase transition-colors hover:border-brass"
-          style={{ fontFamily: "var(--font-hud)" }}
+          className="border border-brass-dim px-3 py-1 text-[0.7rem] tracking-[0.16em] text-brass-hi uppercase transition-colors hover:border-brass font-hud"
         >
           下載 {build.platform} 版
         </a>
@@ -255,8 +211,7 @@ function BuildRow({ build }: { build: Build }) {
         <button
           type="button"
           disabled
-          className="border border-rule px-3 py-1 text-[0.7rem] tracking-[0.16em] text-faint uppercase"
-          style={{ fontFamily: "var(--font-hud)" }}
+          className="border border-rule px-3 py-1 text-[0.7rem] tracking-[0.16em] text-faint uppercase font-hud"
         >
           {build.id === "android" ? "下載 Android APK · " : ""}{buildStatusText(build)}
         </button>

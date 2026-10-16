@@ -56,15 +56,13 @@ export function GameCard({
 
       <figcaption className="px-[7px] pt-1.5 pb-2">
         <p
-          className="truncate text-center text-[0.8rem] leading-tight text-parchment"
-          style={{ fontFamily: "var(--font-serif)" }}
+          className="truncate text-center text-[0.8rem] leading-tight text-parchment font-serif"
         >
           {name}
         </p>
         {stamp && (
           <p
-            className="mt-1 text-center text-[0.6rem] tracking-[0.22em] text-faint uppercase"
-            style={{ fontFamily: "var(--font-hud)" }}
+            className="mt-1 text-center text-[0.6rem] tracking-[0.22em] text-faint uppercase font-hud"
           >
             {stamp}
           </p>
@@ -74,8 +72,7 @@ export function GameCard({
       {typeof cost === "number" && (
         <span className="absolute top-2 left-2 flex h-6 w-6 rotate-45 items-center justify-center border border-brass-dim bg-ink">
           <span
-            className="-rotate-45 text-[0.72rem] tabular-nums text-brass-hi"
-            style={{ fontFamily: "var(--font-hud)" }}
+            className="-rotate-45 text-[0.72rem] tabular-nums text-brass-hi font-hud"
           >
             {cost}
           </span>
@@ -84,16 +81,14 @@ export function GameCard({
 
       {typeof atk === "number" && (
         <span
-          className="absolute bottom-1.5 left-2 text-sm tabular-nums text-brass-hi"
-          style={{ fontFamily: "var(--font-hud)" }}
+          className="absolute bottom-1.5 left-2 text-sm tabular-nums text-brass-hi font-hud"
         >
           {atk}
         </span>
       )}
       {typeof hp === "number" && (
         <span
-          className="absolute right-2 bottom-1.5 text-sm tabular-nums text-crimson-hi"
-          style={{ fontFamily: "var(--font-hud)" }}
+          className="absolute right-2 bottom-1.5 text-sm tabular-nums text-crimson-hi font-hud"
         >
           {hp}
         </span>
@@ -134,14 +129,12 @@ export function CardNote({
       <span className={`block h-px w-10 ${line}`} />
       <p className="mt-2 flex items-baseline gap-2">
         <span
-          className="text-sm text-parchment"
-          style={{ fontFamily: "var(--font-serif)" }}
+          className="text-sm text-parchment font-serif"
         >
           {zh}
         </span>
         <span
-          className={`text-[0.62rem] tracking-[0.24em] uppercase ${accent}`}
-          style={{ fontFamily: "var(--font-hud)" }}
+          className={`text-[0.62rem] tracking-[0.24em] uppercase ${accent} font-hud`}
         >
           {en}
         </span>

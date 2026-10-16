@@ -164,8 +164,7 @@ export function PixelDice() {
           type="button"
           onClick={rollDice}
           disabled={isRolling}
-          className="shrink-0 border border-brass bg-brass/15 px-4 py-2 text-xs font-bold text-brass-hi transition-all hover:bg-brass/30 active:scale-95 disabled:opacity-50 cursor-pointer shadow-sm"
-          style={{ fontFamily: "var(--font-hud)" }}
+          className="shrink-0 border border-brass bg-brass/15 px-4 py-2 text-xs font-bold text-brass-hi transition-all hover:bg-brass/30 active:scale-95 disabled:opacity-50 cursor-pointer shadow-sm font-hud"
         >
           {isRolling ? "🎲 翻滾中..." : "🎲 點擊投擲 3D 像素骰"}
         </button>

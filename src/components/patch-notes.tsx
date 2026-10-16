@@ -26,8 +26,7 @@ export function PatchNotes() {
             >
               <div className="flex items-baseline gap-3 md:block">
                 <p
-                  className={`text-2xl tabular-nums ${index === 0 ? "text-brass" : "text-faint"}`}
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className={`text-2xl tabular-nums ${index === 0 ? "text-brass" : "text-faint"} font-display`}
                 >
                   {note.version}
                 </p>
@@ -38,8 +37,7 @@ export function PatchNotes() {
 
               <div className="mt-4 md:mt-0">
                 <h3
-                  className="text-lg text-parchment"
-                  style={{ fontFamily: "var(--font-serif)" }}
+                  className="text-lg text-parchment font-serif"
                 >
                   {note.title}
                 </h3>
@@ -60,8 +58,7 @@ export function PatchNotes() {
 
         <details className="mt-6 border-t border-rule-soft pt-4">
           <summary
-            className="cursor-pointer text-sm text-quill transition-colors hover:text-parchment"
-            style={{ fontFamily: "var(--font-serif)" }}
+            className="cursor-pointer text-sm text-quill transition-colors hover:text-parchment font-serif"
           >
             以前的 {RELEASE_NOTES.length - 1} 版更新紀錄
           </summary>
@@ -72,13 +69,13 @@ export function PatchNotes() {
                 className="border-t border-rule-soft py-6 md:grid md:grid-cols-[10rem_minmax(0,1fr)] md:gap-10"
               >
                 <div className="flex items-baseline gap-3 md:block">
-                  <p className="text-xl tabular-nums text-faint" style={{ fontFamily: "var(--font-display)" }}>
+                  <p className="text-xl tabular-nums text-faint font-display">
                     {note.version}
                   </p>
                   <p className="hud-label md:mt-2">{note.date.replaceAll("-", ".")}</p>
                 </div>
                 <div className="mt-3 md:mt-0">
-                  <h3 className="text-base text-parchment" style={{ fontFamily: "var(--font-serif)" }}>
+                  <h3 className="text-base text-parchment font-serif">
                     {note.title}
                   </h3>
                   <ul className="mt-2 space-y-1.5">
