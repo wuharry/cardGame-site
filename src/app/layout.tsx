@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Barlow, Barlow_Condensed } from "next/font/google";
-import { GAME_FACTS } from "@/data/game";
-import { BUILDS, downloadUrl } from "@/data/releases";
-import { mediaUrl } from "@/data/media";
+import { HOME_TITLE, HOME_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/data/seo";
+import { DeferredChineseFont } from "@/components/deferred-chinese-font";
 import "./globals.css";
 import "./marketing.css";
 
@@ -30,21 +29,16 @@ const barlowCondensed = Barlow_Condensed({
   display: "swap",
 });
 
-const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
-const availablePlatforms = BUILDS.filter((build) => downloadUrl(build)).map((build) => build.platform).join("／");
-const downloadDescription = availablePlatforms ? `${availablePlatforms} 試玩下載` : "下載版本與開發進度";
-
 export const metadata: Metadata = {
   verification: {
     google: "PKJXLoQy0VwSEQOSFLZfBSNhxVWk0PgPVjLETktDAv4",
   },
-  metadataBase: new URL(process.env.SITE_URL ?? (productionHost ? `https://${productionHost}` : "http://localhost:3100")),
+  metadataBase: new URL(SITE_ORIGIN),
   title: {
-    default: "王牌戰線 Deckmarch — 四路前後排的回合制卡牌對戰",
-    template: "%s — 王牌戰線 Deckmarch",
+    default: HOME_TITLE,
+    template: `%s — ${SITE_NAME}`,
   },
-  description:
-    `${GAME_FACTS.nameZh} ${GAME_FACTS.nameEn}：HD-2D 回合制卡牌對戰，四路前後排、六種卡型與種族結界，${GAME_FACTS.cards} 種正式卡。合法持有六十張即可對戰，選牌直接閱讀效果。查看${downloadDescription}。`,
+  description: HOME_DESCRIPTION,
   keywords: [
     "王牌戰線",
     "Deckmarch",
@@ -55,14 +49,6 @@ export const metadata: Metadata = {
     "獨立遊戲",
     "Windows 遊戲",
   ],
-  openGraph: {
-    title: "王牌戰線 Deckmarch",
-    description:
-      `四路前後排、種族結界與自己的六十張。${GAME_FACTS.cards} 種正式卡，${downloadDescription}與雙人房間對戰。`,
-    type: "website",
-    locale: "zh_TW",
-    images: [{ url: mediaUrl("/media/screens/hero-battlefield.webp"), width: 1280, height: 720, alt: "王牌戰線實機戰場" }],
-  },
 };
 
 export const viewport: Viewport = {
@@ -81,19 +67,15 @@ export default function RootLayout({
       className={`${cinzel.variable} ${barlow.variable} ${barlowCondensed.variable} h-full`}
     >
       <head>
-        {/* 中文明體走 Google 的 unicode-range 分片，只下載真正用到的字塊；
-            交給 next/font 自架會把整套 CJK 拉進 build。 */}
+        {/* Retain unicode-range chunks; load their stylesheet after first paint. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        {/* 這條規則是給 pages/_document 用的；App Router 的 root layout 本來就
-            套用到每一頁，不會只載入單頁。 */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap"
-          rel="stylesheet"
-        />
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+        </noscript>
       </head>
-      <body className="min-h-full antialiased">{children}</body>
+      <body className="min-h-full antialiased"><DeferredChineseFont />{children}</body>
     </html>
   );
 }

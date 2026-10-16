@@ -33,6 +33,7 @@ async function renderPanel(builds) {
 async function renderGuide(builds) {
   const component = await load("../src/app/install/android/page.tsx", {
     "@/data/releases": { ...releases, BUILDS: builds }, "next/link": link,
+    "@/data/seo": { pageMetadata: () => ({}) },
   });
   return renderToStaticMarkup(createElement(component.default));
 }

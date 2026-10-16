@@ -54,10 +54,15 @@
 .chartGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .chartGrid .panel { min-width: 0; margin: 8px 0; }
 .chartGrid svg { width: 100%; height: auto; }
+.chartControls { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.chartControls label { min-width: 140px; }
+.distribution { display: grid; grid-template-columns: minmax(160px, 220px) minmax(0, 1fr); align-items: center; gap: 24px; }
+.distribution svg { width: 100%; height: auto; }
 .legend { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 12px 0; }
 .root details { margin: 18px 0 0; }
 .root summary { color: #dcc58c; cursor: pointer; margin-bottom: 12px; }
 .modeRow { margin: 18px 0; }
 .stacked { display: flex; background: #263740; min-height: 12px; border-radius: 4px; overflow: hidden; margin: 8px 0; }
 @media (max-width: 1000px) { .chartGrid { grid-template-columns: 1fr; } }
+@media (max-width: 540px) { .distribution { grid-template-columns: 1fr; } .distribution svg { max-width: 220px; justify-self: center; } }
 @media (max-width: 760px) { .header, .toolbar { flex-direction: column; align-items: flex-start; } .summary { grid-template-columns: 1fr; gap: 8px; } .summary div { display: flex; align-items: center; justify-content: space-between; padding: 14px; } .summary strong { font-size: 20px; } .summary span { margin: 0; } .panel { padding: 16px; } .login { margin: 35px auto; padding: 24px; } }

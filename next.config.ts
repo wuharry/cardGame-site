@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     return [{
       source: "/:path*",
       headers: [
+        ...(process.env.VERCEL_ENV === "preview" ? [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] : []),
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "X-Frame-Options", value: "DENY" },
         { key: "Referrer-Policy", value: "no-referrer" },

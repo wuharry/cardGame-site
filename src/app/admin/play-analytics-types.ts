@@ -17,6 +17,11 @@ export type PlayDashboard = {
   online_samples: { minute: string; online_connections: number; lobby_connections: number; playing_connections: number }[];
 };
 
+// Sort a copy: table order must not change the timeline or mutate RPC data.
+export function dailyRows(rows: PlayDashboard["daily"], newestFirst = false) {
+  return [...rows].sort((a, b) => newestFirst ? b.day.localeCompare(a.day) : a.day.localeCompare(b.day));
+}
+
 // Treat a missing/expired heartbeat as unknown. Never turn lack of data into zero players.
 export function livePresence(data: PlayDashboard, now = Date.now()) {
   if (!data.servers.length || data.servers.some(s => !s.fresh || now - Date.parse(s.received_at) >= 45000)) return null;

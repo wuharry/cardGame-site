@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AdminAPI, AdminError } from "./admin-api";
-import { livePresence, sampleSegments, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
+import { dailyRows, livePresence, sampleSegments, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
 import styles from "./admin.module.css";
 
 const date = (s: string) => new Date(s).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
@@ -10,19 +10,58 @@ const modes: Record<string, string> = { pve: "單人 AI", lan: "區網", pvp: "�
 const percent = (value: number | null) => value === null ? "尚無勝敗樣本" : `${value}%`;
 const colors = ["#dcc58c", "#7cc9bf", "#a9a7df"];
 
-export function DailyChart({ data }: { data: PlayDashboard }) {
+export function DailyPlot({ data, kind }: { data: PlayDashboard; kind: "bar" | "line" }) {
+  const rows = dailyRows(data.daily);
+  if (!rows.length) return <p className={styles.empty}>尚無每日統計資料。</p>;
   const keys = ["registered", "guest_active", "matches"] as const;
-  const max = Math.max(1, ...data.daily.flatMap(d => keys.map(k => d[k])));
-  return <><svg viewBox="0 0 720 220" role="img" aria-label="每日新增註冊、活躍遊客裝置與正式對局">
-    {[0, .5, 1].map(n => <g key={n}><line x1="36" x2="710" y1={190 - n * 165} y2={190 - n * 165} stroke="#35484a" />
-      <text x="2" y={195 - n * 165} fill="#9db0ad" fontSize="12">{Math.round(max * n)}</text></g>)}
-    {keys.map((key, i) => <polyline key={key} stroke={colors[i]} strokeWidth="2.5" fill="none"
-      points={data.daily.map((d, x) => `${36 + x * 674 / Math.max(1, data.daily.length - 1)},${190 - d[key] / max * 165}`).join(" ")} />)}
-    <text x="36" y="216" fill="#9db0ad" fontSize="12">{data.daily[0]?.day}</text>
-    <text x="710" y="216" textAnchor="end" fill="#9db0ad" fontSize="12">{data.daily.at(-1)?.day}</text>
-  </svg><div className={styles.legend}>{["新增註冊", "活躍遊客裝置（收到回報）", "正式完賽"].map((s, i) => <span key={s} style={{ color: colors[i] }}>● {s}</span>)}</div>
-    <details><summary>每日數據表</summary><div className={styles.tableScroll}><table><thead><tr><th>台北日期</th><th>新增註冊</th><th>遊客首次回報</th><th>活躍遊客裝置</th><th>正式完賽</th></tr></thead>
-      <tbody>{data.daily.map(d => <tr key={d.day}><td>{d.day}</td><td>{d.registered}</td><td>{d.guest_installs}</td><td>{d.guest_active}</td><td>{d.matches}</td></tr>)}</tbody></table></div></details></>;
+  const labels = ["新增註冊", "活躍遊客裝置（收到回報）", "正式完賽"];
+  const max = Math.max(1, ...rows.flatMap(d => keys.map(k => d[k])));
+  const groupWidth = 674 / rows.length;
+  const barWidth = Math.min(16, groupWidth / 4);
+  return <><svg viewBox="0 0 720 220" role="img" aria-label={`每日新增註冊、活躍遊客裝置與正式完賽${kind === "bar" ? "柱狀圖" : "折線圖"}，日期由舊到新；精確值見下方表格`}>
+    {[...new Set([0, Math.ceil(max / 2), max])].map(n => <g key={n}><line x1="36" x2="710" y1={190 - n / max * 165} y2={190 - n / max * 165} stroke="#35484a" />
+      <text x="2" y={195 - n / max * 165} fill="#9db0ad" fontSize="12">{n}</text></g>)}
+    {kind === "bar" ? rows.map((d, x) => keys.map((key, i) => <rect key={`${d.day}-${key}`}
+      x={36 + (x + .5) * groupWidth + (i - 1.5) * barWidth} y={190 - d[key] / max * 165}
+      width={barWidth - 1} height={d[key] / max * 165} fill={colors[i]}>
+      <title>{`${d.day} · ${labels[i]}：${d[key]}`}</title></rect>))
+      : keys.map((key, i) => <g key={key}><polyline stroke={colors[i]} strokeWidth="2.5" fill="none"
+        points={rows.map((d, x) => `${36 + x * 674 / Math.max(1, rows.length - 1)},${190 - d[key] / max * 165}`).join(" ")} />
+        {rows.map((d, x) => <circle key={d.day} cx={36 + x * 674 / Math.max(1, rows.length - 1)} cy={190 - d[key] / max * 165} r="2.5" fill={colors[i]}>
+          <title>{`${d.day} · ${labels[i]}：${d[key]}`}</title></circle>)}</g>)}
+    <text x="36" y="216" fill="#9db0ad" fontSize="12">{rows[0].day}</text>
+    <text x="710" y="216" textAnchor="end" fill="#9db0ad" fontSize="12">{rows.at(-1)!.day}</text>
+  </svg><div className={styles.legend}>{labels.map((s, i) => <span key={s} style={{ color: colors[i] }}>● {s}</span>)}</div></>;
+}
+
+export function DailyChart({ data }: { data: PlayDashboard }) {
+  const [kind, setKind] = useState<"bar" | "line">("bar");
+  return <><div className={styles.chartControls}><label>趨勢呈現<select aria-label="每日趨勢圖類型" value={kind} onChange={e => setKind(e.target.value as "bar" | "line")}>
+    <option value="bar">柱狀圖</option><option value="line">折線圖</option></select></label><small>圖表由舊到新 · 表格由新到舊</small></div>
+    <DailyPlot data={data} kind={kind} />
+    <details><summary>每日數據表 · 新到舊</summary><div className={styles.tableScroll}><table><thead><tr><th scope="col" aria-sort="descending">台北日期 ↓</th><th>新增註冊</th><th>遊客首次回報</th><th>活躍遊客裝置</th><th>正式完賽</th></tr></thead>
+      <tbody>{dailyRows(data.daily, true).map(d => <tr key={d.day}><td>{d.day}</td><td>{d.registered}</td><td>{d.guest_installs}</td><td>{d.guest_active}</td><td>{d.matches}</td></tr>)}</tbody></table></div></details></>;
+}
+
+export function ModeChart({ data }: { data: PlayDashboard }) {
+  const rows = data.guest_modes.filter(m => m.started > 0).sort((a, b) => b.started - a.started || a.mode.localeCompare(b.mode));
+  const total = rows.reduce((sum, m) => sum + m.started, 0);
+  if (!total) return <p className={styles.empty}>尚無遊客對局開始回報，暫不顯示比例。</p>;
+  const palette = [...colors, "#de9d98", "#91a3b2"];
+  const circumference = 2 * Math.PI * 64;
+  return <div className={styles.distribution}><svg viewBox="0 0 200 200" role="img" aria-label={`遊客遊玩模式圓餅圖，共 ${total} 次開始；不是不重複玩家人數`}>
+    {rows.map((m, i) => {
+      const length = m.started / total * circumference;
+      const start = rows.slice(0, i).reduce((sum, row) => sum + row.started, 0) / total * circumference;
+      return <circle key={m.mode} cx="100" cy="100" r="64" fill="none" stroke={palette[i % palette.length]} strokeWidth="32"
+        strokeDasharray={`${length} ${circumference - length}`} strokeDashoffset={-start} transform="rotate(-90 100 100)">
+        <title>{`${modes[m.mode] ?? m.mode}：${m.started} 次（${(m.started / total * 100).toFixed(1)}%）`}</title></circle>;
+    })}
+    <text x="100" y="99" fill="#e4e8e5" fontSize="24" textAnchor="middle">{total}</text>
+    <text x="100" y="120" fill="#9db0ad" fontSize="12" textAnchor="middle">次開始</text>
+  </svg><div className={styles.tableScroll}><table><thead><tr><th>模式</th><th>開始次數</th><th>占比</th></tr></thead><tbody>
+    {rows.map((m, i) => <tr key={m.mode}><td><span style={{ color: palette[i % palette.length] }} aria-hidden="true">● </span>{modes[m.mode] ?? m.mode}</td><td>{m.started}</td><td>{(m.started / total * 100).toFixed(1)}%</td></tr>)}
+  </tbody></table></div></div>;
 }
 
 export function OnlineChart({ data }: { data: PlayDashboard }) {
@@ -104,7 +143,9 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
       <article className={styles.panel}><h3>每日玩家活動 · 近 28 日</h3><DailyChart data={data} /></article>
       <article className={styles.panel}><h3>主機連線 · 最近 24 小時</h3><OnlineChart data={data} />
         {data.servers.map(s => <small key={s.server_id}>{s.server_id} · 回報 {date(s.received_at)} · {s.fresh && clock - Date.parse(s.received_at) < 45000 ? "有效" : "已過期"}</small>)}</article>
-    </div><section className={styles.panel}><h3>遊客遊玩結果 · 累計自行回報</h3>
+    </div><section className={styles.panel}><h3>遊客遊玩模式占比 · 累計自行回報</h3>
+      <p className={styles.note}>以各模式的對局開始次數計算；同一裝置可遊玩多種模式，不代表玩家人數占比。</p><ModeChart data={data} />
+    </section><section className={styles.panel}><h3>遊客遊玩結果 · 累計自行回報</h3>
       <p className={styles.note}>不作排名或收藏證明。本機雙人的勝敗以本機 player 座位計算；外網正式戰績以伺服器紀錄為準。</p>
       {data.guest_modes.length ? data.guest_modes.map(m => { const total = Math.max(1, m.started); return <div className={styles.modeRow} key={m.mode}>
         <span>{modes[m.mode] ?? m.mode} · {m.started} 次開始</span><div className={styles.stacked} role="img" aria-label={`${m.wins} 勝、${m.losses} 敗、${m.draws} 平、${m.abandoned} 中途離開`}>

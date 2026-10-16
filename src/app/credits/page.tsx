@@ -1,12 +1,9 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import credits from "@/data/credits.json";
 
-export const metadata: Metadata = {
-  title: "製作群與素材授權",
-  description: "王牌戰線的素材作者、原始來源、使用方式與授權聲明。",
-};
+export const metadata = pageMetadata("/credits", "製作群與素材授權", "王牌戰線的素材作者、原始來源、使用方式與授權聲明。");
 
 export default function CreditsPage() {
   return (

@@ -37,4 +37,23 @@ data.daily = [{ day: "2026-10-12", registered: 1, guest_installs: 2, guest_activ
   { day: "2026-10-13", registered: 0, guest_installs: 0, guest_active: 0, matches: 0 }];
 const daily = renderToStaticMarkup(createElement(charts.DailyChart, { data }));
 check(daily.includes("每日數據表") && daily.includes("2026-10-12") && !daily.includes("NaN"), "Daily chart includes exact values in an accessible table");
+const body = daily.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
+check(body.indexOf("2026-10-13") < body.indexOf("2026-10-12") && daily.includes('aria-sort="descending"'), "Daily table defaults to newest first with sort semantics");
+const original = JSON.stringify(data.daily);
+check(helpers.dailyRows([...data.daily].reverse())[0].day === "2026-10-12" && helpers.dailyRows(data.daily, true)[0].day === "2026-10-13", "Chart and table sort independently even for unordered input");
+check(JSON.stringify(data.daily) === original, "Sorting never mutates cached dashboard data");
+for (const kind of ["bar", "line"]) {
+  const plot = renderToStaticMarkup(createElement(charts.DailyPlot, { data: { ...data, daily: [...data.daily].reverse() }, kind }));
+  check(plot.includes(kind === "bar" ? "<rect" : "<polyline") && !plot.includes("NaN") && plot.indexOf("2026-10-12") < plot.lastIndexOf("2026-10-13"), `${kind} plot runs oldest to newest with exact-value titles`);
+}
+check(renderToStaticMarkup(createElement(charts.DailyPlot, { data: { ...data, daily: [] }, kind: "bar" })).includes("尚無每日統計"), "No fake chart for missing daily data");
+const oneDay = renderToStaticMarkup(createElement(charts.DailyPlot, { data: { ...data, daily: [data.daily[0]] }, kind: "line" }));
+check(oneDay.includes("<circle") && !oneDay.includes("NaN"), "A single-day line still has visible data points");
+check(!renderToStaticMarkup(createElement(charts.ModeChart, { data })).includes("<svg"), "Empty mode distribution is not shown as a zero-player pie");
+data.guest_modes = [{ mode: "pve", started: 3 }, { mode: "pvp", started: 1 }, { mode: "lan", started: 0 }];
+const pie = renderToStaticMarkup(createElement(charts.ModeChart, { data }));
+check(pie.includes("75.0%") && pie.includes("25.0%") && pie.includes("共 4 次開始") && !pie.includes("NaN"), "Pie denominator is mode starts, with exact accessible counts and shares");
+check((pie.match(/<circle/g) ?? []).length === 2 && !pie.includes("區網"), "Zero samples do not create slices or misleading mode shares");
+const oneMode = renderToStaticMarkup(createElement(charts.ModeChart, { data: { ...data, guest_modes: [data.guest_modes[0]] } }));
+check(oneMode.includes("100.0%") && !oneMode.includes("NaN"), "A single mode renders a full ring");
 console.log(`Play charts: ${checks} checks PASS`);

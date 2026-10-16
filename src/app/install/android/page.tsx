@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import Link from "next/link";
 import { BUILDS, downloadUrl } from "@/data/releases";
 
-export const metadata: Metadata = {
-  title: "Android APK 安裝教學",
-  description: "下載王牌戰線 APK 後，從 Chrome 下載清單或 Downloads 開啟檔案，並依 Android 系統畫面安裝。",
-};
+const androidAvailable = BUILDS.some((build) => build.id === "android" && downloadUrl(build));
+export const metadata = pageMetadata("/install/android", "Android APK 安裝教學", androidAvailable
+  ? "下載王牌戰線 APK 後，從 Chrome 下載清單或 Downloads 開啟檔案，並依 Android 系統畫面安裝。"
+  : "王牌戰線 Android APK 目前暫停公開下載，等待 Samsung Galaxy S24 FE 實機驗收；查看目前的平台狀態。");
 
 export default function AndroidInstallPage() {
   const android = BUILDS.find((build) => build.id === "android");

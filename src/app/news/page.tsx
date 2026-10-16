@@ -1,14 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/data/seo";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PatchNotes } from "@/components/patch-notes";
 import { BUILDS } from "@/data/releases";
 
-export const metadata: Metadata = {
-  title: "最新消息與更新紀錄",
-  description: "王牌戰線的最新玩家版本、平台下載狀態與歷次開發更新。",
-};
+export const metadata = pageMetadata("/news", "最新消息與更新紀錄", "王牌戰線的最新玩家版本、平台下載狀態與歷次開發更新。");
 
 export default function NewsPage() {
   const suspended = BUILDS.filter((build) => build.status === "suspended");
