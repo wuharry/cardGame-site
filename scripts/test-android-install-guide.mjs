@@ -21,12 +21,13 @@ async function load(file, imports = {}) {
 
 const link = { default: (props) => createElement("a", props) };
 const releases = await load("../src/data/releases.ts");
+const game = await load("../src/data/game.ts");
 let checks = 0;
 function check(condition, message) { assert.ok(condition, message); checks += 1; }
 
 async function renderPanel(builds) {
   const component = await load("../src/components/download-panel.tsx", {
-    "@/data/releases": { ...releases, BUILDS: builds }, "next/link": link,
+    "@/data/releases": { ...releases, BUILDS: builds }, "next/link": link, "@/data/game": game,
   });
   return renderToStaticMarkup(createElement(component.DownloadPanel));
 }
@@ -59,6 +60,11 @@ check(panel.includes(`href="${releases.downloadUrl(actual)}"`), "Android card pr
 check(panel.includes("版本說明與驗收範圍") && panel.includes(actual.note), "Dense version notes remain available under an explicit disclosure");
 
 const guide = await renderGuide(publishedBuilds);
+check(guide.includes(`找到「${actual.displayName}」`), "Install guide identifies the actual package name after a site rebrand");
+const oldBrandPanel = await renderPanel([{ ...actual, displayName: "王牌戰線", version: "fixture-legacy" }]);
+check(oldBrandPanel.includes("紙鴉牌 Deckmarch") && oldBrandPanel.includes("fixture-legacy（王牌戰線）"), "Download notice distinguishes current site branding from unchanged package branding");
+const currentBrandPanel = await renderPanel([{ ...actual, displayName: game.GAME_FACTS.nameZh }]);
+check(!currentBrandPanel.includes("玩家包仍使用舊名稱"), "A future package with the current brand does not show an obsolete rebrand warning");
 for (const value of [actual.file, actual.version, actual.size, actual.requirement]) {
   check(guide.includes(value), "Guide uses current shared release metadata: " + value);
 }

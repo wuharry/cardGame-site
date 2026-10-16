@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BUILDS, buildStatusText, downloadUrl, releasePageUrl, type Build } from "@/data/releases";
+import { GAME_FACTS } from "@/data/game";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -15,7 +16,9 @@ function usesLegacyBrand(build: Build): boolean {
 /** 可下載的平台一起放在頂部，未提供的平台另列。 */
 export function DownloadPanel() {
   const available = BUILDS.filter((build) => downloadUrl(build));
-  const legacyVersions = [...new Set(available.filter(usesLegacyBrand).map((build) => build.version))].join("、");
+  const legacyVersions = [...new Set(available
+    .filter((build) => build.displayName && build.displayName !== GAME_FACTS.nameZh)
+    .map((build) => `${build.version}（${build.displayName}）`))].join("、");
   const others = BUILDS.filter((build) => !downloadUrl(build));
   const help = available.flatMap((build) => installationHelp(build));
 
@@ -31,7 +34,7 @@ export function DownloadPanel() {
             選擇符合裝置的平台，依下方說明解壓縮或安裝。和朋友連線前，請各自更新至對應平台的最新玩家包；系統需求與實測範圍列在每份下載旁。
           </p>
           {legacyVersions && <p className="body-cjk mt-4 text-sm">
-            遊戲已更名為「王牌戰線 Deckmarch」。目前提供的 {legacyVersions} 玩家包仍顯示舊名「暮色秘典」，下載檔名沿用 TwilightCodex；新版名稱會隨之後的玩家包更新。
+            遊戲已更名為「{GAME_FACTS.nameZh} {GAME_FACTS.nameEn}」。目前提供的玩家包仍使用舊名稱：{legacyVersions}。下載檔名沿用 TwilightCodex；「紙鴉牌」會隨之後的玩家包更新。
           </p>}
           {available.length > 0 && (
             <nav aria-label="可下載的平台" className="mt-5 flex flex-wrap gap-2">

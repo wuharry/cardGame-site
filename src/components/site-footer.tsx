@@ -8,7 +8,7 @@ export function SiteFooter() {
         <div className="footer-top">
           <Link href="/#main-content" className="site-brand">
             <span className="brand-mark" aria-hidden="true">✦</span>
-            <span>王牌戰線<small>DECKMARCH</small></span>
+            <span>紙鴉牌<small>DECKMARCH</small></span>
           </Link>
           <p>四路交鋒，每張牌都是機會。</p>
           <a className="back-top" href="#main-content" aria-label="回到頁面頂端">↑</a>
@@ -22,7 +22,7 @@ export function SiteFooter() {
             <Link href="/credits" prefetch={false}>製作群與授權</Link>
           </nav>
           <p>個人開發專案 · 遊戲開發中，內容將持續調整。</p>
-          <p>© 2026 Harvey · 王牌戰線。原創且依法受保護的內容保留相關權利；第三方素材依各自授權使用。</p>
+          <p>© 2026 Harvey · 紙鴉牌。原創且依法受保護的內容保留相關權利；第三方素材依各自授權使用。</p>
           <p className="footer-credits">
             Godot Engine · MIT / Noto Serif TC · Cinzel · Barlow /
             Icons by Andrey Kalyuzhnyy · Matt Firth (shikashipx) · game-icons.net · CC BY 3.0 / 4.0。

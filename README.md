@@ -1,6 +1,6 @@
-# 王牌戰線 Deckmarch — 官方網站
+# 紙鴉牌 Deckmarch — 官方網站
 
-《王牌戰線 Deckmarch》的介紹與下載頁。Next.js 16 + TypeScript + Tailwind v4。
+《紙鴉牌 Deckmarch》的介紹與下載頁。Next.js 16 + TypeScript + Tailwind v4。
 
 遊戲本體使用 Godot 4.7.2；本機來源為 `E:\card-game-demo(4.5)`。各平台目前可取得的版本、大小、校驗碼與原生驗證限制，以 `src/data/releases.ts` 的 `BUILDS` 為準。下載 UI 依實際可用成品列出平台，不因加入 Linux／Android 說明就宣稱已有下載包；iPhone 暫未提供安裝入口。
 
@@ -194,12 +194,12 @@ node scripts/shoot.mjs          out/                 # 含四路戰場的逐步�
 
 ---
 
-## 品牌名稱（2026-10-15）
+## 品牌名稱（2026-10-16）
 
-目前名稱為 **王牌戰線 / Deckmarch**。官網標題、導覽、分享資料、安裝說明與著作權文字同步使用新名稱。
-既有 `twilight-codex.vercel.app`、GitHub 下載 repo、附件前綴與包內執行檔名稱保留相容性。R10 玩家包顯示新品牌；歷史 R9 成品與既有截圖可能保留舊名，歷史紀錄不回寫成新品牌。
+目前名稱為 **紙鴉牌 / Deckmarch**。官網標題、導覽、分享資料、安裝說明與著作權文字同步使用新名稱。
+既有 `twilight-codex.vercel.app`、GitHub 下載 repo、附件前綴與包內執行檔名稱保留相容性。目前公開的 R11 桌面包仍顯示「王牌戰線」，R9 Android 舊包顯示「暮色秘典」且停用；「紙鴉牌」需隨未來玩家包發行。`BUILDS.displayName` 記錄實際包內名稱，下載區據此提示差異；歷史版本說明與截圖不回寫成新品牌。
 
-R10 本輪只公開 Windows／macOS／Linux 玩家包；Android 保留私人測試包，等待 Samsung Galaxy S24 FE 實機安裝、啟動與對戰驗收。網站 Android 維持 `preparing`，`downloadUrl()` 與版本 API 不提供 Android 下載，也不回退到已停用的 R9 APK。三平台最終檔名、大小與 SHA-256 依正式成品和公開附件驗證後填入，不能以遊戲改名自行改動 `TwilightCodex-` 相容附件前綴。
+目前公開 Windows／macOS／Linux 的 R11 玩家包；Android 保留私人測試包，等待 Samsung Galaxy S24 FE 實機安裝、啟動與對戰驗收。網站 Android 維持 `preparing`，`downloadUrl()` 與版本 API 不提供 Android 下載，也不回退到已停用的 R9 APK。三平台最終檔名、大小與 SHA-256 依正式成品和公開附件驗證後填入，不能以遊戲改名自行改動 `TwilightCodex-` 相容附件前綴。
 
 ## 官網設計（2026-10-15）
 

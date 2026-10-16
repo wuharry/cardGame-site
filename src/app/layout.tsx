@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   description: HOME_DESCRIPTION,
   keywords: [
-    "王牌戰線",
+    "紙鴉牌",
     "Deckmarch",
     "卡牌遊戲",
     "Godot",

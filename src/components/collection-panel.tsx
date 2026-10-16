@@ -65,7 +65,7 @@ export function CollectionPanel() {
         <figure className="mt-14 max-w-4xl border border-rule bg-board p-1.5 shadow-md">
           <Image
             src={mediaUrl("/media/screens/main-menu.webp")}
-            alt="王牌戰線主選單，顯示引導練習、開始遊戲與卡包收藏入口"
+            alt="紙鴉牌主選單，顯示引導練習、開始遊戲與卡包收藏入口"
             width={1280}
             height={720}
             sizes="(max-width: 1024px) 100vw, 896px"

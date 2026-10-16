@@ -12,6 +12,8 @@ export interface Build {
   id: string;
   platform: string;
   en: string;
+  /** Published package's actual display name; separate from the site's current brand. */
+  displayName?: string;
   status: BuildStatus;
   file: string | null;
   version: string | null;
@@ -35,6 +37,7 @@ export interface Build {
 export const BUILDS: Build[] = [
   {
     id: "windows",
+    displayName: "王牌戰線",
     platform: "Windows",
     en: "ZIP · x86_64",
     status: "available",
@@ -53,6 +56,7 @@ export const BUILDS: Build[] = [
   },
   {
     id: "macos",
+    displayName: "王牌戰線",
     platform: "macOS",
     en: "ZIP · Universal",
     status: "available",
@@ -71,6 +75,7 @@ export const BUILDS: Build[] = [
   },
   {
     id: "linux",
+    displayName: "王牌戰線",
     platform: "Linux",
     en: "ZIP · x86_64",
     status: "available",
@@ -89,6 +94,7 @@ export const BUILDS: Build[] = [
   },
   {
     id: "android",
+    displayName: "暮色秘典",
     platform: "Android",
     en: "APK · arm64 · Preview",
     status: "preparing",

@@ -1,6 +1,6 @@
 /** 遊戲規則與介紹；各平台實際下載成品及驗證範圍另見 releases.ts。 */
 export const GAME_FACTS = {
-  nameZh: "王牌戰線",
+  nameZh: "紙鴉牌",
   nameEn: "Deckmarch",
   version: "2026.10.15-R11",
   engine: "Godot 4.7",

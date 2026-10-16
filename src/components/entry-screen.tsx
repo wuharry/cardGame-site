@@ -14,7 +14,7 @@ export function EntryScreen() {
         <div className="hero-copy">
           <p className="overline"><span className="status-dot" /> 獨立開發・試玩進行中</p>
           <p className="hero-english">DECKMARCH</p>
-          <h1 id="hero-title">王牌戰線</h1>
+          <h1 id="hero-title">紙鴉牌</h1>
           <div className="hero-rule" aria-hidden="true"><span>✦</span></div>
           <h2>落下的每張牌，<br />都是下一步伏筆。</h2>
           <p className="hero-description">四路佈陣，跨路交鋒。召喚從者、埋下伏印，<br className="desktop-break" />在對手以為勝券在握時，打出你的反擊。</p>

@@ -38,7 +38,7 @@ try {
   await page.waitForURL("**/guide");
   assert(await page.locator(".subpage-heading h1").isVisible());
   assert.equal(await page.locator(".site-header").evaluate(el => getComputedStyle(el).position), "sticky");
-  await page.getByRole("link", { name: "王牌戰線首頁", exact: true }).click();
+  await page.getByRole("link", { name: "紙鴉牌首頁", exact: true }).click();
   await page.waitForURL("**/#main-content");
   assert(await page.locator(".hero-copy h1").isVisible());
   await page.goBack(); await page.waitForURL("**/guide");
