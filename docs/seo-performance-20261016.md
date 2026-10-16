@@ -71,4 +71,23 @@ node scripts/test-game-version.mjs
 
 第一輪本機與正式站皆通過 SEO 43 項；圖表 18 項、管理 API 19 項、Android 下載門檻 32 項與版本 manifest 檢查通過，以及 lint／production build。手機頁面以 390×844、844×390 與 1440×900 檢查無橫向溢出、導覽與戰場切換、APK 停用及無 runtime error，使用隔離 Chrome，沒有存取正式管理帳號。第二輪新增字型完整性檢查。
 
-正式部署、正式站重驗、PageSpeed 修改後數值與 Search Console 提交結果，於完成後補記。真實手機使用者資料不足，不能宣稱 Core Web Vitals 實際使用者驗收通過；本輪也不是 S24 FE 遊戲 APK 測試。
+## 正式站完成結果
+
+功能 commit `b12a4b8`、字型修正 commit `2ef23e3` 均已 push，Vercel production 部署成功；正式站 SEO 47 項檢查通過。正式手機瀏覽器確認中文字型已載入、Google Fonts 外部請求數為零，無 runtime error。隔離管理頁以合成資料驗證每日表格降序、柱狀／折線切換與 75%／25% 模式圓餅圖，Auth 與 RPC 全數攔截，未讀寫正式玩家資料。
+
+[最終 PageSpeed 手機報告](https://pagespeed.web.dev/analysis/https-twilight-codex-vercel-app/zliqsh3qud?form_factor=mobile)，2026-10-16 09:52 台北時間，沿用模擬 Moto G Power／慢速 4G／首次載入：
+
+| 指標 | 修改前 | 精簡字型後 |
+| --- | --- | --- |
+| 效能 | 56 | 69 |
+| FCP | 10.4 秒 | 4.0 秒 |
+| LCP | 12.2 秒 | 5.3 秒 |
+| Total Blocking Time | 0 毫秒 | 20 毫秒 |
+| CLS | 0 | 0 |
+| Lighthouse SEO | 100 | 100 |
+
+剩餘限制：這是各一次的實驗室測試，網路與機房狀況可能影響結果；LCP 5.3 秒仍未達良好目標 2.5 秒，不能宣稱手機載入已全面達標。最終報告仍列首屏 CSS、字型／圖片載入優先度與部分 JavaScript 可改善，留待後續效能工作。真實使用者資料不足，沒有 INP／Core Web Vitals 真實使用者合格結論；本輪不是 S24 FE 遊戲 APK 測試。
+
+Search Console 最後狀態：Sitemap「成功」，探索五個網頁；首頁線上測試可編入索引，實際收錄仍是「已找到 - 目前尚未建立索引」。手動要求被單日配額拒絕，不等於網站無法收錄，也沒有完成手動收錄要求。未設定自動隔日重試。
+
+APK 在下載區、Android 安裝狀態頁、版本 API 與遊戲結構化資料均維持不可下載，沒有新增測試包或公開附件。
