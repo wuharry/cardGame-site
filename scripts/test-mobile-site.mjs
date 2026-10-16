@@ -21,6 +21,9 @@ try {
     console.log("PASS mobile 390×844", path, "content readable with unavailable fonts");
   }
   await page.goto(base + "/", { waitUntil: "networkidle" });
+  assert.equal(await page.locator('link[rel="apple-touch-icon"]').getAttribute("href"), "/apple-icon.png");
+  assert.equal(await page.locator('link[rel="icon"][sizes="512x512"]').getAttribute("href"), "/icon.png");
+  assert(await page.locator(".site-header img.brand-mark").evaluate(el => el.complete && el.naturalWidth > 0), "Paper-raven brand mark loads");
   assert(await page.evaluate(() => document.querySelectorAll('link[rel="preload"][as="font"]').length <= 1), "Only the display font may be globally preloaded");
   assert(await page.evaluate(() => document.querySelectorAll('link[rel="stylesheet"]').length === 0), "Cold first paint uses styles delivered with HTML");
   assert.equal(await page.locator(".hero-backdrop").getAttribute("fetchpriority"), "high");

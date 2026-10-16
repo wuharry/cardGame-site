@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRef, useState } from "react";
 
 const NAV = [
@@ -25,7 +26,7 @@ export function SiteHeader() {
       <a className="skip-link" href="#main-content">跳到主要內容</a>
       <div className="header-inner">
         <Link href="/#main-content" className="site-brand" aria-label="紙鴉牌首頁" onClick={() => setOpen(false)}>
-          <span className="brand-mark" aria-hidden="true">✦</span>
+          <Image className="brand-mark" src="/apple-icon.png" alt="" width={40} height={40} sizes="40px" />
           <span>紙鴉牌<small>DECKMARCH</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="主要導覽">

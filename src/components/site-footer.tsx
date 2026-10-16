@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { FEEDBACK_URL } from "@/data/site";
 
 export function SiteFooter() {
@@ -7,7 +8,7 @@ export function SiteFooter() {
       <div className="content-width">
         <div className="footer-top">
           <Link href="/#main-content" className="site-brand">
-            <span className="brand-mark" aria-hidden="true">✦</span>
+            <Image className="brand-mark" src="/apple-icon.png" alt="" width={40} height={40} sizes="40px" />
             <span>紙鴉牌<small>DECKMARCH</small></span>
           </Link>
           <p>四路交鋒，每張牌都是機會。</p>

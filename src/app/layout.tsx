@@ -36,6 +36,13 @@ export const metadata: Metadata = {
     google: "PKJXLoQy0VwSEQOSFLZfBSNhxVWk0PgPVjLETktDAv4",
   },
   metadataBase: new URL(SITE_ORIGIN),
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
+  },
   title: {
     default: HOME_TITLE,
     template: `%s — ${SITE_NAME}`,
