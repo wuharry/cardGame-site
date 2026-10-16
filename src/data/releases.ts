@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.15-r11";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.16-r12";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -37,60 +37,60 @@ export interface Build {
 export const BUILDS: Build[] = [
   {
     id: "windows",
-    displayName: "王牌戰線",
+    displayName: "紙鴉牌",
     platform: "Windows",
     en: "ZIP · x86_64",
     status: "available",
-    file: "TwilightCodex-Windows-20261015-R11.zip",
-    version: "2026.10.15-R11",
-    size: "437.7 MiB",
-    bytes: 458919739,
+    file: "TwilightCodex-Windows-20261016-R12.zip",
+    version: "2026.10.16-R12",
+    size: "446.7 MiB",
+    bytes: 468407307,
     updated: "2026-10-16",
-    sha256: "7239886523ada276a910ae8940a2bcfd826200bf6183a82584c2139f17da80a8",
-    build: 2026101502,
-    minimumBuild: 2026101502,
+    sha256: "c76c4e4c67089d8723b3b6e84841f686b98f74032f49b2d389eeee0939ca38f5",
+    build: 2026101601,
+    minimumBuild: 2026101601,
     protocol: 16,
     requirement: "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    note: "王牌戰線 Deckmarch R11；更新原創像素傷害浮字，補齊洞窟與冰原漏打包的六張法線貼圖，修正技能費用說明。五項明確遠程從者技能不受目標反擊，仍需魔力、與普攻擇一，並遵守召喚暈眩、目標限制與反制規則；不算秘術或連奏。完整解壓後執行 TwilightCodex.exe，預設 Compatibility＋ANGLE，附本機診斷工具。最終 ZIP 解壓 EXE 已在本機通過一般視窗與無畫面啟動檢查，主選單已目視確認；朋友電腦與完整真人外網對局尚未驗收。保留資源加密、授權附件與可關閉的匿名統計。正式多人需 R11（BUILD 2026101502）。",
-    noteEn: "Deckmarch R11 updates original pixel damage numbers, restores six cavern and frostland normal maps and corrects skill cost text. Five explicit ranged minion skills avoid target retaliation but still cost Mana, share the normal attack action and obey summoning sickness, target and reaction rules; they are not Arcana and do not count toward Spell Combo. Extract the full ZIP and run TwilightCodex.exe. Compatibility/ANGLE and local diagnostics are included. The extracted final ZIP EXE passed local GUI and headless startup, with the main menu visually checked. Friend PCs and full two-human Internet matches remain untested. Encryption, legal documents and optional anonymous statistics are retained. Official multiplayer requires R11 (BUILD 2026101502).",
+    note: "紙鴉牌 Deckmarch R12：改善卡牌選取、合法目標、詳情閱讀與教學提示；卡圖按需載入並在關閉或捲出畫面時釋放，原圖品質不變。整合離線 AI 連招與明確遠程射擊規則。保留加密、完整授權與可關閉的匿名統計。正式多人需 R12（BUILD 2026101601），protocol 16。完整解壓後執行 TwilightCodex.exe，預設 Compatibility＋ANGLE，附本機診斷工具。本輪通過成品與資源檢查；Windows 原生啟動、朋友電腦及完整真人外網對局仍待驗收。",
+    noteEn: "Deckmarch R12 improves selection, legal targets, card details and tutorial hints. Illustrations load when displayed and release when hidden; original artwork quality is unchanged. Includes offline AI combo planning and explicit ranged-shot rules. Encryption, complete legal notices and optional anonymous statistics are retained. Official multiplayer requires R12 (BUILD 2026101601), protocol 16. Extract the full ZIP and run TwilightCodex.exe. Compatibility/ANGLE and local diagnostics are included. Finished-package checks passed; native Windows startup, friend PCs and full two-human Internet matches remain untested.",
   },
   {
     id: "macos",
-    displayName: "王牌戰線",
+    displayName: "紙鴉牌",
     platform: "macOS",
     en: "ZIP · Universal",
     status: "available",
-    file: "TwilightCodex-macOS-20261015-R11.zip",
-    version: "2026.10.15-R11",
-    size: "457.3 MiB",
-    bytes: 479545957,
+    file: "TwilightCodex-macOS-20261016-R12.zip",
+    version: "2026.10.16-R12",
+    size: "467.6 MiB",
+    bytes: 490304440,
     updated: "2026-10-16",
-    sha256: "f70295913942a3f50ff9dc4fac27d769cc4f61212c70c07a27971640a2fe1c70",
-    build: 2026101502,
-    minimumBuild: 2026101502,
+    sha256: "c9f4f3f43ed06071a0b48870dba7c0c04c34e1c382c441cf8ac570a6e20da37a",
+    build: 2026101601,
+    minimumBuild: 2026101601,
     protocol: 16,
     requirement: "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    note: "王牌戰線 Deckmarch R11，更新原創像素傷害浮字、五項遠程從者技能規則、洞窟與冰原共六張法線貼圖及技能費用說明。macOS 13.0 以上，Apple Silicon／Intel 通用 ZIP；完整解壓後開啟包內 .app。ad-hoc 簽章，尚未 Apple 公證。本輪未在 macOS 原生系統啟動；封裝檢查不等於原生畫面或操作驗收。保留資源加密、授權附件與可關閉的匿名統計。正式多人需 R11（BUILD 2026101502）。",
-    noteEn: "Deckmarch R11 updates original pixel damage numbers, five explicit ranged minion skills, six cavern and frostland normal maps and skill cost text. Universal ZIP for macOS 13.0+ on Apple Silicon and Intel. Extract all files and open the bundled .app. Ad-hoc signed and not Apple-notarized. Native macOS startup and UI remain untested; package checks are separate results. Encryption, legal documents and optional anonymous statistics are retained. Official multiplayer requires R11 (BUILD 2026101502).",
+    note: "紙鴉牌 Deckmarch R12：改善卡牌選取、合法目標、詳情閱讀與教學提示；卡圖按需載入並在關閉或捲出畫面時釋放，原圖品質不變。整合離線 AI 連招與明確遠程射擊規則。保留加密、完整授權與可關閉的匿名統計。正式多人需 R12（BUILD 2026101601），protocol 16。macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。ad-hoc 簽章，尚未 Apple 公證。本輪通過成品與資源檢查；圖形介面及完整真人外網對局仍待驗收。",
+    noteEn: "Deckmarch R12 improves selection, legal targets, card details and tutorial hints. Illustrations load when displayed and release when hidden; original artwork quality is unchanged. Includes offline AI combo planning and explicit ranged-shot rules. Encryption, complete legal notices and optional anonymous statistics are retained. Official multiplayer requires R12 (BUILD 2026101601), protocol 16. Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the bundled .app. Ad-hoc signed, not Apple-notarized. Finished-package checks passed; graphical UI and full two-human Internet matches remain untested.",
   },
   {
     id: "linux",
-    displayName: "王牌戰線",
+    displayName: "紙鴉牌",
     platform: "Linux",
     en: "ZIP · x86_64",
     status: "available",
-    file: "TwilightCodex-Linux-20261015-R11.zip",
-    version: "2026.10.15-R11",
-    size: "440.1 MiB",
-    bytes: 461467895,
+    file: "TwilightCodex-Linux-20261016-R12.zip",
+    version: "2026.10.16-R12",
+    size: "449.1 MiB",
+    bytes: 470883738,
     updated: "2026-10-16",
-    sha256: "5c7a2d114859971361ac646cb6f67eef978c8020df48465ade94b31ffab273a2",
-    build: 2026101502,
-    minimumBuild: 2026101502,
+    sha256: "e1dc393b34ca8a3e44c517aab6095c19e76f8f1d76a495ba8b8cf489bf8c297c",
+    build: 2026101601,
+    minimumBuild: 2026101601,
     protocol: 16,
     requirement: "x86_64 · Ubuntu 24.04+，或其他 glibc 2.39+ 發行版",
-    note: "王牌戰線 Deckmarch R11 Linux 桌面玩家 ZIP，更新原創像素傷害浮字、五項遠程從者技能規則、洞窟與冰原共六張法線貼圖及技能費用說明。需要 x86_64 與 glibc 2.39 以上，例如 Ubuntu 24.04 以上。完整解壓並保留執行權限。本輪未在 Linux 桌面原生系統啟動；封裝檢查不等於桌面操作驗收。保留資源加密、授權附件與可關閉的匿名統計。正式多人需 R11（BUILD 2026101502）。",
-    noteEn: "Deckmarch R11 updates original pixel damage numbers, five explicit ranged minion skills, six cavern and frostland normal maps and skill cost text. Linux desktop player ZIP for x86_64 and glibc 2.39+, such as Ubuntu 24.04+. Extract all files and retain executable permissions. Native Linux desktop startup and UI remain untested; package checks are separate results. Encryption, legal documents and optional anonymous statistics are retained. Official multiplayer requires R11 (BUILD 2026101502).",
+    note: "紙鴉牌 Deckmarch R12：改善卡牌選取、合法目標、詳情閱讀與教學提示；卡圖按需載入並在關閉或捲出畫面時釋放，原圖品質不變。整合離線 AI 連招與明確遠程射擊規則。保留加密、完整授權與可關閉的匿名統計。正式多人需 R12（BUILD 2026101601），protocol 16。Linux x86_64，需 glibc 2.39+，例如 Ubuntu 24.04+。完整解壓並保留執行權限，執行 launch.sh。本輪通過成品與資源檢查；Linux 桌面原生啟動與長時間效能、朋友電腦及完整真人外網對局仍待驗收。",
+    noteEn: "Deckmarch R12 improves selection, legal targets, card details and tutorial hints. Illustrations load when displayed and release when hidden; original artwork quality is unchanged. Includes offline AI combo planning and explicit ranged-shot rules. Encryption, complete legal notices and optional anonymous statistics are retained. Official multiplayer requires R12 (BUILD 2026101601), protocol 16. Linux x86_64 requires glibc 2.39+, such as Ubuntu 24.04+. Extract all files, retain executable permissions and run launch.sh. Finished-package checks passed; native Linux desktop startup, sustained performance, friend PCs and full two-human Internet matches remain untested.",
   },
   {
     id: "android",
@@ -150,6 +150,21 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    "version": "2026.10.16-R12",
+    "date": "2026-10-16",
+    "title": "紙鴉牌：介面更新與卡圖記憶體優化",
+    "changes": [
+      "正式採用「紙鴉牌 Deckmarch」名稱與紙鴉圖示；既有帳號、收藏、牌組與存檔位置保留。",
+      "卡圖改為顯示時載入，圖鑑與組牌頁捲出畫面或關閉時釋放；原始卡圖解析度與品質不變。",
+      "Apple M4／macOS／Metal 本機量測：首次載入全卡目錄由 5.85–6.06 秒降至 0.15–0.22 秒；同階段 GPU 貼圖記憶體由 1,585.1 MiB 降至 53.6 MiB。這是特定載入階段的量測，Linux／Android 實機效能仍待驗證。",
+      "整理戰鬥指令、卡牌選取、合法目標提示、詳情閱讀與不同螢幕比例的版面。教學加入柔和金色呼吸光環、水波紋與指針，支援減少動態。",
+      "整合離線 AI 連招判斷與明確遠程射擊規則；弓箭手「多重射擊」與青林獵手「淬毒箭」的技能說明、目標規則及費用同步更新。",
+      "正式多人最低 BUILD 提升為 R12（2026101601），舊桌面版需更新；本次成品協定維持 16，不重設玩家資料。",
+      "公開 Windows／macOS／Linux 桌面玩家 ZIP；保留資源加密、原作者署名與完整素材授權，補齊新版中文字型授權。Windows／Linux 桌面原生啟動、朋友電腦與完整真人外網對局仍待驗收。",
+      "macOS 13+ 通用版採 ad-hoc 簽章，尚未 Apple 公證；Linux x86_64 需要 glibc 2.39+，例如 Ubuntu 24.04。Android APK 下載維持停用，等待 Samsung Galaxy S24 FE 實機驗收，不提供舊 R9 APK 備援。"
+    ]
+  },
   {
     version: "2026.10.15-R11",
     date: "2026-10-16",
