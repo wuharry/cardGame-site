@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The public site's CSS is small: deliver it with HTML for cold mobile loads.
+  // Next 16.3.8 pins this experimental behavior; test client navigation as well.
+  experimental: { inlineCss: true },
   async headers() {
     return [{
       source: "/:path*",

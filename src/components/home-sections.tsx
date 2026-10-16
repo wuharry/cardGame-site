@@ -18,8 +18,8 @@ export function LatestNews() {
   return (
     <section id="news" className="news-section section-space">
       <div className="content-width">
-        <header id="changelog" className="section-heading"><div><p className="overline">NEWS & UPDATES</p><h2>戰線新訊</h2></div><Link className="text-link" href="/news">所有更新 <span aria-hidden="true">↗</span></Link></header>
-        <div className="news-grid">{items.map((item) => <Link href={item.href} className="news-item" key={item.title}>
+        <header id="changelog" className="section-heading"><div><p className="overline">NEWS & UPDATES</p><h2>戰線新訊</h2></div><Link className="text-link" href="/news" prefetch={false}>所有更新 <span aria-hidden="true">↗</span></Link></header>
+        <div className="news-grid">{items.map((item) => <Link href={item.href} prefetch={false} className="news-item" key={item.title}>
           <div className="news-image"><Image src={mediaUrl(item.image)} alt="" fill sizes="(max-width: 700px) 100vw, 33vw" /><span className="news-arrow" aria-hidden="true">↗</span></div>
           <div className="news-meta"><span>{item.tag}</span>{item.date && <time dateTime={item.date}>{item.date.replaceAll("-", ".")}</time>}</div>
           <h3>{item.title}</h3><p>{item.text}</p>
@@ -36,11 +36,11 @@ export function GameIntroduction() {
         <header id="flow" className="section-heading centered"><p className="overline">A DIFFERENT KIND OF CARD BATTLE</p><h2>勝負，在出牌之前就已展開。</h2><p>同樣一張牌，站在哪裡、何時出手，都能改寫戰局。</p></header>
         <div id="lanes" className="battle-feature">
           <figure className="battle-image"><Image src={mediaUrl("/media/screens/hero-battlefield.webp")} alt="R11 四路前後排原生展示畫面，包含新版介面、HD-2D 從者與手牌" width={1280} height={720} sizes="(max-width: 900px) 100vw, 60vw" /><figcaption><span className="status-dot" /> IN-GAME CAPTURE <span>{mediaCaptureCaption("/media/screens/hero-battlefield.webp")}</span></figcaption></figure>
-          <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>四條路線，<br />沒有唯一的進攻路徑。</h3><p>前排掩護後排，攻擊卻能跨路選擇目標。找出防線的缺口，讓你的從者直擊敵方英雄。</p><Link className="text-link" href="/guide#lanes">試試四路交鋒演練 <span aria-hidden="true">→</span></Link></div>
+          <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>四條路線，<br />沒有唯一的進攻路徑。</h3><p>前排掩護後排，攻擊卻能跨路選擇目標。找出防線的缺口，讓你的從者直擊敵方英雄。</p><Link className="text-link" href="/guide#lanes" prefetch={false}>試試四路交鋒演練 <span aria-hidden="true">→</span></Link></div>
         </div>
         <div className="tactics-grid">
-          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>你的回合結束，<br />策略還沒。</h3><p>留下魔力，在符合條件的反制時機施放瞬咒。從者身下的伏印，也可能是下一個轉折。</p><Link className="text-link" href="/guide#cards">認識反制與伏印 <span aria-hidden="true">→</span></Link></article>
-          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>六十張卡，<br />寫成你的打法。</h3><p>從持有的卡牌組出一副牌。正式 PvP 的勝者可挑走敗者一張卡；AI、訪客與區網練習不奪卡。</p><Link className="text-link" href="/guide#collection">了解組牌與奪卡規則 <span aria-hidden="true">→</span></Link></article>
+          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>你的回合結束，<br />策略還沒。</h3><p>留下魔力，在符合條件的反制時機施放瞬咒。從者身下的伏印，也可能是下一個轉折。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識反制與伏印 <span aria-hidden="true">→</span></Link></article>
+          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>六十張卡，<br />寫成你的打法。</h3><p>從持有的卡牌組出一副牌。正式 PvP 的勝者可挑走敗者一張卡；AI、訪客與區網練習不奪卡。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與奪卡規則 <span aria-hidden="true">→</span></Link></article>
         </div>
       </div>
     </section>
@@ -51,7 +51,7 @@ export function ModesOverview() {
   return (
     <section id="modes" className="modes-section section-space">
       <div className="content-width">
-        <header className="section-heading"><div><p className="overline">FIND YOUR NEXT OPPONENT</p><h2>先練一局，再邀朋友入席。</h2></div><Link className="text-link" href="/guide#modes">對戰指南 <span aria-hidden="true">↗</span></Link></header>
+        <header className="section-heading"><div><p className="overline">FIND YOUR NEXT OPPONENT</p><h2>先練一局，再邀朋友入席。</h2></div><Link className="text-link" href="/guide#modes" prefetch={false}>對戰指南 <span aria-hidden="true">↗</span></Link></header>
         <div className="modes-grid">{GAME_MODES.map((mode, index) => <article key={mode.en}>
           <span className="mode-number" aria-hidden="true">0{index + 1}</span><p className="overline">{mode.en}</p><h3>{mode.zh}</h3><p>{mode.body}</p><small>{mode.meta}</small>
         </article>)}</div>

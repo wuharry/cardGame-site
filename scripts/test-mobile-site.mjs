@@ -21,12 +21,30 @@ try {
     console.log("PASS mobile 390×844", path, "content readable with unavailable fonts");
   }
   await page.goto(base + "/", { waitUntil: "networkidle" });
+  assert(await page.evaluate(() => document.querySelectorAll('link[rel="preload"][as="font"]').length <= 1), "Only the display font may be globally preloaded");
+  assert(await page.evaluate(() => document.querySelectorAll('link[rel="stylesheet"]').length === 0), "Cold first paint uses styles delivered with HTML");
+  assert.equal(await page.locator(".hero-backdrop").getAttribute("fetchpriority"), "high");
   await page.getByRole("button", { name: "開啟導覽選單" }).click();
   assert(await page.getByRole("navigation", { name: "手機導覽" }).isVisible());
   await page.getByRole("button", { name: "關閉導覽選單" }).click();
   await page.getByRole("button", { name: /冰原/ }).click();
   assert((await page.locator("#arena-preview img").getAttribute("src")).includes("arena-frostlands"));
   assert(await page.getByRole("button", { name: /^下載 Android APK/ }).isDisabled());
+  await page.getByRole("button", { name: /秘術/ }).click();
+  assert.equal(await page.getByRole("button", { name: /秘術/ }).getAttribute("aria-pressed"), "true");
+  // CSS inlining must also work after client navigation and back/forward.
+  await page.getByRole("button", { name: "開啟導覽選單" }).click();
+  await page.getByRole("navigation", { name: "手機導覽" }).getByRole("link", { name: "新手指南", exact: true }).click();
+  await page.waitForURL("**/guide");
+  assert(await page.locator(".subpage-heading h1").isVisible());
+  assert.equal(await page.locator(".site-header").evaluate(el => getComputedStyle(el).position), "sticky");
+  await page.getByRole("link", { name: "王牌戰線首頁", exact: true }).click();
+  await page.waitForURL("**/#main-content");
+  assert(await page.locator(".hero-copy h1").isVisible());
+  await page.goBack(); await page.waitForURL("**/guide");
+  assert.equal(await page.locator(".site-header").evaluate(el => getComputedStyle(el).position), "sticky");
+  await page.goForward(); await page.waitForURL("**/#main-content");
+  assert.equal(await page.locator(".site-header").evaluate(el => getComputedStyle(el).position), "sticky");
   for (const viewport of [{ width: 844, height: 390 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));

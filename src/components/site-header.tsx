@@ -29,7 +29,7 @@ export function SiteHeader() {
           <span>王牌戰線<small>DECKMARCH</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="主要導覽">
-          {NAV.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
+          {NAV.map((item) => <Link key={item.href} href={item.href} prefetch={false}>{item.label}</Link>)}
         </nav>
         <Link href="/#download" className="header-download" onClick={() => setOpen(false)}>下載試玩 <span aria-hidden="true">↗</span></Link>
         <button ref={toggle} type="button" className="menu-toggle" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "關閉導覽選單" : "開啟導覽選單"} onClick={() => setOpen(!open)}>
@@ -37,7 +37,7 @@ export function SiteHeader() {
         </button>
       </div>
       <nav id="mobile-nav" className="mobile-nav" aria-label="手機導覽" hidden={!open}>
-        {NAV.map((item) => <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>{item.label}<span aria-hidden="true">↗</span></Link>)}
+        {NAV.map((item) => <Link key={item.href} href={item.href} prefetch={false} onClick={() => setOpen(false)}>{item.label}<span aria-hidden="true">↗</span></Link>)}
       </nav>
     </header>
   );

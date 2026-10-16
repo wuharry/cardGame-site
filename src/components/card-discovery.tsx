@@ -18,7 +18,7 @@ export function CardDiscovery() {
         </div>
         <div className="card-display" id="card-description">
           <div className="codex-art"><Image key={card.id} src={mediaUrl(card.art)} alt={card.artAlt} fill sizes="(max-width: 700px) 100vw, 55vw" /><span>DECKMARCH / {card.en.toUpperCase()}</span></div>
-          <div className="codex-description" aria-live="polite" aria-atomic="true"><span className="codex-symbol" aria-hidden="true">✦</span><p className="overline">{card.en}</p><h3>{card.zh}</h3><p>{card.rule}</p><dl><dt>出牌時機</dt><dd>{card.timing}</dd></dl><Link href="/guide#cards" className="text-link">查看卡型與搭配 <span aria-hidden="true">→</span></Link></div>
+          <div className="codex-description" aria-live="polite" aria-atomic="true"><span className="codex-symbol" aria-hidden="true">✦</span><p className="overline">{card.en}</p><h3>{card.zh}</h3><p>{card.rule}</p><dl><dt>出牌時機</dt><dd>{card.timing}</dd></dl><Link href="/guide#cards" prefetch={false} className="text-link">查看卡型與搭配 <span aria-hidden="true">→</span></Link></div>
         </div>
         <p className="card-discovery-note">卡圖為遊戲素材展示；完整卡片數值與效果以遊戲內說明為準。</p>
       </div>

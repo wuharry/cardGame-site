@@ -19,6 +19,7 @@ const barlow = Barlow({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
+  preload: false,
 });
 
 /* HUD 標籤與數值：窄體大寫，直接借遊戲介面的語氣。 */
@@ -27,6 +28,7 @@ const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {

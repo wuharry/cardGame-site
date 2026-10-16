@@ -8,7 +8,7 @@ export function EntryScreen() {
   const available = BUILDS.filter((build) => downloadUrl(build));
   return (
     <section className="codex-hero" aria-labelledby="hero-title">
-      <Image src={mediaUrl("/media/screens/town.webp")} alt="" fill preload sizes="100vw" className="hero-backdrop" />
+      <Image src={mediaUrl("/media/screens/town.webp")} alt="" fill loading="eager" fetchPriority="high" sizes="100vw" className="hero-backdrop" />
       <div className="hero-shade" />
       <div className="hero-inner">
         <div className="hero-copy">
@@ -32,7 +32,7 @@ export function EntryScreen() {
             { art: "frost_witch", name: "冰霜女巫", en: "THE FROST WITCH", position: "center" },
           ].map((card) => (
             <figure key={card.art} className={`hero-card hero-card-${card.position}`}>
-              <div className="hero-card-art"><Image src={mediaUrl(`/media/cards/${card.art}.webp`)} alt="" fill sizes="(max-width: 700px) 52vw, 340px" loading="eager" /></div>
+              <div className="hero-card-art"><Image src={mediaUrl(`/media/cards/${card.art}.webp`)} alt="" fill sizes="(max-width: 700px) 52vw, 340px" loading="lazy" fetchPriority="low" /></div>
               <figcaption><span aria-hidden="true">✦</span><strong>{card.name}</strong><small>{card.en}</small></figcaption>
             </figure>
           ))}
