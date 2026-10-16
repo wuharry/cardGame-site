@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Barlow, Barlow_Condensed } from "next/font/google";
 import { HOME_TITLE, HOME_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/data/seo";
-import { DeferredChineseFont } from "@/components/deferred-chinese-font";
+import "../fonts/site-font.css";
 import "./globals.css";
 import "./marketing.css";
 
@@ -66,16 +66,7 @@ export default function RootLayout({
       lang="zh-Hant-TW"
       className={`${cinzel.variable} ${barlow.variable} ${barlowCondensed.variable} h-full`}
     >
-      <head>
-        {/* Retain unicode-range chunks; load their stylesheet after first paint. */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <noscript>
-          {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-          <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&display=swap" rel="stylesheet" />
-        </noscript>
-      </head>
-      <body className="min-h-full antialiased"><DeferredChineseFont />{children}</body>
+      <body className="min-h-full antialiased">{children}</body>
     </html>
   );
 }

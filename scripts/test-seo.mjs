@@ -1,5 +1,6 @@
 import { strict as assert } from "node:assert";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import ts from "typescript";
 
 const base = process.argv[2] ?? "http://localhost:3100";
@@ -30,8 +31,13 @@ const website = structured[0]["@graph"].find(n => n["@type"] === "WebSite");
 const game = structured[0]["@graph"].find(n => n["@type"] === "VideoGame");
 check(website.name === "王牌戰線 Deckmarch" && website.url === `${origin}/` && website.alternateName.includes("Deckmarch"), "Website identity matches the current brand and URL");
 check(game.gamePlatform.length > 0 && !game.gamePlatform.includes("Android") && !game.aggregateRating && !game.offers, "Game markup avoids unavailable platforms and invented ratings/offers");
-const fontsOutsideNoscript = home.replace(/<noscript>[\s\S]*?<\/noscript>/g, "");
-check(!/<link\b[^>]*href="https:\/\/fonts\.googleapis\.com\/css/.test(fontsOutsideNoscript), "Chinese font CSS cannot block initial HTML rendering");
+check(!home.includes("fonts.googleapis.com") && !home.includes("fonts.gstatic.com"), "Chinese fonts are self-hosted; no third-party render-blocking font requests");
+const fontManifest = JSON.parse(await readFile(new URL("../src/fonts/manifest.json", import.meta.url), "utf8"));
+for (const subset of fontManifest.subsets) {
+  const bytes = await readFile(new URL(`../src/fonts/${subset.file}`, import.meta.url));
+  check(bytes.toString("ascii", 0, 4) === "wOF2" && createHash("sha256").update(bytes).digest("hex") === subset.sha256, `${subset.file} is a verified WOFF2 subset`);
+}
+check(fontManifest.bytes < 600000 && fontManifest.weights === "400 700", "One compact variable family serves all three original weights");
 const robots = await fetch(base + "/robots.txt"); const rules = await robots.text();
 check(robots.ok && rules.includes(`Sitemap: ${origin}/sitemap.xml`) && rules.includes("Disallow: /api/"), "robots.txt publishes the sitemap and avoids crawling API routes");
 check(!/Disallow: \/admin/.test(rules), "Admin remains crawlable so its noindex can be honored");

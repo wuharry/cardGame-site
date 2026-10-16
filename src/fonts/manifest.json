@@ -1,0 +1,55 @@
+{
+  "family": "Noto Serif TC",
+  "weights": "400 700",
+  "format": "woff2",
+  "bytes": 468364,
+  "subsets": [
+    {
+      "file": "noto-serif-tc-site-0.woff2",
+      "bytes": 161776,
+      "sha256": "3453292eff7bc978f92755203cf1e07f81024c42b0192c45671dacfa5c8d349a"
+    },
+    {
+      "file": "noto-serif-tc-site-1.woff2",
+      "bytes": 196696,
+      "sha256": "ec140066248beb9d2709a388c7de4226471ef40abe597cdaf13e98dba4ce03ee"
+    },
+    {
+      "file": "noto-serif-tc-site-2.woff2",
+      "bytes": 109892,
+      "sha256": "9b6d4babce9799626c98e9b5c3b5aae3cc2bfff619cb3a958e03968c9b20b266"
+    }
+  ],
+  "characters": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~©·×÷–—’↑→↓↗↘−⋮▶◀☰⚔⚡✕✦➔⟲、。《》「」【】・一七三上下不且丟並中主之也乳了予事二互五交享亮人介仍他付代以件任份伏伐伸伺但佈位低住佔何作你使來例供依便係保信修個倒借值假做停側備傷傾僅像優允元充先光免入內全兩八公六共兵其具典再冰冷准出分切列初判別利到制券刻則前剛剩副創力功加助動勝募勾勿包化匯匿區十千升半協南占卡印即卻原參及友反取受叢口句另只召可台史右司吃各合同名向吟否含吸吹呈告命和咒品員哨哪售唯問啟喚單嘗嘲器噬嚇嚴四回因固圈圍圖在地址均坡型埋域執基堆堤報場塊填境墓增壓士外多大太央失夾奏套奪女好如妖始姿威子字存學它守安完官定客宣害家容宿密寒實寫寬封射將專尊對導小少尚就尾局展層屬岩工左巫差己已布師席帳帶常幀幕幫平庇床序底度座庫廳延建式引弧張強彈彎形影征待律後徑得從復微徽心必快念怎性恢息情想意感態慢憶應懸成我或截戰戲戴房所手才打扣批找承技把投折抽拆拒拘拿持指按挑挫振捲捷掃授掉排掛掠採探接控掩描提插換握揭援損搭擁擇擊擋操擎擠擲擴擷攜攤支收改攻放政效敗教散整敵數文料斜斧新斷方於施旁旋族既日早明是時晨普景暈暖暗暢暫暮曉曦曲更書替最會有朋服望期未本材束松析林枚果架查校核格框案桌條棄棋棘森楚極概構槽樂標模樣樹機橫檔檢檻欄權次歡止正此步武歷歸死殊段毀每毒比氣水求池決沒河治沿法泥洞洩活派流浪浮海消涵淡深清減測游湊源準溪滑滾滿漏演漸潭濾瀏火為無焦焰然照燈燒爆牆片版牌物特牽狀猜獨獵王玩現球理環生產用由甲界留略畫當疊疫痛療登發白的盜盤目直相盾看真眩眼瞄瞬知短矮石破硬碑確碼礎示神禦禮私秒秘移稀程稜種稱稿積穩空穿窄窗窟立站章端符第筆等策算管箭箱節範築篩簽籠籤精糊系紀紅紋素索累細紹終組結絕絡給統絲經維網綴線緣編練縮績繁織繪續缺罩置署羅群翅習翻考者而耗聚聯聲肩育背胸能脅腦腳臉自至致臺與舊舞航般船色花若英草荊菇菱落著蓋薄薩藏蘑處虛號蛙蜥蜴血行衍術衛衝衡表被裂補裝裡製複要覆見規視覺覽觀角解觸計訊記訣訪設許診註詞詢試詩話該詳誌認語誤說調請諷諾講謝證識警護譽讀變讓象貓負貫責買費貼資賊質購贏走起超越跡跨路跳身軌軸較載輝輪輸轉辨迎返述退送逆透逐這通速造連進逾遇遊過道遠適遮遵選遺避邀還邊那邪部郵都鄰配醒醫重量釐金鈕銀銘銷鋒錄錢錯鍛鍵鎖鎧鏡鐘鑰長門閃閉開間閱關阱防阻附限陣除陷隊階隔際隨隱雄集雙離雪零電需霜霧靈靜非靠面音響頁頂項須預頓領頭顆題額顏願類顯風飛飾饋首馬騎驅驗驟骨骰體高髮鬥鬼魂魔鷹麼黃點鼠齊🎮🎯🎲🏆👁👤💡💣💥📐📜🔒🖱🗡🛡🧲🪽️！（）＋，／：；？｜",
+  "source": "https://fonts.google.com/noto/specimen/Noto+Serif+TC",
+  "api": "https://developers.google.com/fonts/docs/css2",
+  "license": "/licenses/NotoSerifTC-OFL.txt",
+  "files": [
+    "src/app/credits/page.tsx",
+    "src/app/guide/page.tsx",
+    "src/app/install/android/page.tsx",
+    "src/app/layout.tsx",
+    "src/app/news/page.tsx",
+    "src/app/page.tsx",
+    "src/components/arena-band.tsx",
+    "src/components/arena-gallery.tsx",
+    "src/components/card-discovery.tsx",
+    "src/components/card-types.tsx",
+    "src/components/collection-panel.tsx",
+    "src/components/download-panel.tsx",
+    "src/components/entry-screen.tsx",
+    "src/components/game-card.tsx",
+    "src/components/game-modes.tsx",
+    "src/components/home-sections.tsx",
+    "src/components/lane-doctrine.tsx",
+    "src/components/patch-notes.tsx",
+    "src/components/pixel-dice.tsx",
+    "src/components/site-footer.tsx",
+    "src/components/site-header.tsx",
+    "src/components/systems-panel.tsx",
+    "src/components/turn-flow.tsx",
+    "src/data/credits.json",
+    "src/data/game.ts",
+    "src/data/releases.ts"
+  ]
+}

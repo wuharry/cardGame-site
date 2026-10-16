@@ -27,7 +27,7 @@
 | 安全性問題 | 未偵測到問題 |
 | 手機／桌面真實使用者核心指標 | 過去 90 天使用資料不足 |
 
-部署後需提交網站地圖、執行首頁線上測試並提出索引要求。提交成功不等於已收錄；由 Google 後續處理。
+部署後已成功提交網站地圖，Google 探索到五個公開頁；首頁從「Google 無法辨識的網址」變成「已找到 - 目前尚未建立索引」。首頁即時測試顯示「Google 可為網址建立索引」。手動要求建立索引時 Google 回覆「超過單日配額」，未成功加入手動要求；沒有反覆重試或聲稱已收錄。可於翌日再手動提出，Sitemap 已可供 Google 自動排程檢索。
 
 ## 手機效能：修改前實測
 
@@ -44,7 +44,9 @@
 
 報告指出中文 Google Fonts CSS 會阻塞首次顯示，該 CSS 傳輸 102.1 KiB；「可節省時間」為 Lighthouse 模型估計，不代表實測改善值。SEO 100 分只代表工具檢查的基本項目，不代表已收錄或有搜尋排名。
 
-修正：保留既有 Noto Serif TC 字型與 unicode-range 分片，在 hydration 後載入樣式表，先以系統後備字型呈現。停用 JavaScript 時由 noscript 保留原字型路徑。需於正式部署後重測；字型失敗不影響閱讀與互動。
+第一輪只延後載入 Google Fonts CSS，重測[報告](https://pagespeed.web.dev/analysis/https-twilight-codex-vercel-app/6rkartwneq?form_factor=mobile)仍只有 55 分、FCP 21.5 秒／LCP 22.7 秒，總傳輸 4,160 KiB；沒有把移除 render-blocking 提示誤報為效能改善。報告可見不同字重重複下載大量 CJK 字型。
+
+第二輪改成本站提供 Noto Serif TC 的公開文案子集：三個 WOFF2 共 468,364 bytes，涵蓋 1,123 個公開文案字元，400–700 字重共用 variable font。保留 unicode-range、font-display: swap 與系統後備字型，完全移除玩家端 Google Fonts CSS／字型請求，包含 JavaScript 停用時。來源與 OFL 授權保留；新字或動態玩家名稱使用後備字型，無須把私人資料送到字型服務。生成方式見 `src/fonts/README.md`。
 
 ## 後台圖表
 
@@ -67,6 +69,6 @@ node scripts/test-android-install-guide.mjs
 node scripts/test-game-version.mjs
 ```
 
-本機已通過 SEO 43 項、圖表 18 項、管理 API 19 項、Android 下載門檻 32 項與版本 manifest 檢查，以及 lint／production build。手機頁面檢查使用隔離 Chrome，沒有存取正式管理帳號。
+第一輪本機與正式站皆通過 SEO 43 項；圖表 18 項、管理 API 19 項、Android 下載門檻 32 項與版本 manifest 檢查通過，以及 lint／production build。手機頁面以 390×844、844×390 與 1440×900 檢查無橫向溢出、導覽與戰場切換、APK 停用及無 runtime error，使用隔離 Chrome，沒有存取正式管理帳號。第二輪新增字型完整性檢查。
 
 正式部署、正式站重驗、PageSpeed 修改後數值與 Search Console 提交結果，於完成後補記。真實手機使用者資料不足，不能宣稱 Core Web Vitals 實際使用者驗收通過；本輪也不是 S24 FE 遊戲 APK 測試。

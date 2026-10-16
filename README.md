@@ -82,6 +82,8 @@ npm run build
 
 SEO、手機首屏與後台圖表驗收另見 [2026-10-16 紀錄](docs/seo-performance-20261016.md)。啟動 production server 後，執行 `node scripts/test-seo.mjs http://localhost:3100` 與 `node scripts/test-mobile-site.mjs http://localhost:3100`；後者使用已安裝的 Chrome，可用 `CHROME_PATH` 指定路徑。APK 仍等待 S24 FE 實機驗收，網站地圖與搜尋摘要也不得提供停用 APK 的下載承諾。
 
+官網中文明體使用已提交的 WOFF2 公開文案子集，由本站提供；不在玩家端請求 Google Fonts。公開文案大幅更新後可執行 `node scripts/prepare-site-font.mjs` 重建，原始 OFL 授權與字型來源見 [字型說明](src/fonts/README.md)。子集外的字使用系統後備字型，動態玩家名稱不送往字型 API。
+
 歷史 R4／R5 的包體與驗收紀錄保留於下文，不代表目前各平台的下載版本或本輪已完成的測試。
 
 ### 改更新紀錄

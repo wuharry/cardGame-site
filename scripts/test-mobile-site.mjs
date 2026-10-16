@@ -10,13 +10,15 @@ try {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3 });
   const errors = [];
   page.on("pageerror", e => errors.push(e.message));
-  // External font failure must never hide page content or break controls.
-  await page.route("https://fonts.googleapis.com/**", r => r.abort());
+  // Font failure must never hide page content or break controls.
+  await page.route("**/*.woff2", r => r.abort());
+  const externalFonts = [];
+  page.on("request", request => { if (/fonts\.(googleapis|gstatic)\.com/.test(request.url())) externalFonts.push(request.url()); });
   for (const path of ["/", "/guide", "/news", "/credits", "/install/android"]) {
     await page.goto(base + path, { waitUntil: "networkidle" });
-    assert(await page.locator("h1").isVisible(), `${path} content is visible without Google Fonts`);
+    assert(await page.locator("h1").isVisible(), `${path} content is visible without downloaded fonts`);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${path} horizontal overflow`);
-    console.log("PASS mobile 390×844", path, "content readable with unavailable Google Fonts");
+    console.log("PASS mobile 390×844", path, "content readable with unavailable fonts");
   }
   await page.goto(base + "/", { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "開啟導覽選單" }).click();
@@ -31,5 +33,6 @@ try {
     console.log("PASS responsive", JSON.stringify(viewport));
   }
   assert.deepEqual(errors, []);
+  assert.deepEqual(externalFonts, []);
   console.log("PASS mobile navigation, gallery switching, APK gate and no runtime errors");
 } finally { await browser.close(); }
