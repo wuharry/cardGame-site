@@ -136,7 +136,7 @@ function RuleColumn({
             key={rule.label}
             className="grid grid-cols-[1fr_auto] items-baseline gap-x-4 border-t border-rule-soft py-3"
           >
-            <dt className="hud-label" style={{ color: "var(--color-quill)" }}>{rule.label}</dt>
+            <dt className="hud-label text-quill">{rule.label}</dt>
             <dd
               className="hud-value text-right text-base text-brass-hi font-hud"
             >

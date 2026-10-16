@@ -83,7 +83,7 @@ export function CollectionPanel() {
           </h3>
           <dl className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {COLLECTION_FEATURES.map((feature) => (
-              <div key={feature.label} className="plate p-4 border-l-2 border-brass-dim">
+              <div key={feature.label} className="plate p-4 border-l-2 border-l-brass-dim">
                 <dt className="hud-label text-[0.7rem]">{feature.label}</dt>
                 <dd className="mt-1 text-lg font-bold text-brass-hi font-serif">
                   {feature.value}

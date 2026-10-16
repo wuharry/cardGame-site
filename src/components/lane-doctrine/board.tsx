@@ -6,9 +6,9 @@ import { Cell, HeroBar, type CellRole } from "./units";
 type Outcome = "blocked" | "hit" | "strike";
 
 const OUTCOME_STYLE: Record<Outcome, { frame: string; icon: string; text: string }> = {
-  blocked: { frame: "border-l-4 border-crimson", icon: "🛡️", text: "text-crimson-hi" },
-  hit: { frame: "border-l-4 border-brass bg-brass/10", icon: "💥", text: "text-brass-hi" },
-  strike: { frame: "border-l-4 border-brass", icon: "⚔️", text: "text-parchment" },
+  blocked: { frame: "border-l-4 border-l-crimson", icon: "🛡️", text: "text-crimson-hi" },
+  hit: { frame: "border-l-4 border-l-brass bg-brass/10", icon: "💥", text: "text-brass-hi" },
+  strike: { frame: "border-l-4 border-l-brass", icon: "⚔️", text: "text-parchment" },
 };
 
 const LANE_GRID = "grid grid-cols-[2.8rem_repeat(4,minmax(0,1fr))]";

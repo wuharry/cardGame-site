@@ -162,7 +162,7 @@ export function LaneDoctrine() {
                     </h3>
 
                     {/* 核心口訣卡片 */}
-                    <div className="plate notch mt-3 border-l-2 border-brass bg-panel p-3">
+                    <div className="plate notch mt-3 border-l-2 border-l-brass bg-panel p-3">
                       <p className="text-[0.84rem] font-semibold text-brass-hi leading-snug">
                         {step.summary}
                       </p>

@@ -51,9 +51,9 @@ export function CardTypeShowcase() {
 
             {/* 三種卡型條列說明 */}
             <div className="mt-10 space-y-4">
-              <CardRule card={minion} icon="👤" layer="中層" frame="border-brass" timingTone="text-brass-hi" />
-              <CardRule card={equip} icon="🗡️" layer="頂層" frame="border-brass-dim" timingTone="text-quill" />
-              <CardRule card={ward} icon="💣" layer="底層" frame="border-crimson" tone="text-crimson-hi" timingTone="text-crimson-hi" />
+              <CardRule card={minion} icon="👤" layer="中層" frame="border-l-brass" timingTone="text-brass-hi" />
+              <CardRule card={equip} icon="🗡️" layer="頂層" frame="border-l-brass-dim" timingTone="text-quill" />
+              <CardRule card={ward} icon="💣" layer="底層" frame="border-l-crimson" tone="text-crimson-hi" timingTone="text-crimson-hi" />
             </div>
           </div>
 
@@ -94,7 +94,7 @@ export function CardTypeShowcase() {
             </div>
 
             {/* 反制窗口說明 */}
-            <div className="plate notch mt-8 p-4 border-l-2 border-steel">
+            <div className="plate notch mt-8 p-4 border-l-2 border-l-steel">
               <span className="hud-label text-steel">反制時序概念</span>
               <div className="mt-2 flex items-center justify-between text-xs text-parchment/80">
                 <span className="rounded bg-panel px-2 py-1">對手出牌宣告</span>
@@ -109,8 +109,8 @@ export function CardTypeShowcase() {
             </div>
 
             <div className="mt-6 space-y-4">
-              <CardRule card={arcana} icon="📜" frame="border-brass-dim" timingTone="text-brass-hi" />
-              <CardRule card={quick} icon="⚡" frame="border-steel" tone="text-steel" timingTone="text-steel" />
+              <CardRule card={arcana} icon="📜" frame="border-l-brass-dim" timingTone="text-brass-hi" />
+              <CardRule card={quick} icon="⚡" frame="border-l-steel" tone="text-steel" timingTone="text-steel" />
             </div>
           </div>
         </div>

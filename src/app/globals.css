@@ -80,211 +80,216 @@
   }
 }
 
-/* ============================================================
-   材質 —— 用網點與硬邊做「實體物件」，不靠 blur 與光暈
-   ============================================================ */
+/* 自訂元件放進 components 層：同一元素上的 Tailwind utility（如 text-brass-hi）才能覆蓋它們。
+   沒有分層的規則會壓過所有分層樣式，utility 寫了也不生效。 */
+@layer components {
+  /* ============================================================
+     材質 —— 用網點與硬邊做「實體物件」，不靠 blur 與光暈
+     ============================================================ */
 
-/* 紙／石的顆粒。一層極淡的雜訊，避免大色塊看起來像 CSS 底色。 */
-.grain::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* 金屬板：上緣受光、下緣沉、四邊細框。沒有 box-shadow 光暈。 */
-.plate {
-  background-color: var(--color-panel);
-  border: 1px solid var(--color-rule);
-  box-shadow:
-    inset 0 1px 0 rgb(232 222 200 / 0.07),
-    inset 0 -1px 0 rgb(0 0 0 / 0.5);
-}
-
-.plate-deep {
-  background-color: var(--color-board);
-  border: 1px solid var(--color-rule-soft);
-  box-shadow: inset 0 1px 0 rgb(232 222 200 / 0.04);
-}
-
-/* 卡框：外框＋內線的雙線，像實體卡的印刷邊。 */
-.card-frame {
-  border: 1px solid var(--color-rule);
-  outline: 1px solid rgb(13 11 9 / 0.9);
-  outline-offset: -4px;
-  border-radius: var(--radius-card);
-  background-color: var(--color-panel);
-}
-
-/* 切角金屬牌。用 clip-path 而非圓角，維持硬質感。 */
-.notch {
-  clip-path: polygon(
-    10px 0,
-    100% 0,
-    100% calc(100% - 10px),
-    calc(100% - 10px) 100%,
-    0 100%,
-    0 10px
-  );
-}
-
-/* 實體卡落在桌上的硬投影：位移大、模糊小。 */
-.rest-on-table {
-  box-shadow: 5px 8px 0 rgb(0 0 0 / 0.45);
-}
-
-/* 主選單那條髮絲線——歧路旅人式選單的骨架。 */
-.menu-rule {
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--color-rule) 12%,
-    var(--color-rule) 88%,
-    transparent
-  );
-}
-
-.menu-rule-lit {
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--color-brass-dim) 10%,
-    var(--color-brass) 50%,
-    var(--color-brass-dim) 90%,
-    transparent
-  );
-}
-
-/* 全站唯一允許的大面積漸層：暗角。它模擬鏡頭，不是裝飾。 */
-.vignette::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    120% 90% at 50% 42%,
-    transparent 30%,
-    rgb(13 11 9 / 0.55) 72%,
-    var(--color-ink) 100%
-  );
-}
-
-/* ============================================================
-   排版角色
-   ============================================================ */
-
-.eyebrow {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.72rem;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: var(--color-brass);
-}
-
-.hud-label {
-  font-family: var(--font-hud);
-  font-weight: 600;
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--color-faint);
-}
-
-.hud-value {
-  font-family: var(--font-hud);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--color-parchment);
-}
-
-.section-title {
-  font-family: var(--font-serif);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1.3;
-  color: var(--color-parchment);
-}
-
-.body-cjk {
-  font-family: var(--font-serif);
-  font-weight: 400;
-  line-height: 1.9;
-  color: var(--color-quill);
-}
-
-/* ============================================================
-   動作 —— 每一個都對應一條遊戲規則
-   ============================================================ */
-
-/* 伏印警戒：埋設後我方整排卡槽紅色脈動（§7 宿主制） */
-@keyframes ward-alert {
-  0%,
-  100% {
-    border-color: var(--color-crimson-dim);
-    background-color: rgb(176 54 43 / 0.05);
+  /* 紙／石的顆粒。一層極淡的雜訊，避免大色塊看起來像 CSS 底色。 */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  50% {
-    border-color: var(--color-crimson);
-    background-color: rgb(176 54 43 / 0.16);
-  }
-}
 
-.ward-alert {
-  animation: ward-alert 1.9s ease-in-out infinite;
-}
-
-/* 卡牌出手：從手牌抬起、落到卡槽 */
-@keyframes card-play {
-  from {
-    transform: translateY(12px) rotate(-2deg);
-    opacity: 0;
+  /* 金屬板：上緣受光、下緣沉、四邊細框。沒有 box-shadow 光暈。 */
+  .plate {
+    background-color: var(--color-panel);
+    border: 1px solid var(--color-rule);
+    box-shadow:
+      inset 0 1px 0 rgb(232 222 200 / 0.07),
+      inset 0 -1px 0 rgb(0 0 0 / 0.5);
   }
-  to {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-}
 
-.animate-card-play {
-  animation: card-play 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+  .plate-deep {
+    background-color: var(--color-board);
+    border: 1px solid var(--color-rule-soft);
+    box-shadow: inset 0 1px 0 rgb(232 222 200 / 0.04);
   }
-  .ward-alert,
+
+  /* 卡框：外框＋內線的雙線，像實體卡的印刷邊。 */
+  .card-frame {
+    border: 1px solid var(--color-rule);
+    outline: 1px solid rgb(13 11 9 / 0.9);
+    outline-offset: -4px;
+    border-radius: var(--radius-card);
+    background-color: var(--color-panel);
+  }
+
+  /* 切角金屬牌。用 clip-path 而非圓角，維持硬質感。 */
+  .notch {
+    clip-path: polygon(
+      10px 0,
+      100% 0,
+      100% calc(100% - 10px),
+      calc(100% - 10px) 100%,
+      0 100%,
+      0 10px
+    );
+  }
+
+  /* 實體卡落在桌上的硬投影：位移大、模糊小。 */
+  .rest-on-table {
+    box-shadow: 5px 8px 0 rgb(0 0 0 / 0.45);
+  }
+
+  /* 主選單那條髮絲線——歧路旅人式選單的骨架。 */
+  .menu-rule {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-rule) 12%,
+      var(--color-rule) 88%,
+      transparent
+    );
+  }
+
+  .menu-rule-lit {
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-brass-dim) 10%,
+      var(--color-brass) 50%,
+      var(--color-brass-dim) 90%,
+      transparent
+    );
+  }
+
+  /* 全站唯一允許的大面積漸層：暗角。它模擬鏡頭，不是裝飾。 */
+  .vignette::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      120% 90% at 50% 42%,
+      transparent 30%,
+      rgb(13 11 9 / 0.55) 72%,
+      var(--color-ink) 100%
+    );
+  }
+
+  /* ============================================================
+     排版角色
+     ============================================================ */
+
+  .eyebrow {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--color-brass);
+  }
+
+  .hud-label {
+    font-family: var(--font-hud);
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-faint);
+  }
+
+  .hud-value {
+    font-family: var(--font-hud);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-parchment);
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    /* 帶 --tw-leading，text-3xl 這類字級 utility 才會沿用這個行高。 */
+    @apply leading-[1.3];
+    color: var(--color-parchment);
+  }
+
+  .body-cjk {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    @apply leading-[1.9];
+    color: var(--color-quill);
+  }
+
+  /* ============================================================
+     動作 —— 每一個都對應一條遊戲規則
+     ============================================================ */
+
+  /* 伏印警戒：埋設後我方整排卡槽紅色脈動（§7 宿主制） */
+  @keyframes ward-alert {
+    0%,
+    100% {
+      border-color: var(--color-crimson-dim);
+      background-color: rgb(176 54 43 / 0.05);
+    }
+    50% {
+      border-color: var(--color-crimson);
+      background-color: rgb(176 54 43 / 0.16);
+    }
+  }
+
+  .ward-alert {
+    animation: ward-alert 1.9s ease-in-out infinite;
+  }
+
+  /* 卡牌出手：從手牌抬起、落到卡槽 */
+  @keyframes card-play {
+    from {
+      transform: translateY(12px) rotate(-2deg);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+  }
+
   .animate-card-play {
-    animation: none !important;
+    animation: card-play 0.45s cubic-bezier(0.2, 0.8, 0.3, 1) both;
   }
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-  }
-}
 
-/* 魔力成長：每秒一階填滿十格再歸零。示範規則，不是裝飾。 */
-@keyframes mana-fill {
-  from {
-    width: 0%;
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    .ward-alert,
+    .animate-card-play {
+      animation: none !important;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+    }
   }
-  to {
-    width: 100%;
+
+  /* 魔力成長：每秒一階填滿十格再歸零。示範規則，不是裝飾。 */
+  @keyframes mana-fill {
+    from {
+      width: 0%;
+    }
+    to {
+      width: 100%;
+    }
   }
-}
 
-.animate-mana-fill {
-  animation: mana-fill 10s steps(10, end) infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
   .animate-mana-fill {
-    animation: none !important;
-    width: 60%;
+    animation: mana-fill 10s steps(10, end) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-mana-fill {
+      animation: none !important;
+      width: 60%;
+    }
   }
 }
