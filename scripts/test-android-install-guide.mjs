@@ -19,7 +19,8 @@ async function load(file, imports = {}) {
   return exports;
 }
 
-const link = { default: (props) => createElement("a", props) };
+// TypeScript 6 always emits esModuleInterop helpers, so the mock must declare itself an ES module.
+const link = { __esModule: true, default: (props) => createElement("a", props) };
 const releases = await load("../src/data/releases.ts");
 const game = await load("../src/data/game.ts");
 let checks = 0;
