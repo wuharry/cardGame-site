@@ -6,6 +6,20 @@
 
 網站只放介紹、下載資料與 WebP 預覽。大型遊戲 ZIP／APK 放公開 GitHub Releases，勿加入 `public/`。網站卡圖與原生場景截圖的實際來源及擷取版本，保存在 `public/media/import-manifest.json`；改下載 UI 不會更新圖片或宣稱重拍。
 
+### 2026-10-16 官網圖片同步
+
+目前主選單、首頁戰場、森林／洞窟／冰原與封面背景均已換成 R11 來源 `9ffbfd47` 的原生擷取。擷取日期為 2026-10-16，平台 macOS／Forward+、1280×720；戰場使用六名從者與六張手牌的展示配置，沒有當成真人自然對局或 Android 驗收。主選單背景換為目前遊戲使用的天文台畫作；英雄保留 HD-2D，場上仍是四路前後排。
+
+R11 版本名與附件 tag 沿用 `2026.10.15-R11`／`v2026.10.15-r11`；GitHub 的 `published_at` 為 `2026-10-16T00:56:14Z`，即台灣 10/16 08:56，因此桌面下載更新日期與 R11 公開更新紀錄標為 10/16。版號、BUILD、最低連線版本、附件與檢查碼不因官網更新而更動。Android 仍未開放。
+
+之後先在隔離 Godot 專案使用 `scripts/capture-game-media.gd`（外部 `--script` 路徑）產出六張 PNG 與 `capture-manifest.json`，再同步：
+
+```bash
+node scripts/import-assets.mjs <game-path> --screens-dir <capture-directory>
+```
+
+擷取工具使用背景 SubViewport、暫存帳戶與關閉的匿名回報；隔離專案的 `application/config/version` 應先透過 Godot API 對齊 `ReleaseInfo.VERSION`。普通匯入或 `--cards-only` 會保留已部署場景圖及其來源清單，不再從寫死的舊 QA 圖回填。圖片網址沿用內容雜湊，更新後 Next/image 與瀏覽器會取得新圖。
+
 ---
 
 ## 跑起來

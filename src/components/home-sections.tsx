@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { GAME_MODES } from "@/data/game";
-import { mediaUrl } from "@/data/media";
+import { mediaCaptureCaption, mediaUrl } from "@/data/media";
 import { BUILDS, RELEASE_NOTES } from "@/data/releases";
 import { FEEDBACK_URL } from "@/data/site";
 
@@ -35,7 +35,7 @@ export function GameIntroduction() {
       <div className="content-width">
         <header id="flow" className="section-heading centered"><p className="overline">A DIFFERENT KIND OF CARD BATTLE</p><h2>勝負，在出牌之前就已展開。</h2><p>同樣一張牌，站在哪裡、何時出手，都能改寫戰局。</p></header>
         <div id="lanes" className="battle-feature">
-          <figure className="battle-image"><Image src={mediaUrl("/media/screens/hero-battlefield.webp")} alt="四路前後排的實機戰場，從者站在卡位上，手牌位於畫面下方" width={1280} height={720} sizes="(max-width: 900px) 100vw, 60vw" /><figcaption><span className="status-dot" /> IN-GAME CAPTURE <span>遊戲實機畫面</span></figcaption></figure>
+          <figure className="battle-image"><Image src={mediaUrl("/media/screens/hero-battlefield.webp")} alt="R11 四路前後排原生展示畫面，包含新版介面、HD-2D 從者與手牌" width={1280} height={720} sizes="(max-width: 900px) 100vw, 60vw" /><figcaption><span className="status-dot" /> IN-GAME CAPTURE <span>{mediaCaptureCaption("/media/screens/hero-battlefield.webp")}</span></figcaption></figure>
           <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>四條路線，<br />沒有唯一的進攻路徑。</h3><p>前排掩護後排，攻擊卻能跨路選擇目標。找出防線的缺口，讓你的從者直擊敵方英雄。</p><Link className="text-link" href="/guide#lanes">試試四路交鋒演練 <span aria-hidden="true">→</span></Link></div>
         </div>
         <div className="tactics-grid">

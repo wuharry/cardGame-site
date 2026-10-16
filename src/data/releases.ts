@@ -42,7 +42,7 @@ export const BUILDS: Build[] = [
     version: "2026.10.15-R11",
     size: "437.7 MiB",
     bytes: 458919739,
-    updated: "2026-10-15",
+    updated: "2026-10-16",
     sha256: "7239886523ada276a910ae8940a2bcfd826200bf6183a82584c2139f17da80a8",
     build: 2026101502,
     minimumBuild: 2026101502,
@@ -60,7 +60,7 @@ export const BUILDS: Build[] = [
     version: "2026.10.15-R11",
     size: "457.3 MiB",
     bytes: 479545957,
-    updated: "2026-10-15",
+    updated: "2026-10-16",
     sha256: "f70295913942a3f50ff9dc4fac27d769cc4f61212c70c07a27971640a2fe1c70",
     build: 2026101502,
     minimumBuild: 2026101502,
@@ -78,7 +78,7 @@ export const BUILDS: Build[] = [
     version: "2026.10.15-R11",
     size: "440.1 MiB",
     bytes: 461467895,
-    updated: "2026-10-15",
+    updated: "2026-10-16",
     sha256: "5c7a2d114859971361ac646cb6f67eef978c8020df48465ade94b31ffab273a2",
     build: 2026101502,
     minimumBuild: 2026101502,
@@ -146,7 +146,7 @@ export interface ReleaseNote {
 export const RELEASE_NOTES: ReleaseNote[] = [
   {
     version: "2026.10.15-R11",
-    date: "2026-10-15",
+    date: "2026-10-16",
     title: "像素傷害浮字、遠程技能與地形貼圖修補",
     changes: [
       "傷害改為原創像素數字、暖黃色與深色外框，依序短暫放大、停留閱讀與淡出（pop／read／fade）；治療、護盾保留各自顏色。擁擠時局部縮短移動，避免遮住生命數值與 HUD 操作按鈕。",

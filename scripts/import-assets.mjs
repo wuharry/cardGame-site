@@ -1,5 +1,5 @@
 // 從指定的 Godot 專案匯入真實素材；不下載 LFS，也不改動遊戲資源。
-// 用法：node scripts/import-assets.mjs <game-path> [--cards-only] [--menu <screenshot>] [--caverns <screenshot>]
+// 用法：node scripts/import-assets.mjs <game-path> [--cards-only] [--screens-dir <capture-directory>]
 import sharp from "sharp";
 import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
@@ -19,35 +19,8 @@ const CARD_ART = [
   "domain_fairy_forest",
 ];
 
-// 已逐張檢視的原生截圖。洞窟、雪地目前只有四路改版前的場景擷取，
-// 頁面必須保留「較早版本場景預覽」說明；不能拿來說明現行牌位規則。
-const SCREENSHOTS = [
-  {
-    slug: "hero-battlefield",
-    source: "docs/qa/combat-interactions-20261009/screenshots/sickness/normal100/next-owning-turn-ready.png",
-    note: "四路版本的原生 QA 截圖；使用測試配置，不代表自然對戰紀錄。",
-  },
-  {
-    slug: "arena-forest",
-    source: "docs/qa/combat-interactions-20261009/screenshots/sickness/normal100/summoned-versus-ready-and-charge.png",
-    note: "四路版本的原生 QA 截圖；呈現召喚疲勞與疾行。",
-  },
-  {
-    slug: "arena-caverns",
-    source: "docs/art/clear-water-20261009/after-caverns-front.png",
-    note: "較早版本的洞窟場景預覽，仍顯示五路；現行規則為四路。",
-  },
-  {
-    slug: "arena-frostlands",
-    source: "docs/art/clear-water-20261009/after-frostlands-front.png",
-    note: "較早版本的雪地場景預覽，仍顯示五路；現行規則為四路。",
-  },
-  {
-    slug: "main-menu",
-    source: "docs/qa/collection-decks-20261009/menu-zh/01-owned-practice-menu.png",
-    note: "2026-10-09 原生主選單截圖，含較早品牌與流程；R3 應另傳 --menu 指定已驗證的新畫面。",
-  },
-];
+// New captures are explicit; an ordinary card sync must never restore legacy screenshots.
+const SCREEN_SLUGS = ["hero-battlefield", "arena-forest", "arena-caverns", "arena-frostlands", "main-menu", "town"];
 
 function sha256(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
@@ -62,19 +35,27 @@ async function main() {
   let cardsOnly = false;
   let menuPath;
   let cavernsPath;
+  let screensDirectory;
   for (let index = 1; index < args.length; index++) {
     if (args[index] === "--cards-only") cardsOnly = true;
     else if (args[index] === "--menu" && args[index + 1] && !args[index + 1].startsWith("--")) {
       menuPath = path.resolve(args[++index]);
     } else if (args[index] === "--caverns" && args[index + 1] && !args[index + 1].startsWith("--")) {
       cavernsPath = path.resolve(args[++index]);
+    } else if (args[index] === "--screens-dir" && args[index + 1] && !args[index + 1].startsWith("--")) {
+      screensDirectory = path.resolve(args[++index]);
     } else throw new Error("未知或不完整的參數：" + args[index]);
   }
   if (!(await stat(path.join(game, "project.godot")).catch(() => null))?.isFile()) {
     throw new Error("找不到 project.godot，請確認遊戲來源路徑：" + game);
   }
   const project = await readFile(path.join(game, "project.godot"), "utf8");
-  const sourceVersion = project.match(/^config\/version="([^"]+)"/m)?.[1] ?? "未標記版本";
+  const release = await readFile(path.join(game, "src/release/release_info.gd"), "utf8").catch(() => "");
+  const sourceVersion = release.match(/^const VERSION := "([^"]+)"/m)?.[1]
+    ?? project.match(/^config\/version="([^"]+)"/m)?.[1] ?? "未標記版本";
+  if (screensDirectory && (cardsOnly || menuPath || cavernsPath)) {
+    throw new Error("--screens-dir 不可與 --cards-only、--menu 或 --caverns 同時使用");
+  }
 
   let commonGitDir;
   async function gameImage(relativePath) {
@@ -132,17 +113,33 @@ async function main() {
     const source = artResource.path.slice("res://".length);
     inputs.push({ kind: "cards", slug, source, resource: resourcePath, sourceVersion, buffer: await gameImage(source) });
   }
-  for (const screenshot of cardsOnly ? [] : SCREENSHOTS) {
-    if (menuPath && screenshot.slug === "main-menu") continue;
-    if (cavernsPath && screenshot.slug === "arena-caverns") continue;
-    inputs.push({ kind: "screens", ...screenshot, buffer: await gameImage(screenshot.source) });
+  if (screensDirectory) {
+    const capture = JSON.parse(await readFile(path.join(screensDirectory, "capture-manifest.json"), "utf8"));
+    if (capture.sourceVersion !== sourceVersion || !/^[a-f0-9]{8,40}$/.test(capture.sourceCommit)
+        || !/^\d{4}-\d{2}-\d{2}$/.test(capture.capturedOn)
+        || capture.captures.length !== SCREEN_SLUGS.length) {
+      throw new Error("擷取清單的版本、來源 commit、日期或圖片數不符");
+    }
+    for (const slug of SCREEN_SLUGS) {
+      const matches = capture.captures.filter((item) => item.slug === slug);
+      if (matches.length !== 1 || matches[0].source !== slug + ".png") {
+        throw new Error("擷取清單缺少、重複或使用非預期的圖片路徑：" + slug);
+      }
+      const file = path.join(screensDirectory, matches[0].source);
+      inputs.push({
+        kind: "screens", slug, source: path.relative(game, file).replaceAll(path.sep, "/"),
+        sourceRoot: "game-source", sourceVersion, sourceCommit: capture.sourceCommit,
+        capturedOn: capture.capturedOn, renderer: capture.renderer, platform: capture.platform,
+        note: matches[0].note, buffer: await readFile(file),
+      });
+    }
   }
   if (menuPath) {
     inputs.push({
       kind: "screens", slug: "main-menu", sourceVersion,
       source: path.relative(path.dirname(game), menuPath).replaceAll(path.sep, "/"),
       sourceRoot: "release-package",
-      note: "Windows 解壓包實際啟動畫面，包含視窗標題列；已目視確認 R3 品牌、新玩家抽卡與組牌入口。",
+      note: "指定的原生主選單畫面；來源平台與封裝驗收範圍需由提供者另行確認。",
       buffer: await readFile(menuPath).catch(() => { throw new Error("缺少指定的主選單截圖：" + menuPath); }),
     });
   }
@@ -151,7 +148,7 @@ async function main() {
       kind: "screens", slug: "arena-caverns", sourceVersion,
       source: path.relative(path.dirname(game), cavernsPath).replaceAll(path.sep, "/"),
       sourceRoot: "release-package",
-      note: "Windows R3 解壓包以合法自組牌組進入單人，AI 行動後回到我方第三回合的四路洞窟實際畫面；含視窗標題列。",
+      note: "指定的原生洞窟畫面；來源平台與封裝驗收範圍需由提供者另行確認。",
       buffer: await readFile(cavernsPath).catch(() => { throw new Error("缺少指定的洞窟截圖：" + cavernsPath); }),
     });
   }
@@ -170,8 +167,7 @@ async function main() {
     });
   }
 
-  // town.webp 是網站既有的無 UI 主選單背景，原始擷取來源未隨專案保存。
-  // 保留它並明列限制，不以不同內容的主選單畫面覆寫。
+  // Existing screens are retained unless a new explicit capture replaces that exact output.
   const townPath = path.join(OUT, "screens/town.webp");
   const town = await readFile(townPath).catch(() => {
     throw new Error("缺少網站既有背景：" + townPath +
@@ -179,15 +175,17 @@ async function main() {
   });
   const townMetadata = await sharp(town).metadata();
   const preserved = [];
-  if (cardsOnly) {
-    const previous = JSON.parse(await readFile(path.join(OUT, "import-manifest.json"), "utf8"));
-    for (const entry of previous) {
-      if (!entry.output.startsWith("/media/screens/") || entry.output === "/media/screens/town.webp" ||
-          outputs.some((output) => output.output === entry.output)) continue;
-      const retained = await readFile(path.join(SITE, "public", entry.output));
-      if (sha256(retained) !== entry.outputSha256) throw new Error("保留截圖與來源清單不符：" + entry.output);
-      preserved.push(entry);
-    }
+  const previous = JSON.parse(await readFile(path.join(OUT, "import-manifest.json"), "utf8"));
+  const previousTown = previous.find((entry) => entry.output === "/media/screens/town.webp");
+  if (previousTown && previousTown.outputSha256 !== sha256(town)) {
+    throw new Error("保留背景與來源清單不符：/media/screens/town.webp");
+  }
+  for (const entry of previous) {
+    if (!entry.output.startsWith("/media/screens/") || entry.output === "/media/screens/town.webp" ||
+        outputs.some((output) => output.output === entry.output)) continue;
+    const retained = await readFile(path.join(SITE, "public", entry.output));
+    if (sha256(retained) !== entry.outputSha256) throw new Error("保留截圖與來源清單不符：" + entry.output);
+    preserved.push(entry);
   }
 
   await mkdir(path.join(OUT, "cards"), { recursive: true });
@@ -201,7 +199,8 @@ async function main() {
     ...entry, outputSha256: sha256(data),
   }));
   manifest.push(...preserved);
-  manifest.push({
+  const retainedTown = !outputs.some((output) => output.output === "/media/screens/town.webp");
+  if (retainedTown) manifest.push(previousTown ?? {
     output: "/media/screens/town.webp", outputSha256: sha256(town),
     width: townMetadata.width, height: townMetadata.height,
     retained: true,
@@ -209,7 +208,7 @@ async function main() {
   });
   await writeFile(path.join(OUT, "import-manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
   console.log("完成：" + outputs.length +
-    " 張匯入，" + (preserved.length + 1) + " 張既有截圖／背景保留；來源與限制見 public/media/import-manifest.json。");
+    " 張匯入，" + (preserved.length + Number(retainedTown)) + " 張既有截圖／背景保留；來源與限制見 public/media/import-manifest.json。");
 }
 
 main().catch((error) => {

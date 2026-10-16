@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { COLLECTION_FEATURES, GAME_FACTS, SPOILS_RULES } from "@/data/game";
-import { mediaUrl } from "@/data/media";
+import { mediaCaptureCaption, mediaUrl } from "@/data/media";
 
 export function CollectionPanel() {
   return (
@@ -72,7 +72,7 @@ export function CollectionPanel() {
             className="h-auto w-full object-cover"
           />
           <figcaption className="body-cjk px-3 py-3 text-[0.8rem] text-quill">
-            主選單：引導練習、對戰準備與卡包收藏入口。此圖擷取自更名後的開發版本。
+            主選單：引導練習、對戰準備與卡包收藏入口。{mediaCaptureCaption("/media/screens/main-menu.webp")}。
           </figcaption>
         </figure>
 
