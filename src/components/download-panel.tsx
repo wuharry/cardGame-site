@@ -266,7 +266,7 @@ function BuildRow({ build }: { build: Build }) {
       {build.id === "android" && !href ? (
         <>
           <p className="body-cjk basis-full text-[0.82rem]">
-            R10 Android 測試包等待 Samsung Galaxy S24 FE 實機安裝、啟動與對戰驗收，完成前暫不提供公開下載。
+            Android 測試包等待 Samsung Galaxy S24 FE 實機安裝、啟動與對戰驗收，完成前暫不提供公開下載。
           </p>
           {build.status === "suspended" && build.note && <p className="body-cjk basis-full text-[0.82rem]">{build.note}</p>}
         </>

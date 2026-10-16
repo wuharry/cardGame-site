@@ -2,7 +2,7 @@
 export const GAME_FACTS = {
   nameZh: "王牌戰線",
   nameEn: "Deckmarch",
-  version: "2026.10.15-R10",
+  version: "2026.10.15-R11",
   engine: "Godot 4.7",
   lanes: 4,
   cards: 244,
@@ -174,8 +174,9 @@ export interface SystemRule {
 
 export const ACTION_RULES: SystemRule[] = [
   { label: "Attack", value: "1 / turn", note: "每個從者每回合一次普攻，免費。" },
-  { label: "Active skill", value: "1 / turn", note: "技能要花魔力；強化攻擊與普攻擇一。" },
-  { label: "Summoning sickness", value: "1 turn", note: "召喚當回合不能攻擊，【衝鋒】除外。" },
+  { label: "Active skill", value: "1 / turn", note: "技能要花魔力；強化攻擊和遠程法術與普攻擇一。" },
+  { label: "Ranged spell", value: "普攻擇一", note: "限明列的五項從者技能，不受目標反擊；仍需魔力，與普攻共用一次行動，受召喚暈眩、目標限制與反制規則。不算秘術，也不計連奏。" },
+  { label: "Summoning sickness", value: "1 turn", note: "召喚當回合不能普攻或使用攻擊型技能，【衝鋒】除外。" },
   { label: "Hero HP", value: "20", note: "歸零落敗。打英雄不受反擊。" },
   { label: "PvE turn", value: "不限時", note: "對 AI 沒有倒數，可以慢慢讀卡。" },
   { label: "PvP turn", value: "100 秒", note: "最後 15 秒倒數，逾時自動結束回合。" },

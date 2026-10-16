@@ -16,7 +16,7 @@ export function SystemsPanel() {
             一回合能做的事，就這麼多
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            每個從者每回合一次普攻 + 一次技能，魔力每回合 +1。
+            每個從者每回合一次普攻；強化攻擊和遠程法術與普攻擇一，技能仍需支付魔力。
           </p>
         </header>
 
