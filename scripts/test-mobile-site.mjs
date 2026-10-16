@@ -47,6 +47,12 @@ try {
   assert.equal(await page.locator(".site-header").evaluate(el => getComputedStyle(el).position), "sticky");
   for (const id of ["cards", "arenas", "download", "support"]) {
     await page.goto(`${base}/#${id}`, { waitUntil: "networkidle" });
+    // A same-document fragment navigation need not start any network work;
+    // observe its rendered destination instead of assuming networkidle implies it.
+    await page.waitForFunction(id => {
+      const rect = document.querySelector(`#${id} h2`)?.getBoundingClientRect();
+      return rect && rect.bottom > 0 && rect.top < innerHeight;
+    }, id, { timeout: 10000 });
     const target = await page.locator(`#${id} h2`).first().evaluate(el => {
       const rect = el.getBoundingClientRect(); return { top: rect.top, bottom: rect.bottom, viewport: innerHeight };
     });
@@ -71,9 +77,14 @@ try {
   assert.equal(firstScreenFonts.length, 1, "First screen must not download the entire Chinese family");
   assert(firstScreenFonts[0].bytes > 0 && firstScreenFonts[0].bytes <= 120000, "First-screen Chinese font budget is 120 KB");
   await normal.locator("#support").scrollIntoViewIfNeeded();
+  // Scroll completion can precede content-visibility activation and the next
+  // paint. Wait for a real deferred font response, not an already-idle network.
+  await normal.waitForFunction(() => performance.getEntriesByType("resource")
+    .filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2")).length > 1,
+  undefined, { timeout: 10000 });
   await normal.waitForLoadState("networkidle");
   await normal.evaluate(() => document.fonts.ready);
-  assert(await normal.evaluate(() => document.fonts.check('500 40px "Noto Serif TC"', "下一場好對局，從你的回饋開始")), "Deferred sections retain the original Chinese typeface");
+  assert(await normal.evaluate(() => document.fonts.check('500 40px "Noto Serif TC"', "這是持續開發中的獨立遊戲。好玩的地方、讓你挫折的時刻")), "Deferred sections retain the original Chinese typeface");
   assert(await normal.evaluate(() => performance.getEntriesByType("resource").filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2")).length > 1), "Scrolling loads the remaining original glyphs instead of dropping them");
   console.log("PASS cold first-screen font budget and original typeface after scrolling");
   await normal.close();
