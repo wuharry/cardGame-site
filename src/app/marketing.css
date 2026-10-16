@@ -27,6 +27,18 @@ html:has(.marketing-home) { scroll-behavior: auto; }
 .skip-link { position: absolute; left: 20px; top: -100px; padding: 12px 20px; color: var(--night-deep); background: var(--gold-light); z-index: 100; }
 .skip-link:focus { top: 10px; }
 .marketing-home { background: var(--night-deep); color: var(--paper); }
+/* Keep offscreen sections in the DOM and accessibility tree; the browser draws
+   them as they approach the viewport and remembers their actual block size. */
+@supports (content-visibility: auto) {
+  .marketing-home > section:not(.codex-hero) {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 1000px;
+  }
+  body:has(.marketing-home) > .site-footer {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 400px;
+  }
+}
 .marketing-home :where(section, article, div)[id], .subpage-heading { scroll-margin-top: 24px; }
 .marketing-home h2, .marketing-home h3, .subpage-heading h1, .site-footer { font-family: var(--font-serif); }
 .overline { font: 600 11px/1.6 var(--font-sans); letter-spacing: .22em; color: var(--gold); text-transform: uppercase; }

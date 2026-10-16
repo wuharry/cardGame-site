@@ -45,6 +45,14 @@ try {
   assert.equal(await page.locator(".site-header").evaluate(el => getComputedStyle(el).position), "sticky");
   await page.goForward(); await page.waitForURL("**/#main-content");
   assert.equal(await page.locator(".site-header").evaluate(el => getComputedStyle(el).position), "sticky");
+  for (const id of ["cards", "arenas", "download", "support"]) {
+    await page.goto(`${base}/#${id}`, { waitUntil: "networkidle" });
+    const target = await page.locator(`#${id} h2`).first().evaluate(el => {
+      const rect = el.getBoundingClientRect(); return { top: rect.top, bottom: rect.bottom, viewport: innerHeight };
+    });
+    assert(target.bottom > 0 && target.top < target.viewport, `${id} deep link reveals the actual section heading`);
+  }
+  await page.goto(base + "/", { waitUntil: "networkidle" });
   for (const viewport of [{ width: 844, height: 390 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));

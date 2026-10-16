@@ -40,4 +40,12 @@
 
 ## 正式部署與 PageSpeed
 
-待部署後補入同版本重測結果。原基準：效能 69、FCP 4.0 秒、LCP 5.3 秒、TBT 20 毫秒、CLS 0。
+第一輪 `9cc370f` 已部署，[報告](https://pagespeed.web.dev/analysis/https-twilight-codex-vercel-app/65jmfaqe4h?form_factor=mobile)為 74 分、FCP 3.6 秒、LCP 4.8 秒、TBT 30 毫秒、CLS 0。移除阻塞 CSS 後仍未達標；報告顯示完整頁面的字型仍在關鍵下載路徑，因此繼續修正，沒有把 74 分當完成。
+
+第二輪將首屏與消息用字分成 108,384 bytes 的主要字型片，保留全部字元、400–700 字重與原字型；其餘三片照常供下方區塊與指南使用，總共 473,856 bytes。使用原生 `content-visibility: auto` 延後繪製畫面外區塊與頁尾，保留 DOM、搜尋、可及性與原生跳轉，不以 hidden 或移除內容加速。`contain-intrinsic-block-size: auto` 在首次呈現後記住實際高度。
+
+本機初次載入中文字型從 468,364 bytes 減為 108,384 bytes；連同需要的英文字型為 165,760 bytes（約 162 KiB）。卡型、戰場、下載與回饋四個深層連結已加入操作驗收，避免區塊延後繪製造成跳錯位置。SEO 檢查因新增第四個字型檔成為 48 項，已通過。
+
+上述逐像素表是第一輪調整的比較；原生延後繪製後，完整長頁擷取會與實際可見範圍不同，另以相同 viewport 的可見區塊檢查完整圖文。第二輪正式部署後再補入同版本重測。原基準：效能 69、FCP 4.0 秒、LCP 5.3 秒、TBT 20 毫秒、CLS 0。
+
+第二輪另以隔離的 `5cc21a7` 原版與目前版本，在同一 Chrome／相同 viewport 對照八個區塊。全部展開後，手機與桌面的完整頁高皆與原版一致；首屏最大 RGB 通道差為手機 1、桌面 2（0–255 範圍），其他區塊包含字形邊緣／次像素與捲動繪製差異，沒有宣稱每個像素都相同。原圖、字重、文案與元件都保留；比較結果在 `/tmp/deckmarch-performance-review/paired-comparison.json`，沒有正式玩家資料。

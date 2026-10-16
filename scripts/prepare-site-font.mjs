@@ -13,11 +13,20 @@ for (const root of roots) {
 const text = (await Promise.all(files.map(file => readFile(file, "utf8")))).join("");
 const characters = [...new Set([...text].filter(char => char.codePointAt(0) > 127))].sort();
 const ascii = Array.from({ length: 95 }, (_, i) => String.fromCharCode(i + 32)).join("");
+// Keep the hero/header and immediately following news in one small subset.
+// Other sections do not need to make the first screen download all guide glyphs.
+const priorityText = await readFile("src/components/entry-screen.tsx", "utf8")
+  + await readFile("src/components/site-header.tsx", "utf8")
+  + (await readFile("src/components/home-sections.tsx", "utf8")).split("export function GameIntroduction")[0];
+const prioritySet = new Set([...priorityText]);
+const primary = characters.filter(char => prioritySet.has(char));
+const remaining = characters.filter(char => !prioritySet.has(char));
+const groups = [ascii + primary.join("")];
+for (let start = 0; start < remaining.length; start += 400) groups.push(remaining.slice(start, start + 400).join(""));
 // Keep each text= URL short. Oversized requests can silently return the full
 // CJK family; reject that response instead of committing multi-megabyte fonts.
 const subsets = [];
-for (let start = 0; start < characters.length; start += 400) {
-  const glyphs = (start === 0 ? ascii : "") + characters.slice(start, start + 400).join("");
+for (const glyphs of groups) {
   const url = new URL("https://fonts.googleapis.com/css2");
   url.searchParams.set("family", "Noto Serif TC:wght@400..700");
   url.searchParams.set("display", "swap");
@@ -46,6 +55,7 @@ await writeFile("src/fonts/manifest.json", JSON.stringify({
   family: "Noto Serif TC", weights: "400 700", format: "woff2", bytes: subsets.reduce((sum, s) => sum + s.font.length, 0),
   subsets: subsets.map(s => ({ file: s.file, bytes: s.font.length, sha256: createHash("sha256").update(s.font).digest("hex") })),
   characters: ascii + characters.join(""),
+  firstScreenCharacters: ascii + primary.join(""),
   source: "https://fonts.google.com/noto/specimen/Noto+Serif+TC", api: "https://developers.google.com/fonts/docs/css2",
   license: "/licenses/NotoSerifTC-OFL.txt", files: files.sort(),
 }, null, 2) + "\n");
