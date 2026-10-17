@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.16-r12";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.17-r13";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -32,7 +32,16 @@ export interface Build {
   noteEn?: string;
   /** 可讓單一平台更新，不把其他平台連到不存在的新附件。 */
   releaseBase?: string;
+  /** 僅供官網的已驗收下載鏡像；逐平台、逐版本啟用，不改遊戲更新 API。 */
+  mirrorProvider?: "itch.io";
+  /** itch.io 公開專案頁；不保存會過期的 CDN 簽名網址。 */
+  mirrorPageUrl?: string;
 }
+
+const R13_SUMMARY = {
+  zh: "紙鴉牌 · Deckmarch R13：加入起手換牌，煉金鍋爐移至獨立支援區，棄牌回魔改為向上取整並保留冷卻。修正連線未就緒時，開局換牌過早判斷主機身分造成的載入錯誤。保留原有帳號、收藏、牌組、存檔、資源加密、授權附件及可關閉的匿名統計。正式多人需 R13（BUILD 2026101701），protocol 19；雙方玩家與伺服器須同步更新。",
+  en: "Deckmarch R13 adds an opening-hand mulligan, moves alchemy cauldrons into dedicated support zones, and rounds half the discarded card's Cost up for Mana recycling while preserving its cooldown. It fixes loading errors caused by opening-hand logic checking server identity before the multiplayer connection is ready. Existing accounts, collections, decks, saves, resource encryption, legal notices and optional anonymous statistics are retained. Official multiplayer requires R13 (BUILD 2026101701), protocol 19; both players and the server must use the updated version.",
+};
 
 export const BUILDS: Build[] = [
   {
@@ -41,18 +50,18 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · x86_64",
     status: "available",
-    file: "TwilightCodex-Windows-20261016-R12.zip",
-    version: "2026.10.16-R12",
+    file: "TwilightCodex-Windows-20261017-R13.zip",
+    version: "2026.10.17-R13",
     size: "446.7 MiB",
-    bytes: 468407307,
-    updated: "2026-10-16",
-    sha256: "c76c4e4c67089d8723b3b6e84841f686b98f74032f49b2d389eeee0939ca38f5",
-    build: 2026101601,
-    minimumBuild: 2026101601,
-    protocol: 16,
+    bytes: 468434591,
+    updated: "2026-10-17",
+    sha256: "8cb834b99de019cdcc41595426858dc772b2b448cec7cbe6e257109f81820616",
+    build: 2026101701,
+    minimumBuild: 2026101701,
+    protocol: 19,
     requirement: "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    note: "紙鴉牌 Deckmarch R12：改善卡牌選取、合法目標、詳情閱讀與教學提示；卡圖按需載入並在關閉或捲出畫面時釋放，原圖品質不變。整合離線 AI 連招與明確遠程射擊規則。保留加密、完整授權與可關閉的匿名統計。正式多人需 R12（BUILD 2026101601），protocol 16。完整解壓後執行 TwilightCodex.exe，預設 Compatibility＋ANGLE，附本機診斷工具。本輪通過成品與資源檢查；Windows 原生啟動、朋友電腦及完整真人外網對局仍待驗收。",
-    noteEn: "Deckmarch R12 improves selection, legal targets, card details and tutorial hints. Illustrations load when displayed and release when hidden; original artwork quality is unchanged. Includes offline AI combo planning and explicit ranged-shot rules. Encryption, complete legal notices and optional anonymous statistics are retained. Official multiplayer requires R12 (BUILD 2026101601), protocol 16. Extract the full ZIP and run TwilightCodex.exe. Compatibility/ANGLE and local diagnostics are included. Finished-package checks passed; native Windows startup, friend PCs and full two-human Internet matches remain untested.",
+    note: `${R13_SUMMARY.zh} 完整解壓後執行 TwilightCodex.exe，預設 Compatibility＋ANGLE，附本機診斷工具。本輪通過封裝資源、授權及不同視窗尺寸檢查；完整解壓後的實際 EXE 已通過無畫面與一般視窗啟動，正常結束且沒有引擎錯誤或警告，一般視窗另確認主選單第一幀。主選單版面另以相同資源的驗收工具目視確認；未另擷取實際 EXE 畫面。朋友電腦及完整真人外網對局仍待驗收。`,
+    noteEn: `${R13_SUMMARY.en} Extract the full ZIP and run TwilightCodex.exe. Compatibility/ANGLE and local diagnostics are included. Packed-resource, legal-notice and viewport checks passed. The fully extracted Windows EXE passed headless and normal-window startup, exited normally with no engine errors or warnings, and recorded the first main-menu frame in normal-window mode. The menu layout was visually checked separately using a QA runtime with matching packed resources; no actual EXE screenshot was captured. Friend PCs and full two-human Internet matches remain untested.`,
   },
   {
     id: "macos",
@@ -60,18 +69,18 @@ export const BUILDS: Build[] = [
     platform: "macOS",
     en: "ZIP · Universal",
     status: "available",
-    file: "TwilightCodex-macOS-20261016-R12.zip",
-    version: "2026.10.16-R12",
+    file: "TwilightCodex-macOS-20261017-R13.zip",
+    version: "2026.10.17-R13",
     size: "467.6 MiB",
-    bytes: 490304440,
-    updated: "2026-10-16",
-    sha256: "c9f4f3f43ed06071a0b48870dba7c0c04c34e1c382c441cf8ac570a6e20da37a",
-    build: 2026101601,
-    minimumBuild: 2026101601,
-    protocol: 16,
+    bytes: 490339163,
+    updated: "2026-10-17",
+    sha256: "8c910985e3eb7bcfdde763ac389dd7e42644d7985d84054f377d37832b1ef7d9",
+    build: 2026101701,
+    minimumBuild: 2026101701,
+    protocol: 19,
     requirement: "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    note: "紙鴉牌 Deckmarch R12：改善卡牌選取、合法目標、詳情閱讀與教學提示；卡圖按需載入並在關閉或捲出畫面時釋放，原圖品質不變。整合離線 AI 連招與明確遠程射擊規則。保留加密、完整授權與可關閉的匿名統計。正式多人需 R12（BUILD 2026101601），protocol 16。macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。ad-hoc 簽章，尚未 Apple 公證。本輪通過成品與資源檢查；圖形介面及完整真人外網對局仍待驗收。",
-    noteEn: "Deckmarch R12 improves selection, legal targets, card details and tutorial hints. Illustrations load when displayed and release when hidden; original artwork quality is unchanged. Includes offline AI combo planning and explicit ranged-shot rules. Encryption, complete legal notices and optional anonymous statistics are retained. Official multiplayer requires R12 (BUILD 2026101601), protocol 16. Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the bundled .app. Ad-hoc signed, not Apple-notarized. Finished-package checks passed; graphical UI and full two-human Internet matches remain untested.",
+    note: `${R13_SUMMARY.zh} macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。ad-hoc 簽章，尚未 Apple 公證。本輪通過封裝資源與授權檢查；macOS 原生啟動、圖形介面及完整真人外網對局仍待驗收。`,
+    noteEn: `${R13_SUMMARY.en} Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the bundled .app. Ad-hoc signed, not Apple-notarized. Packed-resource and legal-notice checks passed; native macOS startup, graphical UI and full two-human Internet matches remain untested.`,
   },
   {
     id: "linux",
@@ -79,18 +88,18 @@ export const BUILDS: Build[] = [
     platform: "Linux",
     en: "ZIP · x86_64",
     status: "available",
-    file: "TwilightCodex-Linux-20261016-R12.zip",
-    version: "2026.10.16-R12",
+    file: "TwilightCodex-Linux-20261017-R13.zip",
+    version: "2026.10.17-R13",
     size: "449.1 MiB",
-    bytes: 470883738,
-    updated: "2026-10-16",
-    sha256: "e1dc393b34ca8a3e44c517aab6095c19e76f8f1d76a495ba8b8cf489bf8c297c",
-    build: 2026101601,
-    minimumBuild: 2026101601,
-    protocol: 16,
+    bytes: 470911434,
+    updated: "2026-10-17",
+    sha256: "1b91e3c33752c5598298d5c04d826d30ac983d124e76c39ea211d9b2280ae7c4",
+    build: 2026101701,
+    minimumBuild: 2026101701,
+    protocol: 19,
     requirement: "x86_64 · Ubuntu 24.04+，或其他 glibc 2.39+ 發行版",
-    note: "紙鴉牌 Deckmarch R12：改善卡牌選取、合法目標、詳情閱讀與教學提示；卡圖按需載入並在關閉或捲出畫面時釋放，原圖品質不變。整合離線 AI 連招與明確遠程射擊規則。保留加密、完整授權與可關閉的匿名統計。正式多人需 R12（BUILD 2026101601），protocol 16。Linux x86_64，需 glibc 2.39+，例如 Ubuntu 24.04+。完整解壓並保留執行權限，執行 launch.sh。本輪通過成品與資源檢查；Linux 桌面原生啟動與長時間效能、朋友電腦及完整真人外網對局仍待驗收。",
-    noteEn: "Deckmarch R12 improves selection, legal targets, card details and tutorial hints. Illustrations load when displayed and release when hidden; original artwork quality is unchanged. Includes offline AI combo planning and explicit ranged-shot rules. Encryption, complete legal notices and optional anonymous statistics are retained. Official multiplayer requires R12 (BUILD 2026101601), protocol 16. Linux x86_64 requires glibc 2.39+, such as Ubuntu 24.04+. Extract all files, retain executable permissions and run launch.sh. Finished-package checks passed; native Linux desktop startup, sustained performance, friend PCs and full two-human Internet matches remain untested.",
+    note: `${R13_SUMMARY.zh} Linux x86_64，需 glibc 2.39+，例如 Ubuntu 24.04+。完整解壓並保留執行權限，執行 launch.sh。本輪通過封裝資源與授權檢查；Linux 桌面原生啟動與長時間效能、朋友電腦及完整真人外網對局仍待驗收。`,
+    noteEn: `${R13_SUMMARY.en} Linux x86_64 requires glibc 2.39+, such as Ubuntu 24.04+. Extract all files, retain executable permissions and run launch.sh. Packed-resource and legal-notice checks passed; native Linux desktop startup, sustained performance, friend PCs and full two-human Internet matches remain untested.`,
   },
   {
     id: "android",
@@ -124,6 +133,20 @@ export function downloadUrl(build: Build): string | null {
   }
 }
 
+/** 官網使用已驗收的 itch.io 公開頁；未設定或格式錯誤時保留 GitHub 下載。 */
+export function websiteDownloadUrl(build: Build): string | null {
+  const canonical = downloadUrl(build);
+  if (!canonical || build.mirrorProvider !== "itch.io" || !build.mirrorPageUrl) return canonical;
+  try {
+    const url = new URL(build.mirrorPageUrl);
+    if (url.origin !== "https://wuharry.itch.io" || url.username || url.password || url.search || url.hash
+      || !/^\/[a-zA-Z0-9_-]+\/?$/.test(url.pathname)) return canonical;
+    return url.href;
+  } catch {
+    return canonical;
+  }
+}
+
 /** 版本頁沿用同一份 GitHub 附件資訊，不另外維護版本網址。 */
 export function releasePageUrl(build: Build): string | null {
   const href = downloadUrl(build);
@@ -150,6 +173,22 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "2026.10.17-R13",
+    date: "2026-10-17",
+    title: "紙鴉牌 · Deckmarch R13：起手換牌、煉金支援區與連線修正",
+    changes: [
+      "雙方可在第一回合前換掉 0–5 張起手牌一次，或全部保留；先從剩餘牌庫補牌，再把換出的牌洗回。PvE 不限時，PvP 有獨立 30 秒選牌時間，逾時保留未確認者的手牌；雙方確認後才開始第一回合。引導練習保留固定手牌。",
+      "煉金鍋爐改放在獨立支援區，每側最多一個，不占前後排從者格，也不替英雄或後排擋路。滿場仍可設置；鍋爐不會被當作從者攻擊、傷害、消滅或召還，原有材料配方保留。",
+      "棄牌回魔改為費用的一半向上取整：1／3／5 費牌分別獲得 1／2／3 點暫時魔力，偶數費收益不變；仍保留下一個自己的回合不能再用的冷卻。",
+      "修正多人對局載入時，起手換牌在連線未就緒前查詢主機身分造成的引擎錯誤。現在會先確認連線已建立；未就緒時略過主機判定與區網換牌同步。",
+      "修正部分 3D 素材失效的材質引用與匯入警告，保留模型幾何與貼圖內容。正式多人最低 BUILD 提升至 2026101701，protocol 更新為 19；雙方玩家與伺服器須同步更新，不重設既有玩家資料。",
+      "三個桌面 ZIP 通過封裝資源與授權檢查。完整解壓後的實際 Windows EXE 通過無畫面與一般視窗啟動，正常結束且沒有引擎錯誤或警告，另記錄主選單第一幀。Windows 版面以相同資源的驗收工具通過不同視窗尺寸檢查並目視確認，未另擷取實際 EXE 畫面。macOS／Linux 原生啟動、朋友電腦與完整真人外網對局仍待驗收。macOS 13+ 採 ad-hoc 簽章，尚未 Apple 公證；Linux 需 glibc 2.39+。",
+      "Android 公開下載維持停用，等待 Samsung Galaxy S24 FE 實機驗收；不提供舊 R9 APK 備援。",
+      `English summary: ${R13_SUMMARY.en}`,
+      "Validation scope: the three desktop ZIPs passed packed-resource and legal-notice checks. The fully extracted Windows EXE passed headless and normal-window startup, exited normally with no engine errors or warnings, and recorded the first main-menu frame. Its menu layout was visually checked using a QA runtime with matching packed resources, which also passed viewport checks; no actual EXE screenshot was captured. Native macOS/Linux startup, friend PCs and full two-human Internet matches remain untested. macOS 13+ is ad-hoc signed, not Apple-notarized; Linux requires glibc 2.39+. Android downloads remain disabled pending Samsung Galaxy S24 FE device testing, with no older R9 APK fallback.",
+    ],
+  },
   {
     "version": "2026.10.16-R12",
     "date": "2026-10-16",

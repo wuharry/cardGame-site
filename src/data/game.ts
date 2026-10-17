@@ -2,7 +2,7 @@
 export const GAME_FACTS = {
   nameZh: "紙鴉牌",
   nameEn: "Deckmarch",
-  version: "2026.10.16-R12",
+  version: "2026.10.17-R13",
   engine: "Godot 4.7",
   lanes: 4,
   heroHp: 20,
@@ -11,7 +11,7 @@ export const GAME_FACTS = {
   cards: 244,
   tokens: 21,
   aiPresets: 19,
-  protocol: 16,
+  protocol: 19,
 } as const;
 
 export interface LaneUnit {
@@ -195,7 +195,7 @@ export const ACTION_RULES: SystemRule[] = [
 export const RESOURCE_RULES: SystemRule[] = [
   { label: "Mana", value: "+1 / turn", note: "每回合上限 +1 並回滿，最高 10。" },
   { label: "Carry over", value: "refill", note: "剩下的魔力可在對手回合反制，但不累加。" },
-  { label: "Discard for mana", value: "Cost ÷ 2", note: "棄一張手牌換暫時魔力，隔一回合才能再用。" },
+  { label: "Discard for mana", value: "Cost ÷ 2 ↑", note: "棄一張手牌，獲得費用一半向上取整的暫時魔力；下一個自己的回合不能再用。" },
   { label: "Deck", value: "60", note: "同名卡最多 3 張。抽完不扣血。" },
   { label: "Hand limit", value: "8", note: "滿手再抽直接入墓，雙方都看得到。" },
   { label: "Natural draw", value: "空手抽 2", note: "通常抽一張；手牌空了抽兩張。" },

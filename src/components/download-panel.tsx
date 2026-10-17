@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BUILDS, buildStatusText, downloadUrl, releasePageUrl, type Build } from "@/data/releases";
+import { BUILDS, buildStatusText, downloadUrl, websiteDownloadUrl, releasePageUrl, type Build } from "@/data/releases";
 import { GAME_FACTS } from "@/data/game";
 import { CONNECTION_HELP, FIRST_MATCH_HELP, installationHelp } from "@/data/install-help";
 
@@ -73,7 +73,9 @@ export function DownloadPanel() {
 }
 
 function FeaturedBuild({ build }: { build: Build }) {
-  const href = downloadUrl(build);
+  const href = websiteDownloadUrl(build);
+  const githubHref = downloadUrl(build);
+  const usesItch = href !== githubHref && build.mirrorProvider === "itch.io";
   const releaseHref = releasePageUrl(build);
 
   return (
@@ -103,7 +105,7 @@ function FeaturedBuild({ build }: { build: Build }) {
             <span
               className="block text-lg tracking-[0.2em] uppercase font-hud font-bold"
             >
-              {build.id === "android" ? "下載 Android APK" : `下載 ${build.platform} 版`}
+              {usesItch ? "前往 itch.io 下載" : build.id === "android" ? "下載 Android APK" : `下載 ${build.platform} 版`}
             </span>
           </a>
         ) : (
@@ -119,6 +121,21 @@ function FeaturedBuild({ build }: { build: Build }) {
               {buildStatusText(build)}
             </span>
           </div>
+        )}
+
+        {usesItch && (
+          <p className="body-cjk text-sm leading-7">
+            下載頁提供多個平台，請選擇 {build.platform} 版：<code className="break-all">{build.file}</code>。
+          </p>
+        )}
+
+        {usesItch && githubHref && (
+          <a
+            href={githubHref}
+            className="block border border-brass-dim px-5 py-3 text-center text-sm text-brass-hi transition-colors hover:border-brass hover:text-parchment"
+          >
+            GitHub 備用下載
+          </a>
         )}
 
         {href && build.id === "android" && (
@@ -139,7 +156,7 @@ function FeaturedBuild({ build }: { build: Build }) {
 
       {releaseHref && (
         <details className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
-          <summary className="cursor-pointer text-brass-hi">下載沒開始？查看備用入口</summary>
+          <summary className="cursor-pointer text-brass-hi">查看 GitHub 版本頁與附件</summary>
           <p className="mt-3">
             到{" "}
             <a href={releaseHref} className="text-brass-hi underline underline-offset-4 hover:text-parchment">
@@ -157,10 +174,14 @@ function FeaturedBuild({ build }: { build: Build }) {
         <Spec label="Status" value={buildStatusText(build)} />
       </dl>
 
-      {build.note && (
+      {(build.note || build.noteEn) && (
         <details className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
-          <summary className="cursor-pointer text-parchment">版本說明與驗收範圍</summary>
-          <p className="mt-3">{build.note}</p>
+          <summary className="cursor-pointer text-parchment">
+            版本說明與驗收範圍 <span lang="en">· Release notes</span>
+          </summary>
+          <p className="mt-3 text-parchment font-serif">{GAME_FACTS.nameZh} · {GAME_FACTS.nameEn}</p>
+          {build.note && <p lang="zh-Hant" className="mt-3">{build.note}</p>}
+          {build.noteEn && <p lang="en" className="mt-3">{build.noteEn}</p>}
         </details>
       )}
       {href && build.sha256 && (
@@ -183,7 +204,7 @@ function Spec({ label, value }: { label: string; value: string }) {
 }
 
 function BuildRow({ build }: { build: Build }) {
-  const href = downloadUrl(build);
+  const href = websiteDownloadUrl(build);
 
   return (
     <li id={`download-${build.id}`} className="flex scroll-mt-24 flex-wrap items-baseline gap-x-6 gap-y-1 border-b border-rule-soft py-4">
