@@ -1,23 +1,27 @@
 # 下載與安裝改善
 
-2026-10-17：紙鴉牌 · Deckmarch R13 已在 GitHub Releases 公開三個桌面 ZIP 與 LF 格式 `SHA256SUMS`，四附件的檔名、大小與 SHA-256 均符合候選三最終 manifest。正式遊戲伺服器已同步來源 `066c80ace94135ed7be4260627393e7a59efb376`、BUILD／最低 BUILD `2026101701`、protocol `19`，完成備份並保留既有玩家狀態及安全設定，未重跑 SQL。官網第一階段 `31b1136` 已確認 Vercel 正式 Ready，精確成品 metadata 與中英文說明已上線；本階段僅將 Windows 主下載改為 itch.io，保留可見的同檔 GitHub 備用。macOS／Linux 主下載及遊戲更新 API 仍使用 GitHub。
+2026-10-18：紙鴉牌 · Deckmarch R13 已在 GitHub Releases 公開三個桌面 ZIP 與 LF 格式 `SHA256SUMS`，四附件的檔名、大小與 SHA-256 均符合候選三最終 manifest。正式遊戲伺服器已同步來源 `066c80ace94135ed7be4260627393e7a59efb376`、BUILD／最低 BUILD `2026101701`、protocol `19`，完成備份並保留既有玩家狀態及安全設定，未重跑 SQL。官網 `d4b92c2` 已確認 Vercel 正式 Ready，Windows itch.io 主下載與同檔 GitHub 備用已上線；本階段在 macOS／Linux 手動下載檔通過完整核對後，也啟用兩平台的 itch.io 主下載及可見的同檔 GitHub 備用。遊戲更新 API 保持 GitHub 原始網址與相同 metadata。
 
 公開 Windows ZIP 已完成不帶登入資訊的完整下載，468,434,591 bytes 與 SHA-256 符合封版；完整 CRC、安全解壓及 42 檔逐 SHA 核對通過。實際解壓 EXE 通過無畫面與一般視窗啟動，均正常結束、沒有引擎錯誤或警告，一般視窗記錄主選單第一幀。最初因低速中斷的下載 attempt1 與部分檔案仍以 FAIL 保留，後續獨立完整下載及完整驗收另記 PASS。相同資源的驗收工具另通過不同視窗尺寸檢查，主選單已目視確認；未另擷取實際 EXE 畫面。macOS／Linux 原生啟動、朋友電腦及完整真人外網對局仍未驗收。
 
 itch.io 四附件已成功發布，R13 中英文介紹、安裝說明與各平台檔案可在公開頁查看。使用者親手下載 Windows ZIP，該檔案的完整 bytes／SHA-256、CRC、42 檔安全清單與逐檔 SHA 均通過，且使用者明確表示「速度我認為可以接受」，因此先啟用 Windows 鏡像。這份手動下載檔與已驗收的 R13 Windows 成品相同；本次沒有重新執行該 Downloads 副本，不把先前相同 EXE 的啟動結果改稱本次新測試。
 
-Windows 的匿名 CLI 鏡像下載、成對下載測速及 CDN URL 擷取均為 NOT RUN，不宣稱量化加速倍數或保證其他網路速度。手動檔案檢查報告中的 16.087 秒是 CRC／hash 檢查耗時，並非下載時間。macOS／Linux 的 itch.io 完整下載尚未驗收，因此維持 GitHub 主下載，不顯示重複的 GitHub 備用按鈕。Android 公開下載仍停用，等待 Samsung Galaxy S24 FE 實機驗收。
+macOS／Linux 已分別從公開 itch.io 頁面手動下載，實際 Downloads 檔與封版三的完整 bytes／SHA-256、CRC、成員清單及逐檔 SHA／封裝 metadata 全部相符。macOS ZIP 為 490,339,163 bytes、SHA-256 `8c910985e3eb7bcfdde763ac389dd7e42644d7985d84054f377d37832b1ef7d9`，共 35 個成員；Linux ZIP 為 470,911,434 bytes、SHA-256 `1b91e3c33752c5598298d5c04d826d30ac983d124e76c39ea211d9b2280ae7c4`，共 30 個成員，執行檔與啟動器的 0755 權限 metadata 保留。驗收記錄：`build/mirror-apk-followup-20261018/qa/manual-itch-desktops-attempt1/verification.json`。本次僅讀取 ZIP 內容核對，未解壓到磁碟，也未進行 macOS／Linux 原生啟動。
+
+三平台的匿名 CLI 鏡像下載、成對下載測速及 CDN URL 擷取均為 NOT RUN，不宣稱量化加速倍數或保證其他網路速度。Windows 報告中的 16.087 秒與 macOS／Linux 報告中的 34.485 秒均為 CRC／hash 檢查耗時，並非下載時間。Android 公開下載仍停用，等待 Samsung Galaxy S24 FE 實機驗收。
+
+English: all three desktop download actions now open the official itch.io download section with a visible, same-file GitHub fallback. Manually downloaded macOS and Linux ZIPs matched the immutable R13 packages in complete size, SHA-256, CRC, member hashes and archive metadata; this does not establish native startup or device performance. Anonymous itch.io CLI downloads and paired speed benchmarks were not run. The game update API remains canonical GitHub, and Android downloads stay disabled.
 
 ## 官網鏡像接線：2026-10-17
 
 - 只鏡像本次封版驗收的 Windows／macOS／Linux 三個桌面 ZIP 與 `SHA256SUMS`，不含 Android 測試包、伺服器包、原始碼、模板或私密檔案。舊 R11 草稿附件不作為新版鏡像；最終檔名、大小與 SHA-256 以本次封版 manifest 為準。
-- `src/data/releases.ts` 的每份 `Build` 可選填 `mirrorProvider: "itch.io"` 與 `mirrorPageUrl`，指向已驗收成品所在的公開專案頁。只接受官方作者 `wuharry.itch.io` 的 HTTPS 專案頁，不保存會過期的 CDN 簽名網址。檔名、大小與 SHA-256 共用最終封版的 metadata，鏡像直接傳同份已驗收 ZIP，不再次加工或覆寫同版內容。目前僅 Windows 設定 `https://wuharry.itch.io/deckmarch`，其他平台未設定鏡像。
+- `src/data/releases.ts` 的每份 `Build` 可選填 `mirrorProvider: "itch.io"` 與 `mirrorPageUrl`，指向已驗收成品所在的公開專案頁。只接受官方作者 `wuharry.itch.io` 的 HTTPS 專案頁，不保存會過期的 CDN 簽名網址。檔名、大小與 SHA-256 共用最終封版的 metadata，鏡像直接傳同份已驗收 ZIP，不再次加工或覆寫同版內容。目前 Windows／macOS／Linux 均設定 `https://wuharry.itch.io/deckmarch`，Android 未設定鏡像。
 - `websiteDownloadUrl()` 僅供官網下載按鈕使用。未設定鏡像、網址格式不合法或不是官方 itch.io 專案頁時，按鈕保留 GitHub 來源；`planned`、`preparing`、`suspended` 成品在兩邊都不提供下載。
 - `downloadUrl()`、`releasePageUrl()` 與 `/api/game-version` 仍使用 GitHub。現有客戶端 `UpdateChecker.valid_download()` 只接受官方 GitHub 路徑，不能直接將 `RELEASE_BASE` 換成 CDN。
 - 啟用後主按鈕標示「前往 itch.io 下載」，旁邊說明應選的平台與完整檔名；不假裝會直接下載檔案。按鈕在專案網址通過原有驗證後，加上固定 `#download` 前往公開頁的下載區；不放寬 metadata 對任意 query／hash 的拒絕規則。只有啟用有效鏡像時，主按鈕下方才顯示「GitHub 備用下載」，指向同一份正式附件，避免未啟用時出現兩個相同入口；版本頁仍可另行展開。鏡像連線失敗時由使用者選擇備用，不在網頁猜測是否下載完成或自動重複下載。
 - Android 仍等待 Samsung Galaxy S24 FE 實機驗收，鏡像設定不會解除暫停下載。匿名統計、管理頁與遊戲伺服器不因本次接線而變動。
 
-鏡像按平台各自驗收，不把 Windows 的結果套用到 macOS／Linux。本次 Windows 採使用者實際下載、完整檔案核對及明確接受速度作為啟用依據；原有匿名 HEAD／Range／完整下載與成對測速工具保留為額外量測方式，本次相關 itch.io 網路量測沒有執行。若之後要宣稱快了多少，必須另做同網路、同大小樣本的量化比較。itch.io 的 [官方嵌入工具](https://itch.io/docs/creators/widget) 另提供 iframe，初版維持明確外連，不增加第三方 iframe、站內付款流程或網站權限設定。
+鏡像按平台各自驗收，不把 Windows 的結果套用到 macOS／Linux。Windows 採使用者實際下載、完整檔案核對及明確接受速度作為啟用依據；macOS／Linux 在各自實際下載檔通過完整核對後啟用。原有匿名 HEAD／Range／完整下載與成對測速工具保留為額外量測方式，本次相關 itch.io 網路量測沒有執行。若之後要宣稱快了多少，必須另做同網路、同大小樣本的量化比較。itch.io 的 [官方嵌入工具](https://itch.io/docs/creators/widget) 另提供 iframe，初版維持明確外連，不增加第三方 iframe、站內付款流程或網站權限設定。
 
 驗證命令：`node scripts/test-download-mirror.mjs`、`node scripts/test-game-version.mjs`、`node scripts/test-android-install-guide.mjs`、`node scripts/test-play-analytics.mjs`、`node scripts/test-admin-api.mjs`、`npm run lint`、`npm run build`。
 

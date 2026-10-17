@@ -86,4 +86,16 @@ for (const id of ["macos", "linux"]) {
 }
 check(JSON.stringify(versions.versionManifest(mixedBuilds)) === JSON.stringify(versions.versionManifest(mixedBuilds.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Mixed-platform website routing cannot change the canonical game update API");
 
+const published = await renderPanel(releases.BUILDS);
+check((published.match(/前往 itch\.io 下載/g) ?? []).length === 3 && (published.match(/GitHub 備用下載/g) ?? []).length === 3, "Published desktop release exposes three mirror actions and three visible backups");
+for (const id of ["windows", "macos", "linux"]) {
+  const build = releases.BUILDS.find((item) => item.id === id);
+  const platform = await renderPanel([build]);
+  check(releases.websiteDownloadUrl(build) === "https://wuharry.itch.io/deckmarch", `${id} has the verified official project configured`);
+  check(platform.includes('href="https://wuharry.itch.io/deckmarch#download"') && platform.includes(build.file), `${id} mirror action reaches the download section and names the correct package`);
+  check(platform.includes(`href="${releases.downloadUrl(build)}"`) && platform.includes("GitHub 備用下載"), `${id} retains its same-file GitHub backup`);
+}
+check(!published.includes(`href="${android.releaseBase ?? releases.RELEASE_BASE}/${android.file}"`), "Published desktop mirrors do not re-enable the Android APK");
+check(JSON.stringify(versions.versionManifest(releases.BUILDS)) === JSON.stringify(versions.versionManifest(releases.BUILDS.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Published desktop mirrors leave all canonical update metadata unchanged");
+
 console.log(`PASS download mirror and bilingual notes: ${checks} checks for main/backup links, bilingual summaries, unavailable builds and unchanged game update API`);
