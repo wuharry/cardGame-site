@@ -59,6 +59,8 @@ export const BUILDS: Build[] = [
     build: 2026101701,
     minimumBuild: 2026101701,
     protocol: 19,
+    mirrorProvider: "itch.io",
+    mirrorPageUrl: "https://wuharry.itch.io/deckmarch",
     requirement: "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
     note: `${R13_SUMMARY.zh} 完整解壓後執行 TwilightCodex.exe，預設 Compatibility＋ANGLE，附本機診斷工具。本輪通過封裝資源、授權及不同視窗尺寸檢查；完整解壓後的實際 EXE 已通過無畫面與一般視窗啟動，正常結束且沒有引擎錯誤或警告，一般視窗另確認主選單第一幀。主選單版面另以相同資源的驗收工具目視確認；未另擷取實際 EXE 畫面。朋友電腦及完整真人外網對局仍待驗收。`,
     noteEn: `${R13_SUMMARY.en} Extract the full ZIP and run TwilightCodex.exe. Compatibility/ANGLE and local diagnostics are included. Packed-resource, legal-notice and viewport checks passed. The fully extracted Windows EXE passed headless and normal-window startup, exited normally with no engine errors or warnings, and recorded the first main-menu frame in normal-window mode. The menu layout was visually checked separately using a QA runtime with matching packed resources; no actual EXE screenshot was captured. Friend PCs and full two-human Internet matches remain untested.`,

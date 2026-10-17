@@ -17,6 +17,7 @@ const fixture = {
 const canonical = releases.downloadUrl(fixture);
 const mirror = { ...fixture, mirrorProvider: "itch.io", mirrorPageUrl: "https://wuharry.itch.io/fixture-build" };
 const mirrorUrl = mirror.mirrorPageUrl;
+const mirrorDownloadUrl = `${mirrorUrl}#download`;
 let checks = 0;
 function check(condition, message) { assert.ok(condition, message); checks += 1; }
 
@@ -45,7 +46,7 @@ async function renderPanel(builds) {
   return renderToStaticMarkup(createElement(component.DownloadPanel));
 }
 const panel = await renderPanel([mirror]);
-check(panel.includes(`href="${mirrorUrl}"`), "Main website action uses the configured mirror");
+check(panel.includes(`href="${mirrorDownloadUrl}"`), "Main website action opens the validated project download section");
 check(panel.includes("前往 itch.io 下載") && panel.includes(`請選擇 ${fixture.platform} 版`) && panel.includes(fixture.file), "Project-page action explains the platform and exact file to select");
 check(panel.includes(`href="${canonical}"`) && panel.includes("GitHub 備用下載"), "Same-file GitHub backup remains directly clickable");
 check(panel.indexOf("GitHub 備用下載") < panel.indexOf("<details"), "GitHub backup is visible without opening a disclosure");
@@ -69,5 +70,20 @@ const chineseOnly = await renderPanel([{ ...fixture, note: chineseSummary, noteE
 check(chineseOnly.includes(chineseSummary) && !/<p\b[^>]*lang="en"/.test(chineseOnly), "Missing English metadata does not create an empty paragraph");
 const noSummary = await renderPanel([{ ...fixture, note: undefined, noteEn: undefined }]);
 check(!noSummary.includes("版本說明與驗收範圍"), "No empty release-notes disclosure is generated");
+
+const mixedBuilds = releases.BUILDS.map((build) => ({
+  ...build,
+  mirrorProvider: build.id === "windows" ? "itch.io" : undefined,
+  mirrorPageUrl: build.id === "windows" ? mirrorUrl : undefined,
+}));
+const mixed = await renderPanel(mixedBuilds);
+check((mixed.match(/前往 itch\.io 下載/g) ?? []).length === 1 && (mixed.match(/GitHub 備用下載/g) ?? []).length === 1, "Mixed-platform release exposes one mirror action and one visible backup");
+check(mixed.includes(`href="${mirrorDownloadUrl}"`), "Mixed-platform Windows action reaches itch download section");
+for (const id of ["macos", "linux"]) {
+  const build = mixedBuilds.find((item) => item.id === id);
+  const platform = await renderPanel([build]);
+  check(platform.includes(`href="${releases.downloadUrl(build)}"`) && !platform.includes("前往 itch.io 下載") && !platform.includes("GitHub 備用下載"), `${id} keeps GitHub primary without another platform's mirror or backup`);
+}
+check(JSON.stringify(versions.versionManifest(mixedBuilds)) === JSON.stringify(versions.versionManifest(mixedBuilds.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Mixed-platform website routing cannot change the canonical game update API");
 
 console.log(`PASS download mirror and bilingual notes: ${checks} checks for main/backup links, bilingual summaries, unavailable builds and unchanged game update API`);

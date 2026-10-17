@@ -99,7 +99,7 @@ function FeaturedBuild({ build }: { build: Build }) {
 
         {href ? (
           <a
-            href={href}
+            href={usesItch ? `${href}#download` : href}
             className="notch border border-brass bg-brass px-6 py-4 text-center text-ink transition-colors hover:bg-brass-hi"
           >
             <span
