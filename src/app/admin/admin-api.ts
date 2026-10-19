@@ -124,7 +124,15 @@ export type Player = {
   card_types: number; card_copies: number;
 };
 export type PlayerList = { registered: number; total: number; page: number; page_size: number; players: Player[] };
+export type PlayerCommerce = {
+  initialized: true; gold: number; diamonds: number; equipped_emotes: string[];
+  owned_emotes: { id: string; text: string; acquired_at: string; request_id: string }[];
+  transactions: { request_id: string; action: string; item_id: string; item_text: string | null;
+    terminal_error: string; created_at: string; gold_before: number; gold_after: number;
+    price: number | null; expected_price: number | null; diamonds_before: number | null; diamonds_after: number | null }[];
+};
 export type PlayerDetail = {
+  commerce?: PlayerCommerce | null;
   user: Player;
   wallet: { pack_tickets: number; starter_draws_remaining: number; opened_packs: number; last_claim_day: string | null } | null;
   collection: Record<string, number>;

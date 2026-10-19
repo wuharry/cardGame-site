@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AdminAPI, AdminError } from "./admin-api";
-import { dailyRows, livePresence, sampleSegments, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
+import { countAxis, dailyRows, hasMeasurement, livePresence, measuredSegments, tickIndices, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
+import MatchDuration from "./match-duration";
 import styles from "./admin.module.css";
 
 const date = (s: string) => new Date(s).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
@@ -10,37 +11,98 @@ const modes: Record<string, string> = { pve: "單人 AI", lan: "區網", pvp: "�
 const percent = (value: number | null) => value === null ? "尚無勝敗樣本" : `${value}%`;
 const colors = ["#dcc58c", "#7cc9bf", "#a9a7df"];
 
+const dailySeries = [
+  { key: "registered", label: "新增註冊", unit: "人" },
+  { key: "guest_active", label: "活躍遊客裝置（收到回報）", unit: "台" },
+  { key: "matches", label: "正式完賽", unit: "場" },
+] as const;
+const onlineSeries = [
+  { key: "online_connections", label: "全部連線", unit: "條" },
+  { key: "lobby_connections", label: "大廳連線", unit: "條" },
+  { key: "playing_connections", label: "對戰連線", unit: "條" },
+] as const;
+const measured = (value: unknown) => hasMeasurement(value) ? value.toLocaleString("zh-TW") : "無資料";
+
+// One keyboard stop per chart; arrows traverse every measurement, including zero/missing values.
+function TimePlot({ rows, series, kind, label, unit, gap }: {
+  rows: { time: string; values: (number | null)[] }[];
+  series: readonly { key: string; label: string; unit: string }[];
+  kind: "bar" | "line"; label: string; unit: string; gap: number;
+}) {
+  const [hidden, setHidden] = useState<string[]>([]);
+  const [selected, setSelected] = useState("");
+  const infoId = useId();
+  const index = Math.max(0, selected ? rows.findIndex(row => row.time === selected) : rows.length - 1);
+  const active = rows[index];
+  const visible = series.map((s, i) => hidden.includes(s.key) ? -1 : i).filter(i => i >= 0);
+  const axis = countAxis(rows.flatMap(row => visible.map(i => row.values[i])));
+  const start = Date.parse(rows[0].time);
+  const span = Date.parse(rows.at(-1)!.time) - start;
+  const x = (row: typeof active) => span ? 80 + (Date.parse(row.time) - start) / span * 600 : 380;
+  const y = (n: number) => 218 - n / axis.max * 174;
+  const barWidth = Math.max(1, Math.min(14, 600 / rows.length / Math.max(1, visible.length)));
+  const choose = (i: number) => setSelected(rows[Math.max(0, Math.min(rows.length - 1, i))].time);
+  const pointer = (event: React.PointerEvent<SVGSVGElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const position = (event.clientX - bounds.left) / bounds.width * 720;
+    const nearest = rows.reduce((best, row, i) => Math.abs(x(row) - position) < Math.abs(x(rows[best]) - position) ? i : best, 0);
+    choose(nearest);
+  };
+  return <div className={styles.interactiveChart}>
+    <div className={styles.seriesControls} aria-label={`${label}系列篩選`}>{series.map((s, i) => <button key={s.key} type="button"
+      aria-pressed={!hidden.includes(s.key)} onClick={() => setHidden(old => old.includes(s.key) ? old.filter(k => k !== s.key) : [...old, s.key])}>
+      <span style={{ color: colors[i] }} aria-hidden="true">● </span>{s.label}（{s.unit}）</button>)}</div>
+    <small>滑鼠移動、觸控點選圖表；聚焦圖表後用 ← → 選資料，Home／End 到首尾。可橫向捲動。</small>
+    {!visible.length && <p role="status" className={styles.note}>請選擇至少一個系列。</p>}
+    <div className={styles.chartScroll}><svg viewBox="0 0 720 270" role="img" tabIndex={0} aria-label={label} aria-describedby={infoId}
+      onPointerMove={event => { if (event.pointerType === "mouse") pointer(event); }} onPointerDown={pointer}
+      onKeyDown={event => {
+        const target = event.key === "ArrowLeft" ? index - 1 : event.key === "ArrowRight" ? index + 1 : event.key === "Home" ? 0 : event.key === "End" ? rows.length - 1 : null;
+        if (target !== null) { event.preventDefault(); choose(target); }
+      }}>
+      <text x="58" y="18" fill="#b9cac6" fontSize="12">{unit}</text>
+      {axis.ticks.map(n => <g key={n}><line x1="58" x2="704" y1={y(n)} y2={y(n)} stroke="#35484a" />
+        <text x="50" y={y(n) + 4} textAnchor="end" fill="#b9cac6" fontSize="12">{n.toLocaleString("zh-TW")}</text></g>)}
+      {visible.map((i, order) => <g key={series[i].key}>
+        {kind === "line" && measuredSegments(rows, row => row.values[i], row => Date.parse(row.time), gap).map((segment, j) =>
+          <polyline key={j} fill="none" stroke={colors[i]} strokeWidth="2.5" points={segment.map(row => `${x(row)},${y(row.values[i]!)}`).join(" ")} />)}
+        {rows.map(row => {
+          const value = row.values[i];
+          if (!hasMeasurement(value)) return null;
+          const px = x(row) + (kind === "bar" ? (order - (visible.length - 1) / 2) * barWidth : 0);
+          const title = `${row.time} · ${series[i].label}：${value} ${series[i].unit}`;
+          return kind === "bar" && value > 0 ? <rect key={row.time} x={px - barWidth / 2} y={y(value)} width={Math.max(.5, barWidth - 1)} height={218 - y(value)} fill={colors[i]}><title>{title}</title></rect>
+            : <circle key={row.time} cx={px} cy={y(value)} r={rows.length > 120 ? 1.5 : 3} fill={colors[i]}><title>{title}</title></circle>;
+        })}
+      </g>)}
+      <line x1={x(active)} x2={x(active)} y1="32" y2="220" stroke="#e4e8e5" strokeDasharray="4 4" opacity=".7" />
+      {tickIndices(rows.length).map((i, order, ticks) => <g key={rows[i].time}>
+        <line x1={x(rows[i])} x2={x(rows[i])} y1="218" y2="224" stroke="#9db0ad" />
+        <text x={x(rows[i])} y="242" textAnchor={order === 0 ? "start" : order === ticks.length - 1 ? "end" : "middle"} fill="#b9cac6" fontSize="12">
+          {rows[i].time.length === 10 ? rows[i].time.slice(5) : new Date(rows[i].time).toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei", month: "2-digit", day: "2-digit" })}
+          {rows[i].time.length > 10 && <tspan x={x(rows[i])} dy="17">{new Date(rows[i].time).toLocaleTimeString("zh-TW", { timeZone: "Asia/Taipei", hour12: false, hour: "2-digit", minute: "2-digit" })}</tspan>}
+        </text></g>)}
+    </svg></div>
+    <div id={infoId} className={styles.chartReadout} aria-live="polite" aria-atomic="true">
+      <strong>{active.time.length === 10 ? active.time : date(active.time)} · 台北時間</strong>
+      <div>{visible.map(i => <span key={series[i].key}><span style={{ color: colors[i] }} aria-hidden="true">● </span>{series[i].label}：{measured(active.values[i])}{hasMeasurement(active.values[i]) ? ` ${series[i].unit}` : ""}</span>)}</div>
+    </div>
+  </div>;
+}
+
 export function DailyPlot({ data, kind }: { data: PlayDashboard; kind: "bar" | "line" }) {
-  const rows = dailyRows(data.daily);
+  const rows = dailyRows(data.daily).map(row => ({ time: row.day, values: dailySeries.map(s => row[s.key]) }));
   if (!rows.length) return <p className={styles.empty}>尚無每日統計資料。</p>;
-  const keys = ["registered", "guest_active", "matches"] as const;
-  const labels = ["新增註冊", "活躍遊客裝置（收到回報）", "正式完賽"];
-  const max = Math.max(1, ...rows.flatMap(d => keys.map(k => d[k])));
-  const groupWidth = 674 / rows.length;
-  const barWidth = Math.min(16, groupWidth / 4);
-  return <><svg viewBox="0 0 720 220" role="img" aria-label={`每日新增註冊、活躍遊客裝置與正式完賽${kind === "bar" ? "柱狀圖" : "折線圖"}，日期由舊到新；精確值見下方表格`}>
-    {[...new Set([0, Math.ceil(max / 2), max])].map(n => <g key={n}><line x1="36" x2="710" y1={190 - n / max * 165} y2={190 - n / max * 165} stroke="#35484a" />
-      <text x="2" y={195 - n / max * 165} fill="#9db0ad" fontSize="12">{n}</text></g>)}
-    {kind === "bar" ? rows.map((d, x) => keys.map((key, i) => <rect key={`${d.day}-${key}`}
-      x={36 + (x + .5) * groupWidth + (i - 1.5) * barWidth} y={190 - d[key] / max * 165}
-      width={barWidth - 1} height={d[key] / max * 165} fill={colors[i]}>
-      <title>{`${d.day} · ${labels[i]}：${d[key]}`}</title></rect>))
-      : keys.map((key, i) => <g key={key}><polyline stroke={colors[i]} strokeWidth="2.5" fill="none"
-        points={rows.map((d, x) => `${36 + x * 674 / Math.max(1, rows.length - 1)},${190 - d[key] / max * 165}`).join(" ")} />
-        {rows.map((d, x) => <circle key={d.day} cx={36 + x * 674 / Math.max(1, rows.length - 1)} cy={190 - d[key] / max * 165} r="2.5" fill={colors[i]}>
-          <title>{`${d.day} · ${labels[i]}：${d[key]}`}</title></circle>)}</g>)}
-    <text x="36" y="216" fill="#9db0ad" fontSize="12">{rows[0].day}</text>
-    <text x="710" y="216" textAnchor="end" fill="#9db0ad" fontSize="12">{rows.at(-1)!.day}</text>
-  </svg><div className={styles.legend}>{labels.map((s, i) => <span key={s} style={{ color: colors[i] }}>● {s}</span>)}</div></>;
+  return <TimePlot rows={rows} series={dailySeries} kind={kind} label={`每日玩家活動${kind === "bar" ? "柱狀圖" : "折線圖"}，日期由舊到新`} unit="計數（人／台／場；各系列單位見圖例）" gap={129600000} />;
 }
 
 export function DailyChart({ data }: { data: PlayDashboard }) {
   const [kind, setKind] = useState<"bar" | "line">("bar");
   return <><div className={styles.chartControls}><label>趨勢呈現<select aria-label="每日趨勢圖類型" value={kind} onChange={e => setKind(e.target.value as "bar" | "line")}>
-    <option value="bar">柱狀圖</option><option value="line">折線圖</option></select></label><small>圖表由舊到新 · 表格由新到舊</small></div>
-    <DailyPlot data={data} kind={kind} />
-    <details><summary>每日數據表 · 新到舊</summary><div className={styles.tableScroll}><table><thead><tr><th scope="col" aria-sort="descending">台北日期 ↓</th><th>新增註冊</th><th>遊客首次回報</th><th>活躍遊客裝置</th><th>正式完賽</th></tr></thead>
-      <tbody>{dailyRows(data.daily, true).map(d => <tr key={d.day}><td>{d.day}</td><td>{d.registered}</td><td>{d.guest_installs}</td><td>{d.guest_active}</td><td>{d.matches}</td></tr>)}</tbody></table></div></details></>;
+    <option value="bar">柱狀圖</option><option value="line">折線圖</option></select></label><small>圖表由舊到新 · 表格由新到舊 · 無資料不補 0</small></div>
+    <DailyPlot key={kind} data={data} kind={kind} />
+    <details><summary>每日數據表 · 新到舊</summary><div className={styles.tableScroll}><table><thead><tr><th scope="col" aria-sort="descending">台北日期 ↓</th><th>新增註冊（人）</th><th>遊客首次回報（台）</th><th>活躍遊客裝置（台）</th><th>正式完賽（場）</th></tr></thead>
+      <tbody>{dailyRows(data.daily, true).map(d => <tr key={d.day}><td>{d.day}</td><td>{measured(d.registered)}</td><td>{measured(d.guest_installs)}</td><td>{measured(d.guest_active)}</td><td>{measured(d.matches)}</td></tr>)}</tbody></table></div></details></>;
 }
 
 export function ModeChart({ data }: { data: PlayDashboard }) {
@@ -65,20 +127,14 @@ export function ModeChart({ data }: { data: PlayDashboard }) {
 }
 
 export function OnlineChart({ data }: { data: PlayDashboard }) {
-  if (!data.online_samples.length) return <p className={styles.empty}>尚無伺服器心跳資料。更新主機後才會開始記錄。</p>;
-  const start = Date.parse(data.online_samples[0].minute);
-  const span = Math.max(60000, Date.parse(data.online_samples.at(-1)!.minute) - start);
-  const max = Math.max(1, ...data.online_samples.map(s => s.online_connections));
-  return <><svg viewBox="0 0 720 200" role="img" aria-label="最近二十四小時的伺服器連線人次，缺少回報時斷線">
-    {[0, .5, 1].map(n => <g key={n}><line x1="36" x2="710" y1={170 - n * 140} y2={170 - n * 140} stroke="#35484a" />
-      <text x="2" y={175 - n * 140} fill="#9db0ad" fontSize="12">{Math.round(max * n)}</text></g>)}
-    {sampleSegments(data.online_samples).map((segment, i) => <g key={i}>
-      <polyline fill="none" stroke={colors[1]} strokeWidth="2.5" points={segment.map(s => `${36 + (Date.parse(s.minute) - start) / span * 674},${170 - s.online_connections / max * 140}`).join(" ")} />
-      {segment.length === 1 && <circle cx={36 + (Date.parse(segment[0].minute) - start) / span * 674} cy={170 - segment[0].online_connections / max * 140} r="3" fill={colors[1]} />}
-    </g>)}
-    <text x="36" y="198" fill="#9db0ad" fontSize="11">{date(data.online_samples[0].minute)}</text>
-    <text x="710" y="198" textAnchor="end" fill="#9db0ad" fontSize="11">{date(data.online_samples.at(-1)!.minute)}</text>
-  </svg><p className={styles.note}>每分鐘最後一筆回報；圖線中斷代表缺資料。連線數含大廳與已入場玩家，不等於不同自然人。</p></>;
+  const rows = [...data.online_samples].sort((a, b) => a.minute.localeCompare(b.minute))
+    .map(row => ({ time: row.minute, values: onlineSeries.map(s => row[s.key]) }));
+  if (!rows.length) return <p className={styles.empty}>尚無伺服器心跳資料。更新主機後才會開始記錄。</p>;
+  return <><TimePlot rows={rows} series={onlineSeries} kind="line" label="最近二十四小時的伺服器連線數，缺少回報時斷線" unit="連線數（條）" gap={90000} />
+    <p className={styles.note}>每分鐘最後一筆回報；圖線中斷代表缺資料。連線數含大廳與已入場玩家，不等於不同自然人。</p>
+    <details><summary>在線精確數據表 · 新到舊</summary><div className={styles.tableScroll}><table><thead><tr><th>台北時間</th>{onlineSeries.map(s => <th key={s.key}>{s.label}（條）</th>)}</tr></thead><tbody>
+      {[...rows].reverse().map(row => <tr key={row.time}><td>{date(row.time)}</td>{row.values.map((v, i) => <td key={i}>{measured(v)}</td>)}</tr>)}
+    </tbody></table></div></details></>;
 }
 
 export default function PlayAnalytics({ api, disabled, onExpired }: { api: AdminAPI; disabled: boolean; onExpired: () => void }) {
@@ -91,16 +147,21 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
   const [busy, setBusy] = useState(false);
   const [clock, setClock] = useState(0);
   const request = useRef(0);
-  const loading = useRef(false);
+  const [revoked, setRevoked] = useState(false);
   const expired = useRef(onExpired);
   const [revision, setRevision] = useState(0);
   useEffect(() => { expired.current = onExpired; }, [onExpired]);
+  const clearPrivateData = useCallback(() => {
+    request.current++; setRevoked(true);
+    setData(null); setGuests(null); setRates(null); expired.current();
+  }, []);
   useEffect(() => {
     let active = true;
+    let loading = false;
     const generation = ++request.current;
     const load = async () => {
-      if (disabled || document.hidden || loading.current) return;
-      loading.current = true; setBusy(true);
+      if (disabled || revoked || document.hidden || loading) return;
+      loading = true; setBusy(true);
       try {
         const dashboard = await api.rpc<PlayDashboard>("tcg_admin_play_dashboard", { p_days: 28 });
         const guestList = await api.rpc<GuestList>("tcg_admin_guest_players", { p_page: guestPage });
@@ -112,15 +173,17 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
         setError(e instanceof Error ? e.message : "統計查詢失敗。");
         // Revoked permission clears private data immediately, just like an expired session.
         if (e instanceof AdminError && (e.status === 401 || e.status === 403)) {
-          setData(null); setGuests(null); setRates(null); expired.current();
+          clearPrivateData();
         }
-      } finally { loading.current = false; if (active) setBusy(false); }
+      } finally { loading = false; if (active) setBusy(false); }
     };
     void load();
     const poll = window.setInterval(() => void load(), 30000);
     const age = window.setInterval(() => { if (active) setClock(Date.now()); }, 5000);
     return () => { active = false; window.clearInterval(poll); window.clearInterval(age); };
-  }, [api, disabled, guestPage, ratePage, revision]);
+  }, [api, disabled, guestPage, ratePage, revision, revoked, clearPrivateData]);
+
+  if (revoked) return <p role="status">登入或管理權限已失效，私人統計已清除。</p>;
 
   const live = data ? livePresence(data, clock) : null;
   const guestFresh = data && clock - Date.parse(data.generated_at) < 90000;
@@ -152,6 +215,7 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
           {[m.wins, m.losses, m.draws, m.abandoned].map((n, i) => <span key={i} style={{ width: `${n / total * 100}%`, background: ["#7cc9bf", "#de9d98", "#dcc58c", "#6f8090"][i] }} />)}</div>
         <small>{m.wins} 勝 · {m.losses} 敗 · {m.draws} 平 · {m.abandoned} 中途離開 · {m.started - m.wins - m.losses - m.draws - m.abandoned} 尚未結束</small></div>; }) : <p className={styles.empty}>尚無遊客回報。更新遊戲客戶端後才開始收集。</p>}
       <h3>正式完賽原因 · 近 28 日</h3><div className={styles.legend}><span>擊敗 {data.formal_outcomes.defeat}</span><span>離開／斷線 {data.formal_outcomes.disconnect}</span><span>其中平手 {data.formal_outcomes.draws}</span></div></section></>}
+    <MatchDuration api={api} disabled={disabled} onExpired={clearPrivateData} />
     <section className={styles.panel}><h3>每位玩家勝敗率 · 正式伺服器紀錄（累計）</h3><p className={styles.note}>勝率＝勝／（勝＋敗），平手另列。樣本少時只供觀察；未完賽顯示無樣本。</p>
       <div className={styles.tableScroll}><table><thead><tr><th>玩家</th><th>場次／勝敗平</th><th>勝率</th><th>敗率</th><th>目前狀態</th></tr></thead><tbody>{rates?.players.map(p => <tr key={p.id}>
         <td>{p.email}<small>{p.id}</small></td><td>{p.total} 場 · {p.wins}／{p.losses}／{p.draws}</td><td>{percent(p.win_rate)}</td><td>{percent(p.loss_rate)}</td>

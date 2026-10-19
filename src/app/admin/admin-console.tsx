@@ -6,6 +6,7 @@ import { AdminAPI, AdminError, type AdminSession, type Change, type PlayerDetail
 import cards from "./card-names.json";
 import styles from "./admin.module.css";
 import PlayAnalytics from "./play-analytics";
+import PlayerCommerce from "./player-commerce";
 
 const date = (value?: string | null) => value ? new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "—";
 const name = (id: string) => (cards as Record<string, string>)[id] ?? id;
@@ -185,7 +186,7 @@ export default function AdminConsole() {
         </div>
         {detail.restriction.reason && <p>停權／恢復原因：{detail.restriction.reason}</p>}
         <nav aria-label="玩家資料分類" className={styles.tabs}>{[
-          ["collection", "持有卡牌"], ["receipts", "抽卡紀錄"], ["matches", "對局紀錄"], ["deck", "最近對局牌組"], ["audit", "管理操作紀錄"], ["mail", "禮物信件"],
+          ["commerce", "商店與資產"], ["collection", "持有卡牌"], ["receipts", "抽卡紀錄"], ["matches", "對局紀錄"], ["deck", "最近對局牌組"], ["audit", "管理操作紀錄"], ["mail", "禮物信件"],
         ].map(([key, label]) => <button disabled={busy} aria-pressed={tab === key} onClick={() => {
           setTab(key); if (key === "mail") void work(() => loadMail(detail.user.id));
         }} key={key}>{label}</button>)}</nav>
@@ -203,6 +204,7 @@ export default function AdminConsole() {
             <button disabled={busy || !mail || mailOffset + 20 >= mail.total} onClick={() => void work(() => loadMail(detail.user.id, mailOffset + 20))}>下一頁信件</button>
           </footer>
         </div>}
+        {tab === "commerce" && <PlayerCommerce key={detail.user.id} value={detail.commerce} />}
         {tab === "collection" && <><p className={styles.note}>雲端持有量，不是玩家端自行回報。</p><div className={styles.cardGrid}>
           {Object.entries(detail.collection).sort((a, b) => name(a[0]).localeCompare(name(b[0]), "zh-TW")).map(([id, copies]) =>
             <div key={id}><span>{name(id)}<small>{id}</small></span><strong>×{copies}</strong></div>)}</div>

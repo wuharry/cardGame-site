@@ -6,7 +6,7 @@ import { loadTsModule } from "./lib/load-ts-module.mjs";
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports, { allowNodeModules: true });
 const helpers = await load("../src/app/admin/play-analytics-types.ts");
 const charts = await load("../src/app/admin/play-analytics.tsx", {
-  "./play-analytics-types": helpers, "./admin-api": {}, "./admin.module.css": {},
+  "./play-analytics-types": helpers, "./admin-api": {}, "./match-duration": { default: () => null }, "./admin.module.css": {},
 });
 const now = Date.parse("2026-10-13T08:00:00Z");
 const sample = { minute: "2026-10-13T07:00:00Z", online_connections: 0, lobby_connections: 0, playing_connections: 0 };
@@ -22,7 +22,7 @@ check(helpers.sampleSegments(data.online_samples).length === 2, "No interpolated
 const empty = renderToStaticMarkup(createElement(charts.OnlineChart, { data: { ...data, online_samples: [] } }));
 check(empty.includes("尚無伺服器心跳") && !empty.includes("<svg"), "Empty online chart has an honest empty state");
 const online = renderToStaticMarkup(createElement(charts.OnlineChart, { data }));
-check(online.includes('role="img"') && (online.match(/<circle/g) ?? []).length === 2, "Isolated measurements remain visible and chart has accessible label");
+check(online.includes('role="img"') && (online.match(/<circle/g) ?? []).length === 6, "Isolated measurements remain visible and chart has accessible label");
 data.daily = [{ day: "2026-10-12", registered: 1, guest_installs: 2, guest_active: 3, matches: 4 },
   { day: "2026-10-13", registered: 0, guest_installs: 0, guest_active: 0, matches: 0 }];
 const daily = renderToStaticMarkup(createElement(charts.DailyChart, { data }));
@@ -47,3 +47,17 @@ check((pie.match(/<circle/g) ?? []).length === 2 && !pie.includes("區網"), "Ze
 const oneMode = renderToStaticMarkup(createElement(charts.ModeChart, { data: { ...data, guest_modes: [data.guest_modes[0]] } }));
 check(oneMode.includes("100.0%") && !oneMode.includes("NaN"), "A single mode renders a full ring");
 console.log(`Play charts: ${checks} checks PASS`);
+
+for (const maximum of [0, 1, 3, 99, 1500]) {
+  const axis = helpers.countAxis([maximum, null, NaN, undefined]);
+  check(axis.max >= Math.max(1, maximum) && axis.ticks.length === new Set(axis.ticks).size && axis.ticks.every(Number.isInteger), `Readable integer axis at maximum ${maximum}`);
+}
+check(JSON.stringify(helpers.tickIndices(28)) === "[0,7,14,20,27]", "Timeline includes three middle date ticks");
+check(JSON.stringify(helpers.tickIndices(1)) === "[0]", "Single sample has one non-overlapping tick");
+const missingRows = [{ t: 0, n: 1 }, { t: 1, n: null }, { t: 2, n: 0 }, { t: 5, n: 3 }];
+check(helpers.measuredSegments(missingRows, r => r.n, r => r.t, 2).length === 3, "Null and time gaps split lines; measured zero remains");
+const nullData = { ...data, daily: [{ ...data.daily[0], registered: null, guest_active: 0, matches: null }] };
+const nullable = renderToStaticMarkup(createElement(charts.DailyChart, { data: nullData }));
+check(nullable.includes("無資料") && nullable.includes("0 台") && !nullable.includes("NaN"), "Missing daily measurements differ from zero in readout and table");
+check(nullable.includes('tabindex="0"') && nullable.includes('aria-live="polite"') && nullable.includes('aria-pressed="true"'), "Charts expose keyboard focus, live exact values and series toggles");
+console.log("Extended chart checks PASS");
