@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.17-r13";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r14";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -38,6 +38,11 @@ export interface Build {
   mirrorPageUrl?: string;
 }
 
+const R14_SUMMARY = {
+  "zh": "紙鴉牌 · Deckmarch R14：加入輕鬆、天梯與奪牌模式、玩家成長與免費金幣獎勵；更新卡包商店、滑動撕包、九款主題包美術與逐張機率，第五張至少稀有（卡池耗盡時依三張保護回退）。加入投降提示，改善戰場光影及角色接地，修正退出時的音訊資源回收。保留既有帳號、收藏、牌組、存檔、資源加密與授權附件。正式多人最低 BUILD 2026101901、protocol 25，雙方需同步更新。",
+  "en": "Deckmarch R14 adds Casual, Ranked and Ante modes, progression and free Gold rewards; refreshes the pack storefront, swipe-to-tear effects, nine themed wrappers and per-card odds. Every fifth card is Rare or better, with a three-copy-protection fallback when that pool is exhausted. It adds surrender feedback, improves arena lighting and character grounding, and fixes audio-resource shutdown. Existing accounts, collections, decks, saves, encryption and legal notices are retained. Official multiplayer requires BUILD 2026101901 and protocol 25; both players must update."
+};
+
 const R13_SUMMARY = {
   zh: "紙鴉牌 · Deckmarch R13：加入起手換牌，煉金鍋爐移至獨立支援區，棄牌回魔改為向上取整並保留冷卻。修正連線未就緒時，開局換牌過早判斷主機身分造成的載入錯誤。保留原有帳號、收藏、牌組、存檔、資源加密、授權附件及可關閉的匿名統計。正式多人需 R13（BUILD 2026101701），protocol 19；雙方玩家與伺服器須同步更新。",
   en: "Deckmarch R13 adds an opening-hand mulligan, moves alchemy cauldrons into dedicated support zones, and rounds half the discarded card's Cost up for Mana recycling while preserving its cooldown. It fixes loading errors caused by opening-hand logic checking server identity before the multiplayer connection is ready. Existing accounts, collections, decks, saves, resource encryption, legal notices and optional anonymous statistics are retained. Official multiplayer requires R13 (BUILD 2026101701), protocol 19; both players and the server must use the updated version.",
@@ -50,20 +55,20 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · x86_64",
     status: "available",
-    file: "TwilightCodex-Windows-20261017-R13.zip",
-    version: "2026.10.17-R13",
-    size: "446.7 MiB",
-    bytes: 468434591,
-    updated: "2026-10-17",
-    sha256: "8cb834b99de019cdcc41595426858dc772b2b448cec7cbe6e257109f81820616",
-    build: 2026101701,
-    minimumBuild: 2026101701,
-    protocol: 19,
+    file: "TwilightCodex-Windows-20261019-R14.zip",
+    version: "2026.10.19-R14",
+    size: "454.1 MiB",
+    bytes: 476110382,
+    updated: "2026-10-19",
+    sha256: "4784e3682f47f37846248a5e4aef4d754d28fae8fe0804ffad9f0275ea30c757",
+    build: 2026101901,
+    minimumBuild: 2026101901,
+    protocol: 25,
     mirrorProvider: "itch.io",
     mirrorPageUrl: "https://wuharry.itch.io/deckmarch",
     requirement: "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    note: `${R13_SUMMARY.zh} 完整解壓後執行 TwilightCodex.exe，預設 Compatibility＋ANGLE，附本機診斷工具。本輪通過封裝資源、授權及不同視窗尺寸檢查；完整解壓後的實際 EXE 已通過無畫面與一般視窗啟動，正常結束且沒有引擎錯誤或警告，一般視窗另確認主選單第一幀。主選單版面另以相同資源的驗收工具目視確認；未另擷取實際 EXE 畫面。朋友電腦及完整真人外網對局仍待驗收。`,
-    noteEn: `${R13_SUMMARY.en} Extract the full ZIP and run TwilightCodex.exe. Compatibility/ANGLE and local diagnostics are included. Packed-resource, legal-notice and viewport checks passed. The fully extracted Windows EXE passed headless and normal-window startup, exited normally with no engine errors or warnings, and recorded the first main-menu frame in normal-window mode. The menu layout was visually checked separately using a QA runtime with matching packed resources; no actual EXE screenshot was captured. Friend PCs and full two-human Internet matches remain untested.`,
+    note: `${R14_SUMMARY.zh} 完整解壓後執行 TwilightCodex.exe，預設 Compatibility＋ANGLE，附啟動診斷工具。 三平台各通過 347 項封裝資源檢查，資源與授權稽核通過；測試包含實際音效播放與正常清理，沒有引擎錯誤或退出警告。已更新正式資料庫與專用伺服器，公開大廳連線檢查通過。各平台原生桌面完整試玩、朋友電腦與兩位真人完整外網對局仍待驗收。`,
+    noteEn: `${R14_SUMMARY.en} Extract the full ZIP and run TwilightCodex.exe. Compatibility/ANGLE and startup diagnostics are included. Each platform passed 347 packed-resource checks and resource/legal audits, including audible playback and clean shutdown with no engine errors or exit warnings. Production database and dedicated-server updates and public-lobby connectivity checks passed. Full native desktop playthroughs, friend PCs and complete two-human Internet matches remain untested.`,
   },
   {
     id: "macos",
@@ -71,20 +76,20 @@ export const BUILDS: Build[] = [
     platform: "macOS",
     en: "ZIP · Universal",
     status: "available",
-    file: "TwilightCodex-macOS-20261017-R13.zip",
-    version: "2026.10.17-R13",
-    size: "467.6 MiB",
-    bytes: 490339163,
-    updated: "2026-10-17",
-    sha256: "8c910985e3eb7bcfdde763ac389dd7e42644d7985d84054f377d37832b1ef7d9",
-    build: 2026101701,
-    minimumBuild: 2026101701,
-    protocol: 19,
+    file: "TwilightCodex-macOS-20261019-R14.zip",
+    version: "2026.10.19-R14",
+    size: "474.9 MiB",
+    bytes: 498005757,
+    updated: "2026-10-19",
+    sha256: "741bdf62b206a67eefb7101cd0ace1231cbd281ab9e64bfd09211f417a509874",
+    build: 2026101901,
+    minimumBuild: 2026101901,
+    protocol: 25,
     mirrorProvider: "itch.io",
     mirrorPageUrl: "https://wuharry.itch.io/deckmarch",
     requirement: "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    note: `${R13_SUMMARY.zh} macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。ad-hoc 簽章，尚未 Apple 公證。本輪通過封裝資源與授權檢查；macOS 原生啟動、圖形介面及完整真人外網對局仍待驗收。`,
-    noteEn: `${R13_SUMMARY.en} Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the bundled .app. Ad-hoc signed, not Apple-notarized. Packed-resource and legal-notice checks passed; native macOS startup, graphical UI and full two-human Internet matches remain untested.`,
+    note: `${R14_SUMMARY.zh} macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。ad-hoc 簽章，尚未 Apple 公證。 三平台各通過 347 項封裝資源檢查，資源與授權稽核通過；測試包含實際音效播放與正常清理，沒有引擎錯誤或退出警告。已更新正式資料庫與專用伺服器，公開大廳連線檢查通過。各平台原生桌面完整試玩、朋友電腦與兩位真人完整外網對局仍待驗收。`,
+    noteEn: `${R14_SUMMARY.en} Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the .app. Ad-hoc signed, not Apple-notarized. Each platform passed 347 packed-resource checks and resource/legal audits, including audible playback and clean shutdown with no engine errors or exit warnings. Production database and dedicated-server updates and public-lobby connectivity checks passed. Full native desktop playthroughs, friend PCs and complete two-human Internet matches remain untested.`,
   },
   {
     id: "linux",
@@ -92,20 +97,20 @@ export const BUILDS: Build[] = [
     platform: "Linux",
     en: "ZIP · x86_64",
     status: "available",
-    file: "TwilightCodex-Linux-20261017-R13.zip",
-    version: "2026.10.17-R13",
-    size: "449.1 MiB",
-    bytes: 470911434,
-    updated: "2026-10-17",
-    sha256: "1b91e3c33752c5598298d5c04d826d30ac983d124e76c39ea211d9b2280ae7c4",
-    build: 2026101701,
-    minimumBuild: 2026101701,
-    protocol: 19,
+    file: "TwilightCodex-Linux-20261019-R14.zip",
+    version: "2026.10.19-R14",
+    size: "456.4 MiB",
+    bytes: 478585010,
+    updated: "2026-10-19",
+    sha256: "d7fdd09de832b11fc044cc121df3d8b33a2cae579d040dbc4623d2d46357f922",
+    build: 2026101901,
+    minimumBuild: 2026101901,
+    protocol: 25,
     mirrorProvider: "itch.io",
     mirrorPageUrl: "https://wuharry.itch.io/deckmarch",
     requirement: "x86_64 · Ubuntu 24.04+，或其他 glibc 2.39+ 發行版",
-    note: `${R13_SUMMARY.zh} Linux x86_64，需 glibc 2.39+，例如 Ubuntu 24.04+。完整解壓並保留執行權限，執行 launch.sh。本輪通過封裝資源與授權檢查；Linux 桌面原生啟動與長時間效能、朋友電腦及完整真人外網對局仍待驗收。`,
-    noteEn: `${R13_SUMMARY.en} Linux x86_64 requires glibc 2.39+, such as Ubuntu 24.04+. Extract all files, retain executable permissions and run launch.sh. Packed-resource and legal-notice checks passed; native Linux desktop startup, sustained performance, friend PCs and full two-human Internet matches remain untested.`,
+    note: `${R14_SUMMARY.zh} Linux x86_64，需 glibc 2.39+，例如 Ubuntu 24.04+；完整解壓並保留執行權限，執行 launch.sh。 三平台各通過 347 項封裝資源檢查，資源與授權稽核通過；測試包含實際音效播放與正常清理，沒有引擎錯誤或退出警告。已更新正式資料庫與專用伺服器，公開大廳連線檢查通過。各平台原生桌面完整試玩、朋友電腦與兩位真人完整外網對局仍待驗收。`,
+    noteEn: `${R14_SUMMARY.en} Linux x86_64 requires glibc 2.39+, such as Ubuntu 24.04+. Extract all files, retain executable permissions and run launch.sh. Each platform passed 347 packed-resource checks and resource/legal audits, including audible playback and clean shutdown with no engine errors or exit warnings. Production database and dedicated-server updates and public-lobby connectivity checks passed. Full native desktop playthroughs, friend PCs and complete two-human Internet matches remain untested.`,
   },
   {
     id: "android",
@@ -179,6 +184,21 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    "version": "2026.10.19-R14",
+    "date": "2026-10-19",
+    "title": "紙鴉牌 · Deckmarch R14：主題撕包、玩家成長與三種對戰",
+    "changes": [
+      "紙鴉牌 · Deckmarch R14：加入輕鬆、天梯與奪牌模式、玩家成長與免費金幣獎勵；更新卡包商店、滑動撕包、九款主題包美術與逐張機率，第五張至少稀有（卡池耗盡時依三張保護回退）。加入投降提示，改善戰場光影及角色接地，修正退出時的音訊資源回收。保留既有帳號、收藏、牌組、存檔、資源加密與授權附件。正式多人最低 BUILD 2026101901、protocol 25，雙方需同步更新。",
+      "九款主題包使用各自封面，切換與撕包沿用同一素材；光線隨包內最高稀有度由白光漸變。逐張機率與第五張保底規則可在詳情查看；三張持有保護與舊收據保留。",
+      "新增免費金幣、每週獎勵、起始牌組與賽季稱號。正式對戰的獎勵與排名由伺服器結算；本版沒有開放真實付款。",
+      "正式資料庫與遊戲主機已更新；protocol 25 與最低 BUILD 2026101901 同步生效，舊版需更新後進入正式大廳。",
+      "三平台各通過 347 項封裝資源檢查，資源與授權稽核通過；測試包含實際音效播放與正常清理，沒有引擎錯誤或退出警告。已更新正式資料庫與專用伺服器，公開大廳連線檢查通過。各平台原生桌面完整試玩、朋友電腦與兩位真人完整外網對局仍待驗收。",
+      "Android APK 維持停用，等待 Samsung Galaxy S24 FE 實機驗收；本版不發布 APK，也不提供舊 R9 備援。",
+      "English summary: Deckmarch R14 adds Casual, Ranked and Ante modes, progression and free Gold rewards; refreshes the pack storefront, swipe-to-tear effects, nine themed wrappers and per-card odds. Every fifth card is Rare or better, with a three-copy-protection fallback when that pool is exhausted. It adds surrender feedback, improves arena lighting and character grounding, and fixes audio-resource shutdown. Existing accounts, collections, decks, saves, encryption and legal notices are retained. Official multiplayer requires BUILD 2026101901 and protocol 25; both players must update.",
+      "Validation scope: Each platform passed 347 packed-resource checks and resource/legal audits, including audible playback and clean shutdown with no engine errors or exit warnings. Production database and dedicated-server updates and public-lobby connectivity checks passed. Full native desktop playthroughs, friend PCs and complete two-human Internet matches remain untested."
+    ]
+  },
   {
     version: "2026.10.17-R13",
     date: "2026-10-17",
