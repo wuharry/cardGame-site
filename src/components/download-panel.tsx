@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BUILDS, buildStatusText, downloadUrl, websiteDownloadUrl, releasePageUrl, type Build } from "@/data/releases";
+import { BUILDS, buildStatusText, downloadUrl, websiteDownloadUrl, downloadMirrorPageUrl, releasePageUrl, type Build } from "@/data/releases";
 import { GAME_FACTS } from "@/data/game";
 import { CONNECTION_HELP, FIRST_MATCH_HELP, installationHelp } from "@/data/install-help";
 
@@ -15,19 +15,19 @@ export function DownloadPanel() {
     .filter((build) => build.displayName && build.displayName !== GAME_FACTS.nameZh)
     .map((build) => `${build.version}（${build.displayName}）`))].join("、");
   const others = BUILDS.filter((build) => !downloadUrl(build));
-  const help = available.flatMap((build) => installationHelp(build));
 
   return (
-    <section id="download" className="border-t border-rule-soft bg-board">
+    <section id="download" aria-labelledby="download-title" className="border-t border-rule-soft bg-board">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <header className="max-w-2xl">
-          <p className="eyebrow">YOUR NEXT MATCH STARTS HERE</p>
-          <h2 className="section-title mt-4 text-3xl sm:text-4xl">
-            選好平台，準備開戰。
+          <p className="eyebrow">DOWNLOAD & PLAY</p>
+          <h2 id="download-title" className="section-title mt-4 text-3xl sm:text-4xl">
+            選擇你的電腦，免費下載。
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            選擇符合裝置的平台，依下方說明解壓縮或安裝。和朋友連線前，請各自更新至對應平台的最新玩家包；系統需求與實測範圍列在每份下載旁。
+            在這裡選平台、下載 ZIP，再照卡片上的步驟開啟遊戲。和朋友玩時，記得兩邊都用最新版。
           </p>
+          <p lang="en" className="body-cjk mt-3 text-sm">Choose your platform, download the ZIP, and follow the steps below. Free desktop demo.</p>
           {legacyVersions && <p className="body-cjk mt-4 text-sm">
             遊戲已更名為「{GAME_FACTS.nameZh} {GAME_FACTS.nameEn}」。目前提供的玩家包仍使用舊名稱：{legacyVersions}。下載檔名沿用 TwilightCodex；「{GAME_FACTS.nameZh}」會隨之後的玩家包更新。
           </p>}
@@ -35,7 +35,7 @@ export function DownloadPanel() {
             <nav aria-label="可下載的平台" className="mt-5 flex flex-wrap gap-2">
               {available.map((build) => (
                 <a key={build.id} href={`#download-${build.id}`} className="border border-brass-dim px-3 py-2 text-sm text-brass-hi hover:border-brass">
-                  {build.platform}
+                  選擇 {build.platform}
                 </a>
               ))}
             </nav>
@@ -47,7 +47,7 @@ export function DownloadPanel() {
         </div>
 
         <div className="mt-10 border-y border-rule-soft py-2">
-          {[FIRST_MATCH_HELP, ...help, CONNECTION_HELP].map((item) => (
+          {[FIRST_MATCH_HELP, CONNECTION_HELP].map((item) => (
             <details key={item.title} className="border-b border-rule-soft py-4 last:border-0">
               <summary className="cursor-pointer text-sm text-parchment font-serif">
                 {item.title}
@@ -74,9 +74,15 @@ export function DownloadPanel() {
 
 function FeaturedBuild({ build }: { build: Build }) {
   const href = websiteDownloadUrl(build);
-  const githubHref = downloadUrl(build);
-  const usesItch = href !== githubHref && build.mirrorProvider === "itch.io";
+  const mirrorHref = downloadMirrorPageUrl(build);
   const releaseHref = releasePageUrl(build);
+  const troubleshooting = installationHelp(build);
+  const firstSteps: Record<string, { zh: string; en: string }> = {
+    windows: { zh: "完整解壓縮 → TwilightCodex.exe", en: "Extract all → TwilightCodex.exe" },
+    macos: { zh: `Finder 解壓縮 → ${build.displayName || "紙鴉牌"}.app`, en: `Unzip in Finder → ${build.displayName || "紙鴉牌"}.app` },
+    linux: { zh: "解壓縮 → launch.sh", en: "Extract → launch.sh" },
+  };
+  const firstStep = firstSteps[build.id];
 
   return (
     <div id={`download-${build.id}`} className="plate notch min-w-0 scroll-mt-24">
@@ -99,14 +105,16 @@ function FeaturedBuild({ build }: { build: Build }) {
 
         {href ? (
           <a
-            href={usesItch ? `${href}#download` : href}
+            href={href}
+            download={build.file ?? undefined}
             className="notch border border-brass bg-brass px-6 py-4 text-center text-ink transition-colors hover:bg-brass-hi"
           >
             <span
               className="block text-lg tracking-[0.2em] uppercase font-hud font-bold"
             >
-              {usesItch ? "前往 itch.io 下載" : build.id === "android" ? "下載 Android APK" : `下載 ${build.platform} 版`}
+              {build.id === "android" ? "下載 Android APK" : `下載 ${build.platform} ZIP`}
             </span>
+            <span lang="en" className="mt-1 block text-xs">{build.size} · Download from GitHub</span>
           </a>
         ) : (
           <div aria-disabled="true" className="notch border border-brass-dim px-6 py-4 text-center">
@@ -123,19 +131,20 @@ function FeaturedBuild({ build }: { build: Build }) {
           </div>
         )}
 
-        {usesItch && (
-          <p className="body-cjk text-sm leading-7">
-            下載頁提供多個平台，請選擇 {build.platform} 版：<code className="break-all">{build.file}</code>。
-          </p>
+        {firstStep && (
+          <div className="body-cjk text-sm leading-7">
+            <p>{firstStep.zh}</p>
+            <p lang="en" className="text-xs text-quill">{firstStep.en}</p>
+          </div>
         )}
-
-        {usesItch && githubHref && (
-          <a
-            href={githubHref}
-            className="block border border-brass-dim px-5 py-3 text-center text-sm text-brass-hi transition-colors hover:border-brass hover:text-parchment"
-          >
-            GitHub 備用下載
-          </a>
+        {mirrorHref && (
+          <div className="body-cjk text-sm leading-7">
+            <a href={`${mirrorHref}#download`} target="_blank" rel="noopener noreferrer" className="text-brass-hi underline underline-offset-4 hover:text-parchment">
+              下載太慢？試試 itch.io 備用頁 ↗
+            </a>
+            <p className="mt-2 text-xs">另開分頁後，選擇 {build.platform} 的 <code className="break-all">{build.file}</code>。安裝說明會留在這裡。</p>
+            <p lang="en" className="mt-2 text-xs">Slow download? The itch.io backup page opens in a new tab. Choose the same {build.platform} ZIP.</p>
+          </div>
         )}
 
         {href && build.id === "android" && (
@@ -154,6 +163,18 @@ function FeaturedBuild({ build }: { build: Build }) {
         )}
       </div>
 
+      {troubleshooting.length > 0 && (
+        <details className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
+          <summary className="cursor-pointer text-parchment">無法開啟？ <span lang="en">· Help</span></summary>
+          {troubleshooting.map((item) => (
+            <div key={item.title} className="mt-4">
+              <h3 className="text-parchment">{item.title}</h3>
+              <p className="mt-2">{item.body}</p>
+            </div>
+          ))}
+        </details>
+      )}
+
       {releaseHref && (
         <details className="body-cjk border-t border-rule px-6 py-4 text-[0.82rem]">
           <summary className="cursor-pointer text-brass-hi">查看 GitHub 版本頁與附件</summary>
@@ -168,10 +189,10 @@ function FeaturedBuild({ build }: { build: Build }) {
       )}
 
       <dl className="grid grid-cols-2">
-        <Spec label="Version" value={build.version ?? "—"} />
-        <Spec label="File size" value={build.size ?? "—"} />
-        <Spec label="Updated" value={formatDate(build.updated)} />
-        <Spec label="Status" value={buildStatusText(build)} />
+        <Spec label="版本 · Version" value={build.version ?? "—"} />
+        <Spec label="大小 · Size" value={build.size ?? "—"} />
+        <Spec label="更新 · Updated" value={formatDate(build.updated)} />
+        <Spec label="狀態 · Status" value={buildStatusText(build)} />
       </dl>
 
       {(build.note || build.noteEn) && (

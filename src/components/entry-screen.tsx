@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BUILDS, downloadUrl } from "@/data/releases";
 import { GAME_FACTS } from "@/data/game";
 import { mediaUrl } from "@/data/media";
+import { DownloadLink } from "@/components/download-link";
 
 export function EntryScreen() {
   const available = BUILDS.filter((build) => downloadUrl(build));
@@ -17,12 +18,12 @@ export function EntryScreen() {
           <h1 id="hero-title">紙鴉牌</h1>
           <div className="hero-rule" aria-hidden="true"><span>✦</span></div>
           <h2>落下的每張牌，<br />都是下一步伏筆。</h2>
-          <p className="hero-description">四路佈陣，跨路交鋒。召喚從者、埋下伏印，<br className="desktop-break" />在對手以為勝券在握時，打出你的反擊。</p>
+          <p className="hero-description">召喚夥伴、搭配法術，組出自己的打法。<br className="desktop-break" />先和電腦練習，再約朋友玩一局。</p>
           <div className="hero-actions">
-            <Link href="#download" className="codex-button">下載試玩 <span aria-hidden="true">↓</span></Link>
+            <DownloadLink className="codex-button">下載試玩 <span aria-hidden="true">↓</span></DownloadLink>
             <Link href="#about" className="codex-button ghost">探索遊戲 <span aria-hidden="true">↘</span></Link>
           </div>
-          <p className="hero-platforms">{available.map((build) => build.platform).join(" / ") || "版本準備中"}<span>HD-2D 回合制卡牌對戰</span></p>
+          <p className="hero-platforms">{available.map((build) => build.platform).join(" / ") || "版本準備中"}<span>免費試玩 · 回合制卡牌對戰</span></p>
         </div>
         <div className="hero-cards" aria-label="遊戲原創卡圖：樹靈守衛、冰霜女巫、死靈法師">
           <div className="arcane-ring" aria-hidden="true" />

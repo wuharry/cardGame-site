@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { DownloadLink } from "@/components/download-link";
 
 const NAV = [
   { href: "/#about", label: "遊戲介紹" },
@@ -32,7 +33,7 @@ export function SiteHeader() {
         <nav className="desktop-nav" aria-label="主要導覽">
           {NAV.map((item) => <Link key={item.href} href={item.href} prefetch={false}>{item.label}</Link>)}
         </nav>
-        <Link href="/#download" className="header-download" onClick={() => setOpen(false)}>下載試玩 <span aria-hidden="true">↗</span></Link>
+        <DownloadLink className="header-download" onClick={() => setOpen(false)}>下載試玩 <span aria-hidden="true">↓</span></DownloadLink>
         <button ref={toggle} type="button" className="menu-toggle" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "關閉導覽選單" : "開啟導覽選單"} onClick={() => setOpen(!open)}>
           <span aria-hidden="true">{open ? "✕" : "☰"}</span>
         </button>

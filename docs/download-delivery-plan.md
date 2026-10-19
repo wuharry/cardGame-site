@@ -1,5 +1,17 @@
 # 下載與安裝改善
 
+## 2026-10-19 工作區修正（尚未部署）
+
+官網候選改為在本站選平台、直接下載 GitHub ZIP，並在各平台卡片內顯示安裝步驟；itch.io 改為另開分頁的備用入口。正式 R14 的檔名、大小、SHA-256、BUILD `2026101901`、protocol `25` 與更新 API 均維持原值，Android 仍停用，沒有重新打包或替換下載附件。
+
+- `DownloadLink` 在首頁每次點擊都更新原生 fragment 並捲到下載區，避免相同 `#download` 被當作無變更；從其他頁面仍使用正常路由。首頁區段與 footer 已移除 `content-visibility` 和估算高度，避免到達 fragment 後再重排把位置推走；各元件延後載入與圖片固定比例保留。瀏覽器驗收須在冷開、重複點擊與跨頁返回後持續觀察，不能只看點擊當下的座標。
+- `websiteDownloadUrl()` 固定使用原始 GitHub 附件；`downloadMirrorPageUrl()` 只接受已設定的官方 itch.io 公開專案頁。站內安裝說明保持可見，長篇版本／校驗／疑難排解另行展開。
+- itch.io 的官方 [widget](https://itch.io/docs/creators/widget) 與 [JavaScript buy button](https://itch.io/docs/api/javascript) 支援從外站啟動官方下載流程；後者在免費專案也會開啟彈出流程。這些文件沒有提供可取代目前附件的永久 ZIP URL，因此本輪不擷取 CDN 簽名網址、不繞過官方流程，也不宣稱備用頁一定較快。
+
+候選已通過下載與備用入口／雙語內容、既有安裝說明、Android gate、版本 API 回歸及 build／lint；`BUILDS`、`RELEASE_NOTES` 與版本 API 已和修改前 HEAD 做完整物件比對。原生瀏覽器、實際檔案下載與網速驗收由後續 QA 記錄，來源測試通過不等於正式網站已更新。
+
+## 先前發布與鏡像驗收
+
 2026-10-18：紙鴉牌 · Deckmarch R13 已在 GitHub Releases 公開三個桌面 ZIP 與 LF 格式 `SHA256SUMS`，四附件的檔名、大小與 SHA-256 均符合候選三最終 manifest。正式遊戲伺服器已同步來源 `066c80ace94135ed7be4260627393e7a59efb376`、BUILD／最低 BUILD `2026101701`、protocol `19`，完成備份並保留既有玩家狀態及安全設定，未重跑 SQL。官網 `d4b92c2` 已確認 Vercel 正式 Ready，Windows itch.io 主下載與同檔 GitHub 備用已上線；本階段在 macOS／Linux 手動下載檔通過完整核對後，也啟用兩平台的 itch.io 主下載及可見的同檔 GitHub 備用。遊戲更新 API 保持 GitHub 原始網址與相同 metadata。
 
 公開 Windows ZIP 已完成不帶登入資訊的完整下載，468,434,591 bytes 與 SHA-256 符合封版；完整 CRC、安全解壓及 42 檔逐 SHA 核對通過。實際解壓 EXE 通過無畫面與一般視窗啟動，均正常結束、沒有引擎錯誤或警告，一般視窗記錄主選單第一幀。最初因低速中斷的下載 attempt1 與部分檔案仍以 FAIL 保留，後續獨立完整下載及完整驗收另記 PASS。相同資源的驗收工具另通過不同視窗尺寸檢查，主選單已目視確認；未另擷取實際 EXE 畫面。macOS／Linux 原生啟動、朋友電腦及完整真人外網對局仍未驗收。

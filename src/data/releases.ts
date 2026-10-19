@@ -144,17 +144,21 @@ export function downloadUrl(build: Build): string | null {
   }
 }
 
-/** 官網使用已驗收的 itch.io 公開頁；未設定或格式錯誤時保留 GitHub 下載。 */
+/** 官網主下載直接使用同一份 GitHub 成品，平台選擇與安裝說明留在本站。 */
 export function websiteDownloadUrl(build: Build): string | null {
-  const canonical = downloadUrl(build);
-  if (!canonical || build.mirrorProvider !== "itch.io" || !build.mirrorPageUrl) return canonical;
+  return downloadUrl(build);
+}
+
+/** 備用入口只接受官方公開專案頁，不保存會過期的 CDN 或私人下載網址。 */
+export function downloadMirrorPageUrl(build: Build): string | null {
+  if (!downloadUrl(build) || build.mirrorProvider !== "itch.io" || !build.mirrorPageUrl) return null;
   try {
     const url = new URL(build.mirrorPageUrl);
     if (url.origin !== "https://wuharry.itch.io" || url.username || url.password || url.search || url.hash
-      || !/^\/[a-zA-Z0-9_-]+\/?$/.test(url.pathname)) return canonical;
+      || !/^\/[a-zA-Z0-9_-]+\/?$/.test(url.pathname)) return null;
     return url.href;
   } catch {
-    return canonical;
+    return null;
   }
 }
 
