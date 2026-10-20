@@ -1,5 +1,38 @@
 # 下載與安裝改善
 
+## 2026-10-20 紙鴉牌 Deckmarch R15：發布與驗收範圍
+
+R15 已公開至 [GitHub Releases](https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.19-r15)，正式遊戲伺服器也已更新；三平台公開首次下載與啟動已完成，官網文案與下載資料已備妥，等待最後 build 與部署。本節不代表 Vercel 正式網站已切換。版本為 `2026.10.19-R15`，BUILD／最低 BUILD `2026101902`、protocol `27`，凍結遊戲來源為 `7f74a3bd058e5d37a25f718caf7fc7c2939a4339`。公開品牌沿用「紙鴉牌 Deckmarch」；素材檔名中的 PaperRaven 不另作遊戲名稱。
+
+玩家先下載並完整解壓遊戲程式。開啟封面後按「開始」，遊戲才下載該平台的美術與音效；等待時可讀已內建的說明書。三平台素材各為 422,201,600 bytes，約 422 MB（402.6 MiB），與按鈕上的程式 ZIP 大小分開顯示。同版本素材經檢查後保留快取，不要求玩家手動下載或開啟素材檔。
+
+- Windows ZIP：61,682,457 bytes，SHA-256 `aaaf94a07909077b38dfbaac31f1927976b337afc47aec8b55dab09de8c6d696`。
+- macOS ZIP：83,581,195 bytes，SHA-256 `a38db2611e6d97cbd68dc6f2388af127fc4413c8e29687cc84a3762e5b82d7ae`。
+- Linux ZIP：64,157,003 bytes，SHA-256 `bac43bd18eb429c2564149a6a9ffadd6ec731efd716c9a8567bd6b17bbc0d801`。
+
+- Windows 素材 SHA-256：`fd8775c7b3c41e0239e6e0c8f6d1685d09e5619c35fb4c31fbe94d9f299c9b8d`。
+- macOS 素材 SHA-256：`b30c6906acba01474281c3e3ce78fd43e3c809893d43d3a45ad75869563de5aa`。
+- Linux 素材 SHA-256：`21fa1f030ecc054e37551e49e16117e3526fee174ac1187ab315064c78b62dd7`。
+
+GitHub Releases 維持主下載。itch.io 尚未上傳並驗收相同 R15 成品，因此移除三平台的舊鏡像入口，避免玩家拿到 R13／R14；本次不啟用 Cloudflare、網域或付費 CDN。大型程式與素材留在發布附件，不放網站 `public/`，也不透過網站 API 轉送。公開附件白名單為三 ZIP、三平台素材、`release.json` 與 `SHA256SUMS`，不含私人伺服器或開發檔。
+
+`Build.delivery`／`Build.content` 只供下載說明讀取實際素材資訊。`/api/game-version` 保持 schema 1，下載網址仍是三個固定版號的 ZIP；遊戲下載素材使用包內固定版本資料。Android 持續停用，不提供舊 APK 備援。
+
+本輪證據依驗證範圍分開記錄，不沿用 R14 的檢查數，也不把正常進入主選單寫成全部測試通過：
+
+- **PASS：公開附件身分。** Release `418400821` 的八個附件已由匿名公開 API 核對完整檔名、bytes 與 digest。`release.json` 為 4,880 bytes、SHA-256 `e8b1dd844cf9eb47b6b614c859a48d9c34acb01736557884c2c44acc825b8c34`；`SHA256SUMS` 為 637 bytes、SHA-256 `ed67de30ee33b3d078c48146bfbb2f778b5656da64ba1610ae0c6d1a0aba7b39`。
+- **PASS：macOS／Linux 公開首次下載與啟動。** 公開原生 CI 的 headless 與 GUI 各自使用隔離的新資料目錄，未預放素材；由遊戲從包內同版本網址實際下載、校驗並掛載素材後到達主選單，均 exit 0、0 ERROR、主選單及隔離路徑標記成立。這次證據不等於所有 Mac 型號、Linux 發行版或完整對局都已驗收。
+- **PASS：Windows 公開首次下載與啟動。** 公開 Windows ZIP 與另行下載的素材 PCK 已核對完整 bytes／SHA-256，ZIP 通過 CRC、安全解壓與逐檔身分比對。獨立下載的 PCK 只供檔案核對，未放進遊戲快取。實際解壓 EXE 的 headless／GUI 各自從全新快取下載素材，兩者均到達主選單、cache bytes／SHA 符合、資料目錄隔離成立、exit 0／0 ERROR；各保留 1 個退出警告，strict 結果仍 FAIL。這是實際遊戲的首次下載驗收，不是預置快取或只檢查檔案可下載。
+- **FAIL：退出清理的嚴格檢查。** 三平台原生啟動均觀察到 ObjectDB 退出清理警告；Windows 舊報告只計 engine log，漏掉 stdout 的警告，已撤回「Windows 無警告」結論。現在兩份輸出都須判讀，0 ERROR／exit 0 不能抵銷 WARNING。Windows verbose 另列 211 個 RefCounted 樣本，不能把它當成所有測試固定都是 213 個物件，也未證明它們全由新下載流程造成。警告仍判 strict FAIL，不靠忽略訊息、提高基準或清掉報告改成 PASS。
+- **PASS：伺服器更新與隔離關閉。** 正式服務已完成備份與更新，核對 BUILD `2026101902`、protocol `27` 及 active 狀態；保留既有玩家資料與安全設定，未重跑資料庫 installer 或 SQL。隔離 Linux systemd 停止驗收為 0 ERROR／0 WARNING；這個結果不代替真人完整外網對局。
+- **NOT RUN：完整真人對局、朋友電腦與長時間遊玩。** 尚未據此確認持續遊玩記憶體成長或其他裝置效能。macOS 為 ad-hoc 簽章，尚未 Apple 公證；Android 公開下載持續停用，仍等待 S24 FE 實機驗收。官網正式 build、提交與 Vercel 正式版本核對由最後發布步驟執行，本次文案準備不宣稱已部署。
+
+私有候選的快取預置驗收只證明封裝內容可載入，不能寫成 HTTP 首次下載 PASS；公開驗收須從空快取出發，保存下載及快取身分證據。各平台的啟動成功與退出清理 FAIL 並列，不把後者當成「只是假測試問題」，也不憑退出警告推論遊戲必然無法啟動。
+
+English: Deckmarch R15 is public on GitHub, and the production server is updated to BUILD 2026101902 and protocol 27. Players download a smaller desktop ZIP, then press Start in the game to fetch about 422 MB of art and audio while reading the bundled rulebook. Verified content for the same version stays cached. GitHub remains the main download; unverified older itch.io backups are disabled, and no paid CDN is enabled. All eight public assets match the pinned names, sizes and SHA-256 digests. Actual Windows, macOS and Linux headless and GUI runs downloaded content into fresh isolated profiles and reached the main menu with exit 0 and no errors. The public Windows ZIP also passed CRC, safe extraction and per-file identity checks; its separately verified content download was never used to seed the game profiles. All three desktop platforms still have ObjectDB exit-cleanup warnings, which remain strict FAIL. Full human matches, friend computers and long-duration play are not verified. macOS is not Apple-notarized, and Android downloads remain disabled. This document does not claim the website deployment is complete.
+
+驗證入口：`node scripts/test-streamed-downloads.mjs <最終 release.json 路徑>`、`node scripts/test-game-version.mjs`、`node scripts/test-download-mirror.mjs`、`node scripts/test-android-install-guide.mjs`、`npm run lint`、`npm run build`。既有下載錨點程式不變，仍須用正式瀏覽器驗收首頁重複點擊、跨頁返回與手機版；本機來源檢查不能替代瀏覽器或部署驗收。
+
 ## 2026-10-19 工作區修正（尚未部署）
 
 官網候選改為在本站選平台、直接下載 GitHub ZIP，並在各平台卡片內顯示安裝步驟；itch.io 改為另開分頁的備用入口。正式 R14 的檔名、大小、SHA-256、BUILD `2026101901`、protocol `25` 與更新 API 均維持原值，Android 仍停用，沒有重新打包或替換下載附件。

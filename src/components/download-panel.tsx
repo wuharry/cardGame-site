@@ -15,6 +15,11 @@ export function DownloadPanel() {
     .filter((build) => build.displayName && build.displayName !== GAME_FACTS.nameZh)
     .map((build) => `${build.version}（${build.displayName}）`))].join("、");
   const others = BUILDS.filter((build) => !downloadUrl(build));
+  const firstMatch = available.some((build) => build.delivery === "streamed") ? {
+    title: "第一次進遊戲怎麼開始？",
+    body: "先選「新手教學」。完成後會拿到一副 60 張起始牌組，可以先玩單人對戰；之後再開免費卡包、調整自己的牌組。",
+    bodyEn: "Start with the tutorial. Completing it gives you a 60-card starter deck for solo play. Open your free packs and customise your deck when you are ready.",
+  } : FIRST_MATCH_HELP;
 
   return (
     <section id="download" aria-labelledby="download-title" className="border-t border-rule-soft bg-board">
@@ -47,12 +52,13 @@ export function DownloadPanel() {
         </div>
 
         <div className="mt-10 border-y border-rule-soft py-2">
-          {[FIRST_MATCH_HELP, CONNECTION_HELP].map((item) => (
+          {[firstMatch, CONNECTION_HELP].map((item) => (
             <details key={item.title} className="border-b border-rule-soft py-4 last:border-0">
               <summary className="cursor-pointer text-sm text-parchment font-serif">
                 {item.title}
               </summary>
               <p className="body-cjk mt-3 max-w-3xl text-[0.86rem]">{item.body}</p>
+              {"bodyEn" in item && typeof item.bodyEn === "string" && <p lang="en" className="body-cjk mt-2 max-w-3xl text-[0.82rem]">{item.bodyEn}</p>}
             </details>
           ))}
         </div>
@@ -83,6 +89,8 @@ function FeaturedBuild({ build }: { build: Build }) {
     linux: { zh: "解壓縮 → launch.sh", en: "Extract → launch.sh" },
   };
   const firstStep = firstSteps[build.id];
+  const contentSize = build.delivery === "streamed" && build.content && build.content.bytes > 0
+    ? `${Math.round(build.content.bytes / 1_000_000)} MB` : null;
 
   return (
     <div id={`download-${build.id}`} className="plate notch min-w-0 scroll-mt-24">
@@ -135,6 +143,14 @@ function FeaturedBuild({ build }: { build: Build }) {
           <div className="body-cjk text-sm leading-7">
             <p>{firstStep.zh}</p>
             <p lang="en" className="text-xs text-quill">{firstStep.en}</p>
+          </div>
+        )}
+        {contentSize && (
+          <div className="body-cjk border-t border-rule-soft pt-4 text-sm leading-7">
+            <p className="text-parchment">首次另下載約 {contentSize} 的美術與音效。</p>
+            <p lang="en" className="text-xs text-quill">First launch adds about {contentSize} of art and audio.</p>
+            <p className="mt-2">開啟遊戲後按「開始」。下載時可以先看內建說明書；同一版素材下載完成後，下次不用重載。</p>
+            <p lang="en" className="mt-2 text-xs text-quill">Press Start in the game. Read the built-in rulebook while it downloads; the same version stays cached for next time.</p>
           </div>
         )}
         {mirrorHref && (
@@ -190,7 +206,7 @@ function FeaturedBuild({ build }: { build: Build }) {
 
       <dl className="grid grid-cols-2">
         <Spec label="版本 · Version" value={build.version ?? "—"} />
-        <Spec label="大小 · Size" value={build.size ?? "—"} />
+        <Spec label={build.delivery === "streamed" ? "程式 ZIP · Game ZIP" : "大小 · Size"} value={build.size ?? "—"} />
         <Spec label="更新 · Updated" value={formatDate(build.updated)} />
         <Spec label="狀態 · Status" value={buildStatusText(build)} />
       </dl>

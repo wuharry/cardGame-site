@@ -40,7 +40,7 @@ export function GameIntroduction() {
         </div>
         <div className="tactics-grid">
           <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>對手出手時，<br />你也有機會反擊。</h3><p>別急著用光資源。留一手法術或埋下陷阱，等對手進攻時再出招。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識卡牌 <span aria-hidden="true">→</span></Link></article>
-          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>收集喜歡的卡，<br />試出自己的組合。</h3><p>從免費新手包開始，組成一副 60 張牌。一般對戰不會失去卡牌；只有雙方都同意的「奪牌模式」，勝者才能挑走一張卡。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與對戰模式 <span aria-hidden="true">→</span></Link></article>
+          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>收集喜歡的卡，<br />試出自己的組合。</h3><p>完成新手教學，先拿一副 60 張起始牌組。一般對戰不會失去卡牌；只有雙方都同意的「奪牌模式」，勝者才能挑走一張卡。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與對戰模式 <span aria-hidden="true">→</span></Link></article>
         </div>
       </div>
     </section>

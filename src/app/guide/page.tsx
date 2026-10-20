@@ -28,7 +28,7 @@ export default function GuidePage() {
         <header className="subpage-heading content-width">
           <p className="overline">THE FIRST CHAPTER</p>
           <h1>每個高手，都從第一張牌開始。</h1>
-          <p>先用 AI 練習慢慢讀卡，再邀朋友一起對戰。遊戲主選單也有八章圖解的「新手教學」。</p>
+          <p>先從主選單的「新手教學」開始，完成後取得 60 張起始牌組，再和 AI 練習。封面下載素材時，也能先讀內建的八章圖解說明書。</p>
           <nav aria-label="指南章節">
             {CHAPTERS.map((item) => (
               <a key={item.href} href={`#${item.href}`}>{item.label} ↓</a>

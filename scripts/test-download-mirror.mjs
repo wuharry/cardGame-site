@@ -93,13 +93,13 @@ for (const id of ["macos", "linux"]) {
 check(JSON.stringify(versions.versionManifest(mixedBuilds)) === JSON.stringify(versions.versionManifest(mixedBuilds.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Mixed-platform website routing cannot change the canonical game update API");
 
 const published = await renderPanel(releases.BUILDS);
-check((published.match(/itch\.io 備用頁/g) ?? []).length === 3 && (published.match(/Download from GitHub/g) ?? []).length === 3, "Published desktops have direct main downloads and optional backup pages");
+check((published.match(/itch\.io 備用頁/g) ?? []).length === 0 && (published.match(/Download from GitHub/g) ?? []).length === 3, "Current R15 desktops retain GitHub downloads without unverified old-version backups");
 for (const id of ["windows", "macos", "linux"]) {
   const build = releases.BUILDS.find((item) => item.id === id);
   const platform = await renderPanel([build]);
   check(releases.websiteDownloadUrl(build) === releases.downloadUrl(build), `${id} starts its exact GitHub ZIP from the website`);
-  check(releases.downloadMirrorPageUrl(build) === "https://wuharry.itch.io/deckmarch", `${id} has the official backup project configured`);
-  check(platform.includes('href="https://wuharry.itch.io/deckmarch#download"') && platform.includes(build.file), `${id} mirror action reaches the download section and names the correct package`);
+  check(releases.downloadMirrorPageUrl(build) === null, `${id} has no backup until the exact R15 file is independently verified there`);
+  check(!platform.includes('href="https://wuharry.itch.io/deckmarch#download"') && platform.includes(build.file), `${id} cannot send players to an old-version itch download`);
   check(platform.includes(`href="${releases.downloadUrl(build)}"`) && platform.includes(`下載 ${build.platform} ZIP`), `${id} retains the same-file GitHub main download`);
   const visible = platform.slice(0, platform.indexOf("<details"));
   const entry = id === "windows" ? "TwilightCodex.exe" : id === "macos" ? `${build.displayName}.app` : "launch.sh";
