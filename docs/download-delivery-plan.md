@@ -1,5 +1,9 @@
 # 下載與安裝改善
 
+## 2026-10-21：最新 main 的 Android 重打包
+
+依使用者要求改為從最新遊戲 `main` 重新匯出，不再以取得先前試玩的同一份 R15 APK 為唯一途徑。既有手機可玩回報保留；新成品的來源、資源、原簽章與安裝驗收另行記錄。此 Mac 的指定 Android 私人簽章目錄仍無原 keystore／signing.json；官網維持 `preparing`、`file: null`，不提供舊 APK 或未簽候選。安裝教學顯示共用平台狀態，不再硬寫「尚待 S24 FE 試玩」。桌面 R15 下載與版本 API 不變。
+
 ## 2026-10-20 紙鴉牌 Deckmarch R15：發布與驗收範圍
 
 R15 已公開至 [GitHub Releases](https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.19-r15)，正式遊戲伺服器也已更新；三平台公開首次下載與啟動已完成，官網文案與下載資料已備妥，等待最後 build 與部署。本節不代表 Vercel 正式網站已切換。版本為 `2026.10.19-R15`，BUILD／最低 BUILD `2026101902`、protocol `27`，凍結遊戲來源為 `7f74a3bd058e5d37a25f718caf7fc7c2939a4339`。公開品牌沿用「紙鴉牌 Deckmarch」；素材檔名中的 PaperRaven 不另作遊戲名稱。

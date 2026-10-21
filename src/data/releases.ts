@@ -146,8 +146,8 @@ export const BUILDS: Build[] = [
     size: null,
     updated: "2026-10-21",
     requirement: "本次支援基準：Android 9+ · arm64（64 位元 ARM）",
-    note: "R15 已由開發者完成手機實機試玩，效能確認達到可玩程度。正在取得同一份已測試的 APK，核對檔案與簽章後開放測試下載；目前不提供舊 R9 APK。",
-    noteEn: "The developer has played R15 on a physical Android phone and confirmed playable performance. The same tested APK is being prepared for public testing; downloads will open after file and signing checks. The older R9 APK is not offered.",
+    note: "既有 R15 已由開發者完成手機實機試玩，確認達到可玩程度。目前依最新 main 重新打包，新成品仍待原簽章、資源與安裝檢查，完成後開放測試下載；目前不提供舊 R9 APK。",
+    noteEn: "The developer confirmed playable performance with an earlier R15 build on a physical Android phone. A new build from the latest main is being prepared; downloads will open after original-signature, resource and installation checks. The older R9 APK is not offered.",
   },
 ];
 
