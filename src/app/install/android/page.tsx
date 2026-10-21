@@ -5,7 +5,7 @@ import { BUILDS, downloadUrl } from "@/data/releases";
 const androidAvailable = BUILDS.some((build) => build.id === "android" && downloadUrl(build));
 export const metadata = pageMetadata("/install/android", "Android APK 安裝教學", androidAvailable
   ? "下載紙鴉牌 APK 後，從 Chrome 下載清單或 Downloads 開啟檔案，並依 Android 系統畫面安裝。"
-  : "紙鴉牌 Android APK 目前暫停公開下載，等待 Samsung Galaxy S24 FE 實機驗收；查看目前的平台狀態。");
+  : "紙鴉牌 Android APK 目前尚未提供公開下載；查看目前的平台狀態與準備進度。");
 
 export default function AndroidInstallPage() {
   const android = BUILDS.find((build) => build.id === "android");
@@ -20,8 +20,7 @@ export default function AndroidInstallPage() {
         <p className="body-cjk mt-6">
           {suspended ? "Android APK 暫停下載，修正版發布前不提供安裝。" : "目前尚未提供可下載的 Android APK，請以官網下載頁的狀態為準。"}
         </p>
-        <p className="body-cjk mt-3">Android 測試包正等待 Samsung Galaxy S24 FE 實機安裝、啟動與對戰驗收，完成前暫停公開下載。</p>
-        {suspended && android.note && <p className="body-cjk mt-4 leading-7">{android.note}</p>}
+        {android?.note && <p className="body-cjk mt-4 leading-7">{android.note}</p>}
       </main>
     );
   }
@@ -66,7 +65,7 @@ export default function AndroidInstallPage() {
           </li>
           <li className="border-l-2 border-brass-dim pl-4">
             <h3 className="text-lg text-parchment">4. 完成後從手機開啟遊戲</h3>
-            <p className="body-cjk mt-2 leading-7">系統顯示安裝完成後，按「開啟」或到應用程式清單找到「{android.displayName ?? "紙鴉牌"}」。本版 Android 實機安裝、啟動與觸控仍未完成驗收，遇到問題請保留完整訊息。</p>
+            <p className="body-cjk mt-2 leading-7">系統顯示安裝完成後，按「開啟」或到應用程式清單找到「{android.displayName ?? "紙鴉牌"}」。遇到問題請保留完整訊息；本版本的驗收範圍見下方說明。</p>
           </li>
         </ol>
       </section>

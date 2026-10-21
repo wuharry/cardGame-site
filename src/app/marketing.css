@@ -27,18 +27,8 @@ html:has(.marketing-home) { scroll-behavior: auto; }
 .skip-link { position: absolute; left: 20px; top: -100px; padding: 12px 20px; color: var(--night-deep); background: var(--gold-light); z-index: 100; }
 .skip-link:focus { top: 10px; }
 .marketing-home { background: var(--night-deep); color: var(--paper); }
-/* Keep offscreen sections in the DOM and accessibility tree; the browser draws
-   them as they approach the viewport and remembers their actual block size. */
-@supports (content-visibility: auto) {
-  .marketing-home > section:not(.codex-hero) {
-    content-visibility: auto;
-    contain-intrinsic-block-size: auto 1000px;
-  }
-  body:has(.marketing-home) > .site-footer {
-    content-visibility: auto;
-    contain-intrinsic-block-size: auto 400px;
-  }
-}
+/* Keep real section heights for stable fragment navigation. Individual widgets
+   still own their lazy loading, and image containers keep their fixed ratios. */
 .marketing-home :where(section, article, div)[id], .subpage-heading { scroll-margin-top: 24px; }
 .marketing-home h2, .marketing-home h3, .subpage-heading h1, .site-footer { font-family: var(--font-serif); }
 .overline { font: 600 11px/1.6 var(--font-sans); letter-spacing: .22em; color: var(--gold); text-transform: uppercase; }
@@ -175,6 +165,7 @@ html:has(.marketing-home) { scroll-behavior: auto; }
 .marketing-home #download .eyebrow { color: var(--gold); }
 .marketing-home #download .section-title { color: var(--paper); letter-spacing: .08em; font-weight: 500; }
 .marketing-home #download .plate { background: #142129; border-color: #526060; box-shadow: none; }
+.marketing-home #download .plate:target { outline: 2px solid var(--gold); outline-offset: 4px; }
 .marketing-home #download .notch { clip-path: none; }
 .marketing-home #download :is(.border-rule, .border-rule-soft, .border-brass-dim) { border-color: rgb(211 181 122 / 25%); }
 .marketing-home #download .bg-brass { background: var(--gold); border-color: var(--gold); }

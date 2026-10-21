@@ -12,7 +12,7 @@ export function CollectionPanel() {
             六十張卡，構築自己的打法
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            {GAME_FACTS.cards} 種卡 + {GAME_FACTS.tokens} 種衍生物。完成引導練習可取得完整 60 張起始牌組，新帳號另有 150 次新手抽卡。
+            {GAME_FACTS.cards} 種卡 + {GAME_FACTS.tokens} 種衍生物。完成新手教學後取得 60 張起始牌組，可以直接對戰。新帳號另有 150 次新手抽卡，可慢慢開，不必先抽完。
           </p>
         </header>
 
@@ -65,14 +65,14 @@ export function CollectionPanel() {
         <figure className="mt-14 max-w-4xl border border-rule bg-board p-1.5 shadow-md">
           <Image
             src={mediaUrl("/media/screens/main-menu.webp")}
-            alt="紙鴉牌主選單，顯示引導練習、開始遊戲與卡包收藏入口"
+            alt="舊版主選單截圖，顯示當時的練習、開始遊戲與卡包收藏入口"
             width={1280}
             height={720}
             sizes="(max-width: 1024px) 100vw, 896px"
             className="h-auto w-full object-cover"
           />
           <figcaption className="body-cjk px-3 py-3 text-[0.8rem] text-quill">
-            主選單：引導練習、對戰準備與卡包收藏入口。{mediaCaptureCaption("/media/screens/main-menu.webp")}。
+            舊版主選單截圖；R15 的練習入口為「新手教學」。{mediaCaptureCaption("/media/screens/main-menu.webp")}。
           </figcaption>
         </figure>
 

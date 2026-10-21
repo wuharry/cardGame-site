@@ -12,7 +12,7 @@ export function LatestNews() {
     { tag: "版本更新", date: latest.date, title: `${latest.version} 玩家版本資訊`, text: "查看各平台下載、啟動說明與這次更新的內容。", href: "/news", image: "/media/screens/arena-caverns.webp" },
     paused
       ? { tag: "重要公告", date: paused.updated, title: `${paused.platform} 版本暫停下載`, text: "實機測試發現效能與操作問題，修正完成後再開放下載。", href: `#download-${paused.id}`, image: "/media/screens/arena-frostlands.webp" }
-      : { tag: "新手指南", date: null, title: "從第一副牌，開始你的對局", text: "認識四路站位、六種卡型與回合流程。", href: "/guide", image: "/media/screens/hero-battlefield.webp" },
+      : { tag: "新手指南", date: null, title: "第一次玩，從這裡開始", text: "先認識出牌和攻擊，再慢慢試出自己的打法。", href: "/guide", image: "/media/screens/hero-battlefield.webp" },
     { tag: "試玩募集", date: null, title: "你的每一局，都讓遊戲更好", text: "哪張卡太強？哪裡卡住？歡迎留下最真實的想法。", href: "#support", image: "/media/screens/main-menu.webp" },
   ];
   return (
@@ -36,11 +36,11 @@ export function GameIntroduction() {
         <header id="flow" className="section-heading centered"><p className="overline">A DIFFERENT KIND OF CARD BATTLE</p><h2>勝負，在出牌之前就已展開。</h2><p>同樣一張牌，站在哪裡、何時出手，都能改寫戰局。</p></header>
         <div id="lanes" className="battle-feature">
           <figure className="battle-image"><Image src={mediaUrl("/media/screens/hero-battlefield.webp")} alt="R11 四路前後排原生展示畫面，包含新版介面、HD-2D 從者與手牌" width={1280} height={720} sizes="(max-width: 900px) 100vw, 60vw" /><figcaption><span className="status-dot" /> IN-GAME CAPTURE <span>{mediaCaptureCaption("/media/screens/hero-battlefield.webp")}</span></figcaption></figure>
-          <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>四條路線，<br />沒有唯一的進攻路徑。</h3><p>前排掩護後排，攻擊卻能跨路選擇目標。找出防線的缺口，讓你的從者直擊敵方英雄。</p><Link className="text-link" href="/guide#lanes" prefetch={false}>試試四路交鋒演練 <span aria-hidden="true">→</span></Link></div>
+          <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>站在哪裡，<br />和出哪張牌一樣重要。</h3><p>把夥伴放到前排保護後排，再找機會突破對手的防線。不必只盯著正前方，也能攻擊其他路線。</p><Link className="text-link" href="/guide#lanes" prefetch={false}>看看怎麼進攻 <span aria-hidden="true">→</span></Link></div>
         </div>
         <div className="tactics-grid">
-          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>你的回合結束，<br />策略還沒。</h3><p>留下魔力：對手施放秘術時可選擇反制；攻擊、召喚等瞬咒則在首次符合卡牌條件且魔力足夠時自動發動。從者身下的伏印，也可能是下一個轉折。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識反制與伏印 <span aria-hidden="true">→</span></Link></article>
-          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>六十張卡，<br />寫成你的打法。</h3><p>從持有的卡牌組出一副牌。一般對戰不會失去卡牌；新的奪牌對局暫停，既有戰利品仍可領取。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與模式狀態 <span aria-hidden="true">→</span></Link></article>
+          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>對手出手時，<br />你也有機會反擊。</h3><p>別急著用光魔力。對手施放秘術時，你可以選擇用瞬咒反制；對攻擊、召喚等事件的瞬咒，則在第一次符合卡牌條件且魔力足夠時自動發動。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識反制與伏印 <span aria-hidden="true">→</span></Link></article>
+          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>收集喜歡的卡，<br />試出自己的組合。</h3><p>完成新手教學，先拿一副 60 張起始牌組。一般對戰不會失去卡牌；新的奪牌對局暫停，既有戰利品仍可領取。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與對戰模式 <span aria-hidden="true">→</span></Link></article>
         </div>
       </div>
     </section>

@@ -2,7 +2,7 @@
 export const GAME_FACTS = {
   nameZh: "紙鴉牌",
   nameEn: "Deckmarch",
-  version: "2026.10.19-R14",
+  version: "2026.10.19-R15",
   engine: "Godot 4.7",
   lanes: 4,
   heroHp: 20,
@@ -11,7 +11,7 @@ export const GAME_FACTS = {
   cards: 244,
   tokens: 21,
   aiPresets: 19,
-  protocol: 25,
+  protocol: 27,
 } as const;
 
 export interface LaneUnit {
@@ -196,7 +196,7 @@ export const RESOURCE_RULES: SystemRule[] = [
   { label: "Mana", value: "+1 / turn", note: "每回合上限 +1 並回滿，最高 10。" },
   { label: "Carry over", value: "refill", note: "剩下的魔力可在對手回合反制，但不累加。" },
   { label: "Discard for mana", value: "Cost ÷ 2 ↑", note: "棄一張手牌，獲得費用一半向上取整的暫時魔力；下一個自己的回合不能再用。" },
-  { label: "Deck", value: "60", note: "同名卡最多 3 張。抽完不扣血。" },
+  { label: "Deck", value: "60", note: "同名卡最多 3 張。抽到最後一張不會落敗；牌庫空了，再要抽牌時落敗。" },
   { label: "Hand limit", value: "8", note: "滿手再抽直接入墓，雙方都看得到。" },
   { label: "Natural draw", value: "空手抽 2", note: "通常抽一張；手牌空了抽兩張。" },
   { label: "Opening order", value: "隨機先手", note: "後手拿到一次性後援。" },
@@ -205,7 +205,8 @@ export const RESOURCE_RULES: SystemRule[] = [
 /** 玩家只使用持有卡自組牌組；內部 AI 預組不可選作玩家牌組。 */
 export const COLLECTION_FEATURES: SystemRule[] = [
   { label: "Card pool", value: "244 + 21", note: "244 種可收藏，21 種是效果打出來的衍生物。" },
-  { label: "Starter deck", value: "教學送完整 60 張", note: "完成引導練習取得起始牌組；新帳號另有 150 次新手抽卡，不必先抽完才能對戰。" },
+  { label: "Tutorial starter", value: "60 張", note: "完成新手教學後取得起始牌組，可以直接對戰；不扣新手抽卡額度。" },
+  { label: "Starter draws", value: "150 次", note: "新帳號額外抽卡，不吃每日券；可分批開，不必抽完才對戰。" },
   { label: "Your deck", value: "60 張 · 每卡最多 3", note: "用持有卡自組，存檔後選用即可。" },
   { label: "Daily pack ticket", value: "1 券／登入日", note: "登入日領一券，可累積。" },
   { label: "Online account", value: "帳號登入", note: "外網要登入並同步收藏；訪客收藏只留在這台電腦。" },
@@ -228,7 +229,7 @@ export interface GameMode {
 export const GAME_MODES: GameMode[] = [
   {
     zh: "單人練習", en: "AI Practice",
-    body: "自組 60 張就能和 AI 對戰，回合不限時。",
+    body: "使用教學送的起始牌組或自組 60 張，和 AI 對戰；回合不限時。",
     meta: "離線 · 訪客可玩 · 19 副 AI 預組",
   },
   {

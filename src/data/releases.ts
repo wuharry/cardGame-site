@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r14";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -30,6 +30,9 @@ export interface Build {
   minimumBuild?: number;
   protocol?: number;
   noteEn?: string;
+  /** 先下載遊戲程式，素材由遊戲按本版本固定資訊下載並保留快取。 */
+  delivery?: "streamed";
+  content?: { filename: string; bytes: number; sha256: string; url: string };
   /** 可讓單一平台更新，不把其他平台連到不存在的新附件。 */
   releaseBase?: string;
   /** 僅供官網的已驗收下載鏡像；逐平台、逐版本啟用，不改遊戲更新 API。 */
@@ -38,9 +41,14 @@ export interface Build {
   mirrorPageUrl?: string;
 }
 
-const R14_SUMMARY = {
-  "zh": "紙鴉牌 · Deckmarch R14：加入輕鬆、天梯與奪牌模式、玩家成長與免費金幣獎勵；更新卡包商店、滑動撕包、九款主題包美術與逐張機率，第五張至少稀有（卡池耗盡時依三張保護回退）。加入投降提示，改善戰場光影及角色接地，修正退出時的音訊資源回收。保留既有帳號、收藏、牌組、存檔、資源加密與授權附件。正式多人最低 BUILD 2026101901、protocol 25，雙方需同步更新。",
-  "en": "Deckmarch R14 adds Casual, Ranked and Ante modes, progression and free Gold rewards; refreshes the pack storefront, swipe-to-tear effects, nine themed wrappers and per-card odds. Every fifth card is Rare or better, with a three-copy-protection fallback when that pool is exhausted. It adds surrender feedback, improves arena lighting and character grounding, and fixes audio-resource shutdown. Existing accounts, collections, decks, saves, encryption and legal notices are retained. Official multiplayer requires BUILD 2026101901 and protocol 25; both players must update."
+const R15_SUMMARY = {
+  zh: "R15 先下載較小的遊戲程式，開啟後按「開始」，再下載美術與音效。等待時可讀內建說明書；同版本素材下載完成後，下次不用重載。新版也更新新手教學、收藏與組牌操作，並加入英雄表情。",
+  en: "R15 starts with a smaller game download. Open the game and press Start to download art and audio. Read the built-in rulebook while it downloads; content for the same version stays cached. This update also revises the tutorial, collection and deck-building controls, and adds hero emotes.",
+};
+
+const R15_VALIDATION = {
+  zh: "三平台已完成下載與開啟驗收；退出時仍有 ObjectDB 清理警告，嚴格檢查未通過（strict FAIL）。完整真人對局與朋友電腦尚未驗收。",
+  en: "All three desktop versions passed download and startup checks. ObjectDB cleanup warnings on exit still fail strict checks (strict FAIL). Full human matches and friend-computer tests have not been run.",
 };
 
 const R13_SUMMARY = {
@@ -55,20 +63,25 @@ export const BUILDS: Build[] = [
     platform: "Windows",
     en: "ZIP · x86_64",
     status: "available",
-    file: "TwilightCodex-Windows-20261019-R14.zip",
-    version: "2026.10.19-R14",
-    size: "454.1 MiB",
-    bytes: 476110382,
-    updated: "2026-10-19",
-    sha256: "4784e3682f47f37846248a5e4aef4d754d28fae8fe0804ffad9f0275ea30c757",
-    build: 2026101901,
-    minimumBuild: 2026101901,
-    protocol: 25,
-    mirrorProvider: "itch.io",
-    mirrorPageUrl: "https://wuharry.itch.io/deckmarch",
+    file: "TwilightCodex-Windows-20261019-R15.zip",
+    version: "2026.10.19-R15",
+    size: "58.8 MiB",
+    bytes: 61682457,
+    updated: "2026-10-20",
+    sha256: "aaaf94a07909077b38dfbaac31f1927976b337afc47aec8b55dab09de8c6d696",
+    build: 2026101902,
+    minimumBuild: 2026101902,
+    protocol: 27,
+    delivery: "streamed",
+    content: {
+      filename: "PaperRaven-Windows-20261019-R15-Content.pck",
+      bytes: 422201600,
+      sha256: "fd8775c7b3c41e0239e6e0c8f6d1685d09e5619c35fb4c31fbe94d9f299c9b8d",
+      url: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15/PaperRaven-Windows-20261019-R15-Content.pck",
+    },
     requirement: "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    note: `${R14_SUMMARY.zh} 完整解壓後執行 TwilightCodex.exe，預設 Compatibility＋ANGLE，附啟動診斷工具。 三平台各通過 347 項封裝資源檢查，資源與授權稽核通過；測試包含實際音效播放與正常清理，沒有引擎錯誤或退出警告。已更新正式資料庫與專用伺服器，公開大廳連線檢查通過。各平台原生桌面完整試玩、朋友電腦與兩位真人完整外網對局仍待驗收。`,
-    noteEn: `${R14_SUMMARY.en} Extract the full ZIP and run TwilightCodex.exe. Compatibility/ANGLE and startup diagnostics are included. Each platform passed 347 packed-resource checks and resource/legal audits, including audible playback and clean shutdown with no engine errors or exit warnings. Production database and dedicated-server updates and public-lobby connectivity checks passed. Full native desktop playthroughs, friend PCs and complete two-human Internet matches remain untested.`,
+    note: `${R15_SUMMARY.zh} 完整解壓後執行 TwilightCodex.exe；附啟動診斷工具。${R15_VALIDATION.zh}`,
+    noteEn: `${R15_SUMMARY.en} Extract the entire ZIP and run TwilightCodex.exe. Startup diagnostics are included. ${R15_VALIDATION.en}`,
   },
   {
     id: "macos",
@@ -76,20 +89,25 @@ export const BUILDS: Build[] = [
     platform: "macOS",
     en: "ZIP · Universal",
     status: "available",
-    file: "TwilightCodex-macOS-20261019-R14.zip",
-    version: "2026.10.19-R14",
-    size: "474.9 MiB",
-    bytes: 498005757,
-    updated: "2026-10-19",
-    sha256: "741bdf62b206a67eefb7101cd0ace1231cbd281ab9e64bfd09211f417a509874",
-    build: 2026101901,
-    minimumBuild: 2026101901,
-    protocol: 25,
-    mirrorProvider: "itch.io",
-    mirrorPageUrl: "https://wuharry.itch.io/deckmarch",
+    file: "TwilightCodex-macOS-20261019-R15.zip",
+    version: "2026.10.19-R15",
+    size: "79.7 MiB",
+    bytes: 83581195,
+    updated: "2026-10-20",
+    sha256: "a38db2611e6d97cbd68dc6f2388af127fc4413c8e29687cc84a3762e5b82d7ae",
+    build: 2026101902,
+    minimumBuild: 2026101902,
+    protocol: 27,
+    delivery: "streamed",
+    content: {
+      filename: "PaperRaven-macOS-20261019-R15-Content.pck",
+      bytes: 422201600,
+      sha256: "b30c6906acba01474281c3e3ce78fd43e3c809893d43d3a45ad75869563de5aa",
+      url: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15/PaperRaven-macOS-20261019-R15-Content.pck",
+    },
     requirement: "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    note: `${R14_SUMMARY.zh} macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。ad-hoc 簽章，尚未 Apple 公證。 三平台各通過 347 項封裝資源檢查，資源與授權稽核通過；測試包含實際音效播放與正常清理，沒有引擎錯誤或退出警告。已更新正式資料庫與專用伺服器，公開大廳連線檢查通過。各平台原生桌面完整試玩、朋友電腦與兩位真人完整外網對局仍待驗收。`,
-    noteEn: `${R14_SUMMARY.en} Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the .app. Ad-hoc signed, not Apple-notarized. Each platform passed 347 packed-resource checks and resource/legal audits, including audible playback and clean shutdown with no engine errors or exit warnings. Production database and dedicated-server updates and public-lobby connectivity checks passed. Full native desktop playthroughs, friend PCs and complete two-human Internet matches remain untested.`,
+    note: `${R15_SUMMARY.zh} macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。採 ad-hoc 簽章，尚未 Apple 公證。${R15_VALIDATION.zh}`,
+    noteEn: `${R15_SUMMARY.en} Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the .app. Ad-hoc signed, not Apple-notarized. ${R15_VALIDATION.en}`,
   },
   {
     id: "linux",
@@ -97,39 +115,39 @@ export const BUILDS: Build[] = [
     platform: "Linux",
     en: "ZIP · x86_64",
     status: "available",
-    file: "TwilightCodex-Linux-20261019-R14.zip",
-    version: "2026.10.19-R14",
-    size: "456.4 MiB",
-    bytes: 478585010,
-    updated: "2026-10-19",
-    sha256: "d7fdd09de832b11fc044cc121df3d8b33a2cae579d040dbc4623d2d46357f922",
-    build: 2026101901,
-    minimumBuild: 2026101901,
-    protocol: 25,
-    mirrorProvider: "itch.io",
-    mirrorPageUrl: "https://wuharry.itch.io/deckmarch",
+    file: "TwilightCodex-Linux-20261019-R15.zip",
+    version: "2026.10.19-R15",
+    size: "61.2 MiB",
+    bytes: 64157003,
+    updated: "2026-10-20",
+    sha256: "bac43bd18eb429c2564149a6a9ffadd6ec731efd716c9a8567bd6b17bbc0d801",
+    build: 2026101902,
+    minimumBuild: 2026101902,
+    protocol: 27,
+    delivery: "streamed",
+    content: {
+      filename: "PaperRaven-Linux-20261019-R15-Content.pck",
+      bytes: 422201600,
+      sha256: "21fa1f030ecc054e37551e49e16117e3526fee174ac1187ab315064c78b62dd7",
+      url: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15/PaperRaven-Linux-20261019-R15-Content.pck",
+    },
     requirement: "x86_64 · Ubuntu 24.04+，或其他 glibc 2.39+ 發行版",
-    note: `${R14_SUMMARY.zh} Linux x86_64，需 glibc 2.39+，例如 Ubuntu 24.04+；完整解壓並保留執行權限，執行 launch.sh。 三平台各通過 347 項封裝資源檢查，資源與授權稽核通過；測試包含實際音效播放與正常清理，沒有引擎錯誤或退出警告。已更新正式資料庫與專用伺服器，公開大廳連線檢查通過。各平台原生桌面完整試玩、朋友電腦與兩位真人完整外網對局仍待驗收。`,
-    noteEn: `${R14_SUMMARY.en} Linux x86_64 requires glibc 2.39+, such as Ubuntu 24.04+. Extract all files, retain executable permissions and run launch.sh. Each platform passed 347 packed-resource checks and resource/legal audits, including audible playback and clean shutdown with no engine errors or exit warnings. Production database and dedicated-server updates and public-lobby connectivity checks passed. Full native desktop playthroughs, friend PCs and complete two-human Internet matches remain untested.`,
+    note: `${R15_SUMMARY.zh} Linux x86_64，需 glibc 2.39+，例如 Ubuntu 24.04+；完整解壓並保留執行權限，執行 launch.sh。${R15_VALIDATION.zh}`,
+    noteEn: `${R15_SUMMARY.en} Linux x86_64 requires glibc 2.39+, such as Ubuntu 24.04+. Extract all files, retain executable permissions and run launch.sh. ${R15_VALIDATION.en}`,
   },
   {
     id: "android",
-    displayName: "暮色秘典",
+    displayName: "紙鴉牌",
     platform: "Android",
     en: "APK · arm64 · Preview",
     status: "preparing",
-    file: "TwilightCodex-Android-20261014-R9.apk",
-    version: "2026.10.14-R9",
-    size: "442.3 MiB",
-    bytes: 463810470,
-    updated: "2026-10-15",
-    sha256: "642d868da2822ed00efad335819d55468261db9f4c95303ff92c7c3ebf02dbf6",
-    build: 2026101404,
-    minimumBuild: 2026101402,
-    protocol: 16,
+    file: null,
+    version: "2026.10.19-R15",
+    size: null,
+    updated: "2026-10-21",
     requirement: "本次支援基準：Android 9+ · arm64（64 位元 ARM）",
-    note: "暫停下載：2026-10-15 實機試玩發現嚴重問題，修正前暫停提供 R9 Android APK。進入對局後嚴重卡頓、記憶體占用過高，手機可能卡住；遊戲內無法截圖，畫面模糊；操作仍是電腦版介面，出現捲軸且無法用手指滑動。已安裝 R9 APK 的玩家請等待修正版。",
-    noteEn: "Download paused: on-device testing on 2026-10-15 found severe issues, so the R9 Android APK is unavailable until fixed. Matches lag heavily and use so much memory the phone can freeze; in-game screenshots are blocked and the display is blurry; the UI still behaves like the desktop version, with scrollbars that cannot be swiped. If you already installed the R9 APK, please wait for the fixed build.",
+    note: "R15 已由開發者完成手機實機試玩，效能確認達到可玩程度。正在取得同一份已測試的 APK，核對檔案與簽章後開放測試下載；目前不提供舊 R9 APK。",
+    noteEn: "The developer has played R15 on a physical Android phone and confirmed playable performance. The same tested APK is being prepared for public testing; downloads will open after file and signing checks. The older R9 APK is not offered.",
   },
 ];
 
@@ -144,17 +162,21 @@ export function downloadUrl(build: Build): string | null {
   }
 }
 
-/** 官網使用已驗收的 itch.io 公開頁；未設定或格式錯誤時保留 GitHub 下載。 */
+/** 官網主下載直接使用同一份 GitHub 成品，平台選擇與安裝說明留在本站。 */
 export function websiteDownloadUrl(build: Build): string | null {
-  const canonical = downloadUrl(build);
-  if (!canonical || build.mirrorProvider !== "itch.io" || !build.mirrorPageUrl) return canonical;
+  return downloadUrl(build);
+}
+
+/** 備用入口只接受官方公開專案頁，不保存會過期的 CDN 或私人下載網址。 */
+export function downloadMirrorPageUrl(build: Build): string | null {
+  if (!downloadUrl(build) || build.mirrorProvider !== "itch.io" || !build.mirrorPageUrl) return null;
   try {
     const url = new URL(build.mirrorPageUrl);
     if (url.origin !== "https://wuharry.itch.io" || url.username || url.password || url.search || url.hash
-      || !/^\/[a-zA-Z0-9_-]+\/?$/.test(url.pathname)) return canonical;
+      || !/^\/[a-zA-Z0-9_-]+\/?$/.test(url.pathname)) return null;
     return url.href;
   } catch {
-    return canonical;
+    return null;
   }
 }
 
@@ -184,6 +206,19 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "2026.10.19-R15",
+    date: "2026-10-20",
+    title: "紙鴉牌 Deckmarch R15：進遊戲後下載素材，新手教學更新",
+    changes: [
+      "下載檔改成較小的遊戲程式。開啟後按「開始」下載美術與音效，等候時可閱讀內建說明書；下載完成的同版本素材會保留快取。",
+      "新手教學分段帶你練習換牌、看牌、站位與攻擊，完成後提供起始 60 張牌組。進階規則可稍後再看。",
+      "整理收藏與組牌列表的載入及捲動操作，修正抽卡切換下一包或關閉時的問題；加入英雄表情。",
+      "多人伺服器已同步本版，請更新後再進入正式大廳；既有帳號、收藏、牌組與存檔保留。",
+      `${R15_VALIDATION.zh} macOS 尚未 Apple 公證；Android 仍等待實機驗收，暫不提供下載。`,
+      `English: ${R15_SUMMARY.en} Completing the tutorial provides a starter 60-card deck. The multiplayer server is updated; update your game before joining the official lobby. Existing accounts, collections, decks and saves are retained. ${R15_VALIDATION.en} macOS is not Apple-notarized. Android remains unavailable pending device testing.`,
+    ],
+  },
   {
     "version": "2026.10.19-R14",
     "date": "2026-10-19",

@@ -35,11 +35,12 @@ if (current.status !== "available") {
   const currentGuide = await renderGuide(releases.BUILDS);
   check(!/href="[^"]+\.apk"/.test(currentPanel + currentGuide) && !currentPanel.includes('href="/install/android"'), "Actual unavailable Android metadata offers no APK link or install flow");
   check(/<button\b[^>]*disabled/.test(currentPanel) && currentPanel.includes("下載 Android APK"), "Unavailable Android download button is visibly disabled");
-  check(currentPanel.includes("Galaxy S24 FE") && currentGuide.includes("Galaxy S24 FE"), "Current Android gate names the pending actual-device acceptance");
+  check(currentPanel.includes(current.note) && currentGuide.includes(current.note), "Unavailable Android views use the same current readiness note");
+  check(!currentGuide.includes("正等待 Samsung Galaxy S24 FE 實機安裝"), "Guide does not replace updated readiness with obsolete device-test claims");
 }
 
 // 可下載流程用 available fixture 驗證，不受目前是否暫停下載影響。
-const actual = { ...current, status: "available" };
+const actual = { ...current, status: "available", file: "TwilightCodex-Android-fixture.apk", size: "100 MB", sha256: "a".repeat(64) };
 const publishedBuilds = releases.BUILDS.map((build) => build.id === "android" ? actual : build);
 const panel = await renderPanel(publishedBuilds);
 check(/<a\b[^>]*href="[^"]+\.apk"[^>]*>[\s\S]*?下載 Android APK/.test(panel), "Android download action explicitly says APK");

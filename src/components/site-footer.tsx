@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FEEDBACK_URL } from "@/data/site";
+import { DownloadLink } from "@/components/download-link";
 
 export function SiteFooter() {
   return (
@@ -18,7 +19,7 @@ export function SiteFooter() {
           <nav aria-label="頁尾導覽">
             <Link href="/guide" prefetch={false}>新手指南</Link>
             <Link href="/news" prefetch={false}>最新消息</Link>
-            <Link href="/#download">遊戲下載</Link>
+            <DownloadLink>遊戲下載</DownloadLink>
             <a href={FEEDBACK_URL} target="_blank" rel="noopener noreferrer">試玩回饋 ↗</a>
             <Link href="/credits" prefetch={false}>製作群與授權</Link>
           </nav>
