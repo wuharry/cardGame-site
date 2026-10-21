@@ -279,14 +279,8 @@ function BuildRow({ build }: { build: Build }) {
           {build.version} · 更新於 {formatDate(build.updated)}
         </p>
       )}
-      {build.id === "android" && !href ? (
-        <>
-          <p className="body-cjk basis-full text-[0.82rem]">
-            Android 測試包等待 Samsung Galaxy S24 FE 實機安裝、啟動與對戰驗收，完成前暫不提供公開下載。
-          </p>
-          {build.status === "suspended" && build.note && <p className="body-cjk basis-full text-[0.82rem]">{build.note}</p>}
-        </>
-      ) : build.note && <p className="body-cjk basis-full text-[0.82rem]">{build.note}</p>}
+      {build.note && <p className="body-cjk basis-full text-[0.82rem]">{build.note}</p>}
+      {build.noteEn && <p lang="en" className="body-cjk basis-full text-[0.78rem]">{build.noteEn}</p>}
       {href && build.sha256 && (
         <p className="body-cjk min-w-0 basis-full break-all text-[0.72rem] text-faint">
           SHA-256：<code>{build.sha256}</code>
