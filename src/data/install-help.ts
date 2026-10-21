@@ -8,7 +8,7 @@ export interface HelpItem {
 
 export const FIRST_MATCH_HELP: HelpItem = {
   title: "第一次進遊戲怎麼開始？",
-  body: "先閱讀主選單的「新手教學」，再用持有卡建立並選用合法的 60 張牌組。新手免費抽卡可慢慢領，不必抽完才組牌或對戰。",
+  body: "先選主選單的「新手教學」。完成後會拿到一副 60 張起始牌組，可以先玩單人對戰；之後再開免費卡包、調整自己的牌組，每種卡最多 3 張。免費卡包可慢慢開，不必全部開完才對戰。",
 };
 
 export const CONNECTION_HELP: HelpItem = {
@@ -33,7 +33,7 @@ export function installationHelp(build: Build): HelpItem[] {
       ];
     case "macos":
       return [
-        { title: "macOS ZIP 怎麼開啟？", body: `完整解壓縮後，開啟包內的 .app${usesLegacyBrand(build) ? "（舊版檔名為「暮色秘典.app」）" : ""}。請先確認下載旁的 macOS 版本需求，Intel 與 Apple Silicon 使用同一份 Universal 包。` },
+        { title: "macOS ZIP 怎麼開啟？", body: `先在 Finder 完整解壓縮 ZIP，再開啟「${usesLegacyBrand(build) ? "暮色秘典" : (build.displayName || "紙鴉牌")}」應用程式。Finder 可能隱藏 .app 副檔名；看到遊戲圖示、種類為「應用程式」就是正確檔案，不必進入 Contents／MacOS 找 .app。請確認下載的是 macOS ZIP，並核對下載旁的版本需求；Intel 與 Apple Silicon 使用同一份 Universal 包。` },
         { title: "macOS 說無法打開、來源不明？", body: "目前測試版採 ad-hoc 簽章，尚未 Apple 公證。確認來源後，先嘗試開啟一次，再到「系統設定 → 隱私權與安全性」查看該 app 的「仍要打開」選項。若顯示可能損害電腦或檔案已損毀，請停止並回報完整訊息。" },
       ];
     case "linux":

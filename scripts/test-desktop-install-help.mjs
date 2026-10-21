@@ -1,0 +1,22 @@
+import { strict as assert } from "node:assert";
+import { loadTsModule } from "./lib/load-ts-module.mjs";
+
+const releases = await loadTsModule(new URL("../src/data/releases.ts", import.meta.url));
+const help = await loadTsModule(new URL("../src/data/install-help.ts", import.meta.url));
+const mac = releases.BUILDS.find((build) => build.id === "macos");
+const current = help.installationHelp(mac).map((item) => item.body).join("\n");
+assert.ok(current.includes(mac.displayName));
+assert.ok(current.includes("Finder") && current.includes("隱藏 .app"));
+assert.ok(current.includes("種類為「應用程式」"));
+assert.ok(current.includes("不必進入 Contents／MacOS"));
+assert.ok(current.includes("macOS ZIP"));
+assert.ok(current.includes("尚未 Apple 公證"));
+const legacy = help.installationHelp({ ...mac, build: 2026101401 }).map((item) => item.body).join("\n");
+assert.ok(legacy.includes("暮色秘典"));
+const future = help.installationHelp({ ...mac, displayName: "測試新名稱", build: 2026101702 }).map((item) => item.body).join("\n");
+assert.ok(future.includes("測試新名稱"));
+assert.ok(help.FIRST_MATCH_HELP.body.includes("新手教學") && help.FIRST_MATCH_HELP.body.includes("起始牌組"));
+assert.ok(!help.FIRST_MATCH_HELP.body.includes("引導練習"));
+assert.ok(help.FIRST_MATCH_HELP.body.includes("60 張") && help.FIRST_MATCH_HELP.body.includes("最多 3 張"));
+assert.ok(help.FIRST_MATCH_HELP.body.includes("不必全部開完"));
+console.log("PASS desktop install/onboarding help: 11 checks; current, legacy and future package names");

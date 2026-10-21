@@ -27,12 +27,12 @@ export function DownloadPanel() {
         <header className="max-w-2xl">
           <p className="eyebrow">DOWNLOAD & PLAY</p>
           <h2 id="download-title" className="section-title mt-4 text-3xl sm:text-4xl">
-            選擇你的電腦，免費下載。
+            選擇你的裝置，免費下載。
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            在這裡選平台、下載 ZIP，再照卡片上的步驟開啟遊戲。和朋友玩時，記得兩邊都用最新版。
+            選好平台後下載安裝包，再照下方步驟開啟遊戲。電腦版使用 ZIP，Android 使用 APK；和朋友玩時，記得兩邊都用最新版。
           </p>
-          <p lang="en" className="body-cjk mt-3 text-sm">Choose your platform, download the ZIP, and follow the steps below. Free desktop demo.</p>
+          <p lang="en" className="body-cjk mt-3 text-sm">Choose your platform and follow the steps below. Desktop downloads use ZIP; Android uses APK.</p>
           {legacyVersions && <p className="body-cjk mt-4 text-sm">
             遊戲已更名為「{GAME_FACTS.nameZh} {GAME_FACTS.nameEn}」。目前提供的玩家包仍使用舊名稱：{legacyVersions}。下載檔名沿用 TwilightCodex；「{GAME_FACTS.nameZh}」會隨之後的玩家包更新。
           </p>}
@@ -47,7 +47,7 @@ export function DownloadPanel() {
           )}
         </header>
 
-        <div className="mt-10 grid items-start gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-10 grid items-start gap-6 md:grid-cols-2">
           {available.map((build) => <FeaturedBuild key={build.id} build={build} />)}
         </div>
 
@@ -206,7 +206,7 @@ function FeaturedBuild({ build }: { build: Build }) {
 
       <dl className="grid grid-cols-2">
         <Spec label="版本 · Version" value={build.version ?? "—"} />
-        <Spec label={build.delivery === "streamed" ? "程式 ZIP · Game ZIP" : "大小 · Size"} value={build.size ?? "—"} />
+        <Spec label={build.delivery === "streamed" ? (build.id === "android" ? "程式 APK · Game APK" : "程式 ZIP · Game ZIP") : "大小 · Size"} value={build.size ?? "—"} />
         <Spec label="更新 · Updated" value={formatDate(build.updated)} />
         <Spec label="狀態 · Status" value={buildStatusText(build)} />
       </dl>
