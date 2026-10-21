@@ -39,8 +39,8 @@ export function GameIntroduction() {
           <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>四條路線，<br />沒有唯一的進攻路徑。</h3><p>前排掩護後排，攻擊卻能跨路選擇目標。找出防線的缺口，讓你的從者直擊敵方英雄。</p><Link className="text-link" href="/guide#lanes" prefetch={false}>試試四路交鋒演練 <span aria-hidden="true">→</span></Link></div>
         </div>
         <div className="tactics-grid">
-          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>你的回合結束，<br />策略還沒。</h3><p>留下魔力，在符合條件的反制時機施放瞬咒。從者身下的伏印，也可能是下一個轉折。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識反制與伏印 <span aria-hidden="true">→</span></Link></article>
-          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>六十張卡，<br />寫成你的打法。</h3><p>從持有的卡牌組出一副牌。正式 PvP 的勝者可挑走敗者一張卡；AI、訪客與區網練習不奪卡。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與奪卡規則 <span aria-hidden="true">→</span></Link></article>
+          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>你的回合結束，<br />策略還沒。</h3><p>留下魔力：對手施放秘術時可選擇反制；攻擊、召喚等瞬咒則在首次符合卡牌條件且魔力足夠時自動發動。從者身下的伏印，也可能是下一個轉折。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識反制與伏印 <span aria-hidden="true">→</span></Link></article>
+          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>六十張卡，<br />寫成你的打法。</h3><p>從持有的卡牌組出一副牌。一般對戰不會失去卡牌；新的奪牌對局暫停，既有戰利品仍可領取。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與模式狀態 <span aria-hidden="true">→</span></Link></article>
         </div>
       </div>
     </section>

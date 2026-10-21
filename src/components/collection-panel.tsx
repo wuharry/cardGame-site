@@ -7,39 +7,39 @@ export function CollectionPanel() {
     <section id="collection" className="grain border-t border-rule-soft bg-ink py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-5">
         <header className="max-w-2xl">
-          <p className="eyebrow">V — Deck & Spoils</p>
+          <p className="eyebrow">V — Deck & Collection</p>
           <h2 className="section-title mt-4 text-3xl sm:text-4xl">
-            構築專屬牌組 · 勝者掠奪戰利
+            六十張卡，構築自己的打法
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            {GAME_FACTS.cards} 種卡 + {GAME_FACTS.tokens} 種衍生物。新帳號有 150 次新手抽卡，湊滿 60 張就能開打。
+            {GAME_FACTS.cards} 種卡 + {GAME_FACTS.tokens} 種衍生物。完成引導練習可取得完整 60 張起始牌組，新帳號另有 150 次新手抽卡。
           </p>
         </header>
 
-        {/* ============ 核心亮點：高懸念奪卡法則 ============ */}
+        {/* Current availability and preserved historical settlement rules. */}
         <div className="plate notch mt-12 border-2 border-brass bg-panel p-6 sm:p-8 md:p-10 shadow-[0_0_24px_rgba(200,162,60,0.15)]">
           <div className="flex flex-col gap-4 border-b border-rule pb-6 md:flex-row md:items-center md:justify-between">
             <div>
               <div className="flex items-center gap-2">
                 <span className="border border-brass bg-brass/20 px-2 py-0.5 text-[0.68rem] font-bold text-brass-hi font-hud">
-                  硬派對決 · ANTE RULES
+                  奪牌暫停 · ANTE PAUSED
                 </span>
                 
               </div>
               <h3 className="section-title mt-2 text-2xl sm:text-3xl">
-                🏆 贏了可以從對方牌組拿走一張
+                新的奪牌對局暫停開放
               </h3>
             </div>
             <div className="rounded border border-brass-dim bg-ink px-4 py-2 text-center shrink-0">
-              <span className="hud-label text-brass-hi">牌庫歸屬移轉</span>
+              <span className="hud-label text-brass-hi">輕鬆與天梯對戰</span>
               <p className="text-lg font-bold text-parchment font-hud">
-                勝者 +1 ｜ 敗者 −1
+                收藏不移轉
               </p>
             </div>
           </div>
 
           <p className="body-cjk mt-5 text-[0.94rem] leading-relaxed">
-            這是真的轉移收藏，不是結算畫面上的數字。敗者牌組因此缺卡，要補齊才能再出戰。
+            一般對戰不會失去卡牌。本輪暫停新的奪牌配對與房間；先前已完成的奪牌局仍依當局同意規則結算，既有戰利品與收據保留。
           </p>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

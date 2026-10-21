@@ -9,14 +9,14 @@ import { CollectionPanel } from "@/components/collection-panel";
 import { GameModes } from "@/components/game-modes";
 import { SiteFooter } from "@/components/site-footer";
 
-export const metadata = pageMetadata("/guide", "新手指南", "從第一副六十張牌開始，認識紙鴉牌的四路站位、六種卡型、反制時機與正式對戰奪卡規則。");
+export const metadata = pageMetadata("/guide", "新手指南", "從第一副六十張牌開始，認識紙鴉牌的四路站位、六種卡型、反制時機與對戰模式；新的奪牌對局暫停開放。");
 
 const CHAPTERS = [
   { href: "flow", label: "回合流程" },
   { href: "lanes", label: "四路站位" },
   { href: "cards", label: "六種卡型" },
   { href: "systems", label: "行動與資源" },
-  { href: "collection", label: "組牌與奪卡" },
+  { href: "collection", label: "組牌與收藏" },
   { href: "modes", label: "對戰模式" },
 ];
 
