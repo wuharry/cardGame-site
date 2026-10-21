@@ -149,7 +149,7 @@ export const CARD_TYPES: CardType[] = [
   },
   {
     id: "quick", zh: "瞬咒", en: "Quick",
-    rule: "守方的反應法術，在符合卡文的事件出現時反制。",
+    rule: "對手施放秘術時，可選擇是否使用瞬咒反制；對攻擊、召喚等事件的瞬咒，在第一次符合卡牌條件且魔力足夠時自動發動。",
     timing: "守方 · 符合卡文的反應時機", art: "/media/cards/quick_void_rebuke.webp", artAlt: "瞬咒卡「虛空反噬」的卡圖",
   },
   {
@@ -213,8 +213,10 @@ export const COLLECTION_FEATURES: SystemRule[] = [
 ];
 
 export const SPOILS_RULES: SystemRule[] = [
-  { label: "Win a formal PvP match", value: "選 1 張", note: "從敗者本局的起始牌組挑一張，雙方收藏實際增減。" },
-  { label: "Practice and disconnects", value: "不奪卡", note: "AI、訪客與區網不列戰績，也不產生戰利品。" },
+  { label: "Ante availability", value: "新局暫停", note: "暫停奪牌配對與約戰房；舊版客戶端即使仍顯示入口，更新後的伺服器也會拒絕。" },
+  { label: "Casual and ranked", value: "一般對戰不掉卡", note: "輕鬆、天梯、AI、訪客與區網練習不移轉卡牌收藏。" },
+  { label: "Existing receipts", value: "既有戰利品保留", note: "已完成奪牌局的領取與重送紀錄不因新局暫停而刪除。" },
+  { label: "Previous ante matches", value: "斷線／投降也算敗北", note: "先前已開賽的奪牌局依當局同意規則結算；不是所有 PvP 敗北都會失卡。" },
 ];
 
 export interface GameMode {

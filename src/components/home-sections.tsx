@@ -39,8 +39,8 @@ export function GameIntroduction() {
           <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>站在哪裡，<br />和出哪張牌一樣重要。</h3><p>把夥伴放到前排保護後排，再找機會突破對手的防線。不必只盯著正前方，也能攻擊其他路線。</p><Link className="text-link" href="/guide#lanes" prefetch={false}>看看怎麼進攻 <span aria-hidden="true">→</span></Link></div>
         </div>
         <div className="tactics-grid">
-          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>對手出手時，<br />你也有機會反擊。</h3><p>別急著用光資源。留一手法術或埋下陷阱，等對手進攻時再出招。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識卡牌 <span aria-hidden="true">→</span></Link></article>
-          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>收集喜歡的卡，<br />試出自己的組合。</h3><p>完成新手教學，先拿一副 60 張起始牌組。一般對戰不會失去卡牌；只有雙方都同意的「奪牌模式」，勝者才能挑走一張卡。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與對戰模式 <span aria-hidden="true">→</span></Link></article>
+          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>對手出手時，<br />你也有機會反擊。</h3><p>別急著用光魔力。對手施放秘術時，你可以選擇用瞬咒反制；對攻擊、召喚等事件的瞬咒，則在第一次符合卡牌條件且魔力足夠時自動發動。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識反制與伏印 <span aria-hidden="true">→</span></Link></article>
+          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>收集喜歡的卡，<br />試出自己的組合。</h3><p>完成新手教學，先拿一副 60 張起始牌組。一般對戰不會失去卡牌；新的奪牌對局暫停，既有戰利品仍可領取。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與對戰模式 <span aria-hidden="true">→</span></Link></article>
         </div>
       </div>
     </section>
