@@ -91,11 +91,35 @@ for (const selected of suspended) {
 
 const live = await views(releases.BUILDS);
 const manifest = await api(releases.BUILDS);
+const macos = releases.BUILDS.find((build) => build.id === "macos");
+const r17Url = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.22-r17/TwilightCodex-macOS-20261022-R17.zip";
+const r17Page = "https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.22-r17";
+assert.deepEqual(releases.BUILDS.filter((build) => build.status === "available").map((build) => build.id), ["macos"]);
+assert.deepEqual(Object.keys(manifest.platforms), ["macos"]);
+check(live.panel.includes(`href="${r17Url}" download="${macos.file}"`) && live.panel.includes(`href="${r17Page}"`), "Actual panel offers the R17 Mac ZIP and its own release page");
+check((live.panel.match(/<button\b[^>]*disabled/g) ?? []).length === 3, "Windows, Linux and Android remain visibly disabled");
+check(live.entry.includes("macOS") && live.entry.includes('href="/#download"') && !/<button\b[^>]*disabled/.test(live.entry), "Homepage CTA resumes for macOS");
+for (const [lang, note] of [["zh-Hant", macos.note], ["en", macos.noteEn]]) {
+  const paragraph = renderToStaticMarkup(createElement("p", { lang, className: "mt-3" }, note));
+  check(live.panel.includes(paragraph), `R17 validation limits are visible with HTML escaping in ${lang}`);
+}
+check(live.panel.includes("首次另下載約 425 MB") && live.panel.includes("First launch adds about 425 MB"), "Real R17 content size is distinct from synthetic R15-sized fixtures");
+check(!live.panel.includes('href="/install/android"') && !Object.values(live).join("").match(/href="[^"]+\.(?:apk|pck)"/), "Actual views expose neither APK installation nor raw content-pack downloads");
+for (const [name, html] of Object.entries(live)) {
+  for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
+    if (/https:\/\/(?:github\.com\/[^\s"<]+\/releases\/|wuharry\.itch\.io\/)/.test(href)) {
+      check(href === r17Url || href === r17Page, `${name} exposes only the R17 macOS artifact or release page`);
+    }
+  }
+}
 for (const build of releases.BUILDS) {
   if (build.version === "2026.10.19-R15") check(build.status === "suspended", `${build.id} retains the R15 metadata without re-enabling that old release`);
   if (build.status === "available") continue;
   check(!manifest.platforms[build.id], `${build.id} retained metadata is absent from the live update API`);
   if (build.file) check(!Object.values(live).join("").includes(releases.downloadUrl({ ...build, status: "available" })), `${build.id} old download URL is absent from all live views`);
   check(!build.content?.url || !Object.values(live).join("").includes(build.content.url), `${build.id} retained content URL is absent from all live views`);
+  for (const getUrl of [releases.downloadUrl, releases.websiteDownloadUrl, releases.releasePageUrl, releases.downloadMirrorPageUrl]) {
+    check(getUrl(build) === null, `${build.id} actual suspension blocks ${getUrl.name}`);
+  }
 }
-console.log(`PASS download status: ${checks} checks for all entrances, empty API, retained metadata and each single-platform recovery fixture`);
+console.log(`PASS download status: ${checks} checks for actual macOS-only R17 entrances, suspended platforms, empty API, retained metadata and each single-platform recovery fixture`);

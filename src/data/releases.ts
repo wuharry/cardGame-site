@@ -53,6 +53,16 @@ const R15_VALIDATION = {
   en: "All three desktop versions passed download and startup checks. ObjectDB cleanup warnings on exit still fail strict checks (strict FAIL). Full human matches and friend-computer tests have not been run.",
 };
 
+const R17_MACOS_SUMMARY = {
+  zh: "macOS R17 修正 Metal 圖片與退出清理警告。先下載並完整解壓遊戲程式，開啟後按「開始」下載本版美術與音效；等待時可讀內建說明書，同版本素材會保留快取。正式專服已同步 protocol 28；本版 BUILD 2026102201，最低線上 BUILD 2026102101。Windows、Linux 與 Android 仍在熱修，暫停下載，不提供舊版或 APK。",
+  en: "macOS R17 fixes Metal image and exit cleanup warnings. Download and fully extract the game ZIP, then press Start to download this version's art and audio. Read the built-in rulebook while it downloads; content for the same version stays cached. Production now uses protocol 28; this release is BUILD 2026102201, with minimum online BUILD 2026102101. Windows, Linux and Android downloads remain suspended during the hotfix, with no older packages or APK offered.",
+};
+
+const R17_MACOS_VALIDATION = {
+  zh: "首次素材下載、掛載、主選單與正常退出已通過 macOS 無視窗及 Metal 視窗實測，零錯誤／警告；正式連線驗證亦通過。真人對戰、實機爬塔整局及長時間效能仍待驗收。",
+  en: "Fresh content download, mounting, main-menu startup and normal exit passed native macOS headless and Metal-window checks with zero errors or warnings. Production connectivity also passed. Human matches, full tower runs on a real device and sustained performance remain unverified.",
+};
+
 const R13_SUMMARY = {
   zh: "紙鴉牌 · Deckmarch R13：加入起手換牌，煉金鍋爐移至獨立支援區，棄牌回魔改為向上取整並保留冷卻。修正連線未就緒時，開局換牌過早判斷主機身分造成的載入錯誤。保留原有帳號、收藏、牌組、存檔、資源加密、授權附件及可關閉的匿名統計。正式多人需 R13（BUILD 2026101701），protocol 19；雙方玩家與伺服器須同步更新。",
   en: "Deckmarch R13 adds an opening-hand mulligan, moves alchemy cauldrons into dedicated support zones, and rounds half the discarded card's Cost up for Mana recycling while preserving its cooldown. It fixes loading errors caused by opening-hand logic checking server identity before the multiplayer connection is ready. Existing accounts, collections, decks, saves, resource encryption, legal notices and optional anonymous statistics are retained. Official multiplayer requires R13 (BUILD 2026101701), protocol 19; both players and the server must use the updated version.",
@@ -97,27 +107,27 @@ export const BUILDS: Build[] = [
     displayName: "紙鴉牌",
     platform: "macOS",
     en: "ZIP · Universal",
-    status: "suspended",
-    hotfix: HOTFIX_NOTICE,
-    file: "TwilightCodex-macOS-20261019-R15.zip",
-    version: "2026.10.19-R15",
-    size: "79.7 MiB",
-    bytes: 83581195,
-    updated: "2026-10-20",
-    sha256: "a38db2611e6d97cbd68dc6f2388af127fc4413c8e29687cc84a3762e5b82d7ae",
-    build: 2026101902,
-    minimumBuild: 2026101902,
-    protocol: 27,
+    status: "available",
+    releaseBase: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.22-r17",
+    file: "TwilightCodex-macOS-20261022-R17.zip",
+    version: "2026.10.22-R17",
+    size: "79.8 MiB",
+    bytes: 83713638,
+    updated: "2026-10-22",
+    sha256: "c2f768a3fde7303d98b2cf71a6a07027c4fd4af4e4f024d205ff52cb221ad8f1",
+    build: 2026102201,
+    minimumBuild: 2026102101,
+    protocol: 28,
     delivery: "streamed",
     content: {
-      filename: "PaperRaven-macOS-20261019-R15-Content.pck",
-      bytes: 422201600,
-      sha256: "b30c6906acba01474281c3e3ce78fd43e3c809893d43d3a45ad75869563de5aa",
-      url: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15/PaperRaven-macOS-20261019-R15-Content.pck",
+      filename: "PaperRaven-macOS-20261022-R17-Content.pck",
+      bytes: 425476328,
+      sha256: "6e0ab36a330deb6743c5889a8b557220a1a210c0bbc367dc4bceca11c1dd894b",
+      url: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.22-r17/PaperRaven-macOS-20261022-R17-Content.pck",
     },
     requirement: "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    note: `${R15_SUMMARY.zh} macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。採 ad-hoc 簽章，尚未 Apple 公證。${R15_VALIDATION.zh}`,
-    noteEn: `${R15_SUMMARY.en} Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the .app. Ad-hoc signed, not Apple-notarized. ${R15_VALIDATION.en}`,
+    note: `${R17_MACOS_SUMMARY.zh} macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。採 ad-hoc 簽章，尚未 Apple 公證。${R17_MACOS_VALIDATION.zh}`,
+    noteEn: `${R17_MACOS_SUMMARY.en} Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the .app. Ad-hoc signed, not Apple-notarized. ${R17_MACOS_VALIDATION.en}`,
   },
   {
     id: "linux",
@@ -222,6 +232,17 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    version: "2026.10.22-R17",
+    date: "2026-10-22",
+    title: "紙鴉牌 Deckmarch R17：macOS 熱修，其他平台暫停下載",
+    changes: [
+      R17_MACOS_SUMMARY.zh,
+      "成品來源 47b1509d。macOS 採 ad-hoc 簽章，尚未 Apple 公證；R17 已另做原生啟動與首次下載驗收。",
+      R17_MACOS_VALIDATION.zh,
+      `English: ${R17_MACOS_SUMMARY.en} Artifact source: 47b1509d. macOS is ad-hoc signed, not Apple-notarized. R17 has its own native startup and first-download verification. ${R17_MACOS_VALIDATION.en}`,
+    ],
+  },
   {
     version: "2026.10.19-R15",
     date: "2026-10-20",

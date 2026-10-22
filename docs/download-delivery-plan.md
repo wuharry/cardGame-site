@@ -1,5 +1,37 @@
 # 下載與安裝改善
 
+## 2026-10-22：macOS R17 單平台恢復下載
+
+**本版只開放已通過原生成品與公開首次下載驗收的 macOS R17；Windows、Linux 維持熱修中，APK 繼續停用。** 下載區、首頁入口、版本頁與 schema 1 更新 API 共用同一平台開關。成品來源為 `47b1509d`；正式專服已同步 protocol 28，部署等待修正為 `a3425a22`，沒有重建或改寫已凍結的玩家 ZIP／素材。
+
+| 版本欄位 | 正式發布設定 |
+| --- | --- |
+| Version／BUILD | `2026.10.22-R17`／`2026102201` |
+| Minimum BUILD／Protocol | `2026102101`／`28` |
+| macOS ZIP | `TwilightCodex-macOS-20261022-R17.zip`；83,713,638 bytes（79.8 MiB） |
+| ZIP SHA-256 | `c2f768a3fde7303d98b2cf71a6a07027c4fd4af4e4f024d205ff52cb221ad8f1` |
+| macOS content | `PaperRaven-macOS-20261022-R17-Content.pck`；425,476,328 bytes（顯示約 425 MB） |
+| Content SHA-256 | `6e0ab36a330deb6743c5889a8b557220a1a210c0bbc367dc4bceca11c1dd894b` |
+| macOS releaseBase | `https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.22-r17` |
+| Windows／Linux／Android | 保持 `suspended`；Android `file: null`，沒有舊包／APK fallback |
+
+macOS 使用自己的 `releaseBase`；全域 `RELEASE_BASE` 保留 R15，其餘三平台的歷史檔名、大小、hash、版本與素材不改。原有歷史 `RELEASE_NOTES` 保留，另加入 R17。未驗收的舊 itch.io 鏡像不重新啟用。
+
+| 遊戲與附件驗收 | 實際結果 |
+| --- | --- |
+| 正式服務 | protocol 28 就緒；真實外網 ENet／RPC 握手與暫停模式拒絕驗證 PASS |
+| macOS 簽章 | codesign strict PASS；ad-hoc，尚未 Apple 公證 |
+| 凍結成品、預種快取啟動 | headless／Metal GUI 均 PASS；退出碼 0、零錯誤／警告 |
+| 公開 HTTPS 附件 | 四個附件完整 bytes／SHA-256 與本機一致，不含專服或私人檔 |
+| 公開首次素材下載 | headless／Metal GUI 都用獨立空快取實測下載、掛載、主選單與正常退出，PASS；沒有預種素材或修改 executable |
+| 驗收限制 | 真人對戰、實機爬塔整局、長時間 GPU／音訊播放及其他平台實機尚未驗收 |
+
+前次 GUI 因正式服 protocol 27 出現 RPC checksum mismatch 的 FAIL 保留在遊戲 QA；同步專服後使用同份凍結 bytes 重跑才取得上述 PASS。首次下載不是拿私人快取結果代替。公開成品與最新狀態見 [R17 發布頁](https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.22-r17)。
+
+網站驗證入口為 `node scripts/test-download-status.mjs`、`node scripts/test-game-version.mjs`、`node scripts/test-download-mirror.mjs`、`node scripts/test-android-install-guide.mjs`、`node scripts/test-streamed-downloads.mjs /ABSOLUTE_PATH/release.json`、`npm run lint` 與 `npm run build`。最後一支同時核對真正的 R17 ZIP／素材 manifest，不只使用 synthetic fixture。正式部署後仍需核對 Vercel commit、首頁實際連結與 `/api/game-version` 僅含 macOS，不能只看本機 build。
+
+English: R17 restores only the verified macOS ZIP and matching streamed content. The production server now runs protocol 28. Native headless and Metal-window checks passed both with verified private cache and with fresh public HTTPS downloads, reaching the main menu and exiting normally with zero errors or warnings. macOS remains ad-hoc signed, not Apple-notarized. Human matches, full device tower runs and sustained performance remain unverified. Windows, Linux and Android remain suspended; historical release metadata stays intact.
+
 ## 2026-10-22：各平台熱修停用（網站候選，尚未部署）
 
 Windows、macOS、Linux 與 Android 初始皆為 `suspended`，顯示「熱修中，近期發布」／「Hotfix in progress, update coming soon」。`Build.hotfix` 保存公告日期及中英文原因；`file`、`version`、bytes、SHA-256、素材 URL、歷史 `note`／`noteEn` 及 `RELEASE_NOTES` 保留原值供稽核，不把 R15 的發行或驗收紀錄改寫成尚未發行，也不填 R17 的猜測網址或 hash。
