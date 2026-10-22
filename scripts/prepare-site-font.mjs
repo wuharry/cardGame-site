@@ -15,9 +15,16 @@ const characters = [...new Set([...text].filter(char => char.codePointAt(0) > 12
 const ascii = Array.from({ length: 95 }, (_, i) => String.fromCharCode(i + 32)).join("");
 // Keep the hero/header and immediately following news in one small subset.
 // Other sections do not need to make the first screen download all guide glyphs.
+// The hero button and news notice also render release data. Take every
+// buildStatusText label plus the current hotfix notes, not the whole history.
+const { BUILDS } = await import("../src/data/releases.ts");
+const releases = await readFile("src/data/releases.ts", "utf8");
+const statusLabels = releases.match(/export function buildStatusText[\s\S]*?\n}\n/)?.[0];
+if (!statusLabels) throw new Error("buildStatusText not found; update the first-screen glyph source");
 const priorityText = await readFile("src/components/entry-screen.tsx", "utf8")
   + await readFile("src/components/site-header.tsx", "utf8")
-  + (await readFile("src/components/home-sections.tsx", "utf8")).split("export function GameIntroduction")[0];
+  + (await readFile("src/components/home-sections.tsx", "utf8")).split("export function GameIntroduction")[0]
+  + statusLabels + BUILDS.map(build => `${build.platform}${build.hotfix?.note ?? ""}`).join("");
 const prioritySet = new Set([...priorityText]);
 const primary = characters.filter(char => prioritySet.has(char));
 const remaining = characters.filter(char => !prioritySet.has(char));

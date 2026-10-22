@@ -27,8 +27,20 @@ html:has(.marketing-home) { scroll-behavior: auto; }
 .skip-link { position: absolute; left: 20px; top: -100px; padding: 12px 20px; color: var(--night-deep); background: var(--gold-light); z-index: 100; }
 .skip-link:focus { top: 10px; }
 .marketing-home { background: var(--night-deep); color: var(--paper); }
-/* Keep real section heights for stable fragment navigation. Individual widgets
-   still own their lazy loading, and image containers keep their fixed ratios. */
+/* A cold visit without a fragment lays out only the first screen, so offscreen
+   copy does not pull every Chinese subset into the critical path. Any fragment
+   (:target) or first interaction (LayoutOnInteraction) restores real section
+   heights before a jump is measured; estimated heights pushed #download off target. */
+@supports (content-visibility: auto) {
+  html:not([data-full-layout]):not(:has(:target)) .marketing-home > section:not(.codex-hero) {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 1000px;
+  }
+  html:not([data-full-layout]):not(:has(:target)) body:has(.marketing-home) > .site-footer {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 400px;
+  }
+}
 .marketing-home :where(section, article, div)[id], .subpage-heading { scroll-margin-top: 24px; }
 .marketing-home h2, .marketing-home h3, .subpage-heading h1, .site-footer { font-family: var(--font-serif); }
 .overline { font: 600 11px/1.6 var(--font-sans); letter-spacing: .22em; color: var(--gold); text-transform: uppercase; }

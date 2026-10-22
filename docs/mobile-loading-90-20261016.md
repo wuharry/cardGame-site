@@ -67,3 +67,26 @@
 捲動驗收等待實際可見的目的區塊與延後字型的回應，不把 `networkidle` 當成畫面已繪製；同頁錨點跳轉與 `content-visibility` 啟用可能發生在網路閒置之後。這些條件在本機與正式站均通過，沒有主動強迫字型下載或移除原有斷言。
 
 限制：這些是實驗室測試，真實使用者 Core Web Vitals 資料仍不足；LCP 2.7–2.9 秒尚未達「良好」的 2.5 秒，95 分不代表每支手機／每條網路都同樣快。CSS 內嵌仍使用本頁已說明的 Next experimental 功能，升級 Next 時需重跑跨頁與返回測試。APK 下載及版本 API 的 Android 項目維持停用，沒有發布新的遊戲包。
+
+## 2026-10-22 回歸：退回 74 分
+
+2026-10-22 09:56 的手機 PageSpeed 退回效能 74、FCP 3.6 秒、LCP 4.8 秒，和本頁第一輪相同。原因是首屏又下載了全部四片中文字型，共 474,484 bytes。`test-mobile-site.mjs` 的「First screen must not download the entire Chinese family」在修正前的本機 build 失敗，實際下載 4 片，預期 1 片；這項檢查在下列改動後沒有再跑。
+
+| 原因 | 證據 | 修正 |
+| --- | --- | --- |
+| `03262a3`（10/19）移除首頁區段與頁尾的 `content-visibility`，整頁文字在載入時全部排版，所以畫面外區塊用到的字型分片也一起下載 | 正式站手機冷開下載 `site-0`～`site-3` | 只在「網址沒有 fragment，且使用者尚未互動」時延後畫面外排版。`:has(:target)` 涵蓋冷開 `/#download`；Next `Link` 的錨點跳轉不會更新 `:target`，所以 root layout 的 `LayoutOnInteraction` 在第一次 pointerdown／keydown／touchstart／wheel 時設定 `data-full-layout`，讓任何跳轉都先用真實高度排版 |
+| 首屏文案在 `ef4222f` 重新產生字型之後改過；產生器只讀元件原始碼，讀不到 `releases.ts` 在 hero 與消息區顯示的狀態文字 | 「下載狀態」「搭配法術」「電腦練習」「熱修中，近期發布」落在第 1、2 片 | `prepare-site-font.mjs` 把 `buildStatusText` 的全部標籤和目前的 hotfix 公告也算進首屏分片，再重新產生 |
+
+10/19 要解決的落點問題仍然保留：`test-mobile-site.mjs` 新增 `#download` 位置取樣，涵蓋冷開 `/#download`、連點兩次 header 下載入口、從 `/guide` 跳回 `/#download` 三種情境，於 0、1、3 秒及 `document.fonts.ready` 後各量一次，位移上限 4 px。修正後三種情境都固定在 192 px；強制套回 10/16 未設閘門的規則時，從 `/guide` 跳回會落在 -497 px，證明這項取樣抓得到原本的問題。
+
+| 首屏中文字型（冷開，未互動） | 修正前正式站 | 修正後本機 build |
+| --- | --- | --- |
+| 手機 412×823 | 4 片，474,484 bytes | 1 片，117,580 bytes |
+| 桌面 1350×940 | 4 片 | 4 片（未改善，10/16 也沒有量桌面） |
+
+本機驗收：lint、production build、`test-mobile-site`（含新的位置取樣）、SEO 48 項、下載鏡像 70 項、下載狀態 84 項、遊戲版本 manifest、Android 安裝指南 36 項皆通過。部署後的 PageSpeed 重測尚未執行。
+
+限制：
+- 首屏分片距離 120 KB 預算只剩 2,420 bytes，下次改 hero、header 或消息區文案很可能要重新產生字型，甚至超過預算。超過時要先決定哪些字移出首屏分片，不要直接調高預算。
+- 字型依 `origin/main` 的已提交文案產生。之後任何首屏文案或版本狀態的改動，都要重跑 `node scripts/prepare-site-font.mjs` 與 `test-mobile-site.mjs`。
+- 圖片壓縮、舊版 JS polyfill 與未使用的 JS 在 95 分時就已存在，不是這次退步的原因，本輪沒有處理；本頁先前也已決定不降低圖片品質。
