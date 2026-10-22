@@ -15,6 +15,7 @@ export function DownloadPanel() {
     .filter((build) => build.displayName && build.displayName !== GAME_FACTS.nameZh)
     .map((build) => `${build.version}（${build.displayName}）`))].join("、");
   const others = BUILDS.filter((build) => !downloadUrl(build));
+  const paused = others.find((build) => build.status === "suspended");
   const firstMatch = available.some((build) => build.delivery === "streamed") ? {
     title: "第一次進遊戲怎麼開始？",
     body: "先選「新手教學」。完成後會拿到一副 60 張起始牌組，可以先玩單人對戰；之後再開免費卡包、調整自己的牌組。",
@@ -27,12 +28,15 @@ export function DownloadPanel() {
         <header className="max-w-2xl">
           <p className="eyebrow">DOWNLOAD & PLAY</p>
           <h2 id="download-title" className="section-title mt-4 text-3xl sm:text-4xl">
-            選擇你的電腦，免費下載。
+            {available.length ? "選擇你的電腦，免費下載。" : paused ? buildStatusText(paused) : "版本準備中"}
           </h2>
           <p className="body-cjk mt-5 text-[0.98rem]">
-            在這裡選平台、下載 ZIP，再照卡片上的步驟開啟遊戲。和朋友玩時，記得兩邊都用最新版。
+            {available.length ? "在這裡選平台、下載 ZIP，再照卡片上的步驟開啟遊戲。和朋友玩時，記得兩邊都用最新版。"
+              : "目前沒有可下載的平台。修正版完成驗收後，會逐平台恢復下載。"}
           </p>
-          <p lang="en" className="body-cjk mt-3 text-sm">Choose your platform, download the ZIP, and follow the steps below. Free desktop demo.</p>
+          <p lang="en" className="body-cjk mt-3 text-sm">{available.length
+            ? "Choose your platform, download the ZIP, and follow the steps below. Free desktop demo."
+            : paused ? buildStatusText(paused, "en") : "No downloads are available yet. Check each platform's status below."}</p>
           {legacyVersions && <p className="body-cjk mt-4 text-sm">
             遊戲已更名為「{GAME_FACTS.nameZh} {GAME_FACTS.nameEn}」。目前提供的玩家包仍使用舊名稱：{legacyVersions}。下載檔名沿用 TwilightCodex；「{GAME_FACTS.nameZh}」會隨之後的玩家包更新。
           </p>}
@@ -51,7 +55,7 @@ export function DownloadPanel() {
           {available.map((build) => <FeaturedBuild key={build.id} build={build} />)}
         </div>
 
-        <div className="mt-10 border-y border-rule-soft py-2">
+        {available.length > 0 && <div className="mt-10 border-y border-rule-soft py-2">
           {[firstMatch, CONNECTION_HELP].map((item) => (
             <details key={item.title} className="border-b border-rule-soft py-4 last:border-0">
               <summary className="cursor-pointer text-sm text-parchment font-serif">
@@ -61,11 +65,11 @@ export function DownloadPanel() {
               {"bodyEn" in item && typeof item.bodyEn === "string" && <p lang="en" className="body-cjk mt-2 max-w-3xl text-[0.82rem]">{item.bodyEn}</p>}
             </details>
           ))}
-        </div>
+        </div>}
 
         {others.length > 0 && <div className="mt-10">
           <h3 className="hud-label border-b border-rule-soft pb-3">
-            其他平台
+            {available.length ? "其他平台" : "各平台下載狀態"}
           </h3>
           <ul>
             {others.map((build) => (
@@ -242,6 +246,7 @@ function Spec({ label, value }: { label: string; value: string }) {
 
 function BuildRow({ build }: { build: Build }) {
   const href = websiteDownloadUrl(build);
+  const hotfix = build.status === "suspended" ? build.hotfix : undefined;
 
   return (
     <li id={`download-${build.id}`} className="flex scroll-mt-24 flex-wrap items-baseline gap-x-6 gap-y-1 border-b border-rule-soft py-4">
@@ -272,6 +277,7 @@ function BuildRow({ build }: { build: Build }) {
           className="border border-rule px-3 py-1 text-[0.7rem] tracking-[0.16em] text-faint uppercase font-hud"
         >
           {build.id === "android" ? "下載 Android APK · " : ""}{buildStatusText(build)}
+          <span lang="en" className="mt-1 block normal-case tracking-normal">{buildStatusText(build, "en")}</span>
         </button>
       )}
       {href && (
@@ -279,8 +285,16 @@ function BuildRow({ build }: { build: Build }) {
           {build.version} · 更新於 {formatDate(build.updated)}
         </p>
       )}
-      {build.note && <p className="body-cjk basis-full text-[0.82rem]">{build.note}</p>}
-      {build.noteEn && <p lang="en" className="body-cjk basis-full text-[0.78rem]">{build.noteEn}</p>}
+      {hotfix && <div className="body-cjk basis-full text-[0.82rem]">
+        <p lang="zh-Hant">{hotfix.note}</p>
+        <p lang="en" className="mt-2 text-[0.78rem]">{hotfix.noteEn}</p>
+        <p className="mt-2 text-faint">公告 · <time dateTime={hotfix.since}>{formatDate(hotfix.since)}</time></p>
+      </div>}
+      {(build.note || build.noteEn) && <details className="body-cjk basis-full text-[0.82rem]">
+        <summary className="cursor-pointer text-quill">歷史版本說明與驗收範圍 <span lang="en">· Historical release notes</span></summary>
+        {build.note && <p lang="zh-Hant" className="mt-3">{build.note}</p>}
+        {build.noteEn && <p lang="en" className="mt-2 text-[0.78rem]">{build.noteEn}</p>}
+      </details>}
       {href && build.sha256 && (
         <p className="body-cjk min-w-0 basis-full break-all text-[0.72rem] text-faint">
           SHA-256：<code>{build.sha256}</code>

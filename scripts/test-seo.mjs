@@ -2,9 +2,12 @@ import { strict as assert } from "node:assert";
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import ts from "typescript";
+import { loadTsModule } from "./lib/load-ts-module.mjs";
 
 const base = process.argv[2] ?? "http://localhost:3100";
 const origin = new URL(process.env.SITE_URL ?? "https://twilight-codex.vercel.app").origin;
+const releases = await loadTsModule(new URL("../src/data/releases.ts", import.meta.url));
+const availablePlatforms = releases.BUILDS.filter((build) => releases.downloadUrl(build)).map((build) => build.platform);
 let checks = 0;
 const check = (ok, label) => { assert.ok(ok, label); checks++; console.log("PASS", label); };
 const meta = (html, key) => [...html.matchAll(/<meta\s[^>]*>/g)].map(m => m[0])
@@ -23,14 +26,14 @@ for (const path of paths) {
   check((html.match(/<h1\b/g) ?? []).length === 1, `${path} has one main heading`);
   if (path === "/") home = html;
   if (path === "/guide") check(meta(html, "og:title").includes("新手指南"), "Subpage shares do not inherit the homepage title");
-  if (path === "/install/android") check(!/href="[^"]*\.apk(?:\?|"|&)/i.test(html) && meta(html, "description").includes("暫停"), "Android SEO and page preserve the release gate");
+  if (path === "/install/android" && !availablePlatforms.includes("Android")) check(!/href="[^"]*\.apk(?:\?|"|&)/i.test(html) && meta(html, "description").includes("暫停"), "Android SEO and page preserve the release gate");
 }
 const structured = [...home.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1]));
 check(structured.length === 1, "Homepage has one parseable structured data graph");
 const website = structured[0]["@graph"].find(n => n["@type"] === "WebSite");
 const game = structured[0]["@graph"].find(n => n["@type"] === "VideoGame");
 check(website.name === "紙鴉牌 Deckmarch" && website.url === `${origin}/` && website.alternateName.includes("Deckmarch"), "Website identity matches the current brand and URL");
-check(game.gamePlatform.length > 0 && !game.gamePlatform.includes("Android") && !game.aggregateRating && !game.offers, "Game markup avoids unavailable platforms and invented ratings/offers");
+check(JSON.stringify(game.gamePlatform) === JSON.stringify(availablePlatforms) && !game.aggregateRating && !game.offers, "Game markup matches available platforms, including zero, without invented ratings/offers");
 check(!home.includes("fonts.googleapis.com") && !home.includes("fonts.gstatic.com"), "Chinese fonts are self-hosted; no third-party render-blocking font requests");
 const fontManifest = JSON.parse(await readFile(new URL("../src/fonts/manifest.json", import.meta.url), "utf8"));
 for (const subset of fontManifest.subsets) {

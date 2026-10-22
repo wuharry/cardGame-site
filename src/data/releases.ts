@@ -15,6 +15,8 @@ export interface Build {
   /** Published package's actual display name; separate from the site's current brand. */
   displayName?: string;
   status: BuildStatus;
+  /** 目前的熱修公告獨立於歷史成品資訊；恢復下載須逐平台填入已驗收的新成品。 */
+  hotfix?: { since: string; note: string; noteEn: string };
   file: string | null;
   version: string | null;
   size: string | null;
@@ -56,13 +58,20 @@ const R13_SUMMARY = {
   en: "Deckmarch R13 adds an opening-hand mulligan, moves alchemy cauldrons into dedicated support zones, and rounds half the discarded card's Cost up for Mana recycling while preserving its cooldown. It fixes loading errors caused by opening-hand logic checking server identity before the multiplayer connection is ready. Existing accounts, collections, decks, saves, resource encryption, legal notices and optional anonymous statistics are retained. Official multiplayer requires R13 (BUILD 2026101701), protocol 19; both players and the server must use the updated version.",
 };
 
+const HOTFIX_NOTICE = {
+  since: "2026-10-22",
+  note: "熱修中，近期發布。各平台完成修正與驗收後，會分別恢復下載；目前不提供舊版本。",
+  noteEn: "Hotfix in progress, update coming soon. Downloads will resume per platform after fixes and validation. Older versions are currently unavailable.",
+};
+
 export const BUILDS: Build[] = [
   {
     id: "windows",
     displayName: "紙鴉牌",
     platform: "Windows",
     en: "ZIP · x86_64",
-    status: "available",
+    status: "suspended",
+    hotfix: HOTFIX_NOTICE,
     file: "TwilightCodex-Windows-20261019-R15.zip",
     version: "2026.10.19-R15",
     size: "58.8 MiB",
@@ -88,7 +97,8 @@ export const BUILDS: Build[] = [
     displayName: "紙鴉牌",
     platform: "macOS",
     en: "ZIP · Universal",
-    status: "available",
+    status: "suspended",
+    hotfix: HOTFIX_NOTICE,
     file: "TwilightCodex-macOS-20261019-R15.zip",
     version: "2026.10.19-R15",
     size: "79.7 MiB",
@@ -114,7 +124,8 @@ export const BUILDS: Build[] = [
     displayName: "紙鴉牌",
     platform: "Linux",
     en: "ZIP · x86_64",
-    status: "available",
+    status: "suspended",
+    hotfix: HOTFIX_NOTICE,
     file: "TwilightCodex-Linux-20261019-R15.zip",
     version: "2026.10.19-R15",
     size: "61.2 MiB",
@@ -140,7 +151,8 @@ export const BUILDS: Build[] = [
     displayName: "紙鴉牌",
     platform: "Android",
     en: "APK · arm64 · Preview",
-    status: "preparing",
+    status: "suspended",
+    hotfix: HOTFIX_NOTICE,
     file: null,
     version: "2026.10.19-R15",
     size: null,
@@ -191,10 +203,14 @@ export function releasePageUrl(build: Build): string | null {
   return `${url.origin}/${match[1]}/${match[2]}/releases/tag/${match[3]}`;
 }
 
-export function buildStatusText(build: Build): string {
-  if (downloadUrl(build)) return "可下載";
-  if (build.status === "suspended") return "暫停下載";
-  return build.status === "planned" ? "尚未提供" : "新版準備中";
+export function buildStatusText(build: Build, language: "zh" | "en" = "zh"): string {
+  if (downloadUrl(build)) return language === "en" ? "Available" : "可下載";
+  if (build.status === "suspended") {
+    if (build.hotfix) return language === "en" ? "Hotfix in progress, update coming soon" : "熱修中，近期發布";
+    return language === "en" ? "Downloads suspended" : "暫停下載";
+  }
+  if (build.status === "planned") return language === "en" ? "Not yet available" : "尚未提供";
+  return language === "en" ? "Update in preparation" : "新版準備中";
 }
 
 export interface ReleaseNote {

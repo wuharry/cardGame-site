@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { GAME_MODES } from "@/data/game";
 import { mediaCaptureCaption, mediaUrl } from "@/data/media";
-import { BUILDS, RELEASE_NOTES } from "@/data/releases";
+import { BUILDS, RELEASE_NOTES, buildStatusText } from "@/data/releases";
 import { FEEDBACK_URL } from "@/data/site";
 
 export function LatestNews() {
@@ -11,7 +11,7 @@ export function LatestNews() {
   const items = [
     { tag: "版本更新", date: latest.date, title: `${latest.version} 玩家版本資訊`, text: "查看各平台下載、啟動說明與這次更新的內容。", href: "/news", image: "/media/screens/arena-caverns.webp" },
     paused
-      ? { tag: "重要公告", date: paused.updated, title: `${paused.platform} 版本暫停下載`, text: "實機測試發現效能與操作問題，修正完成後再開放下載。", href: `#download-${paused.id}`, image: "/media/screens/arena-frostlands.webp" }
+      ? { tag: "重要公告", date: paused.hotfix?.since ?? paused.updated, title: buildStatusText(paused), text: paused.hotfix?.note ?? `${paused.platform} 暫停下載，修正完成後再開放。`, textEn: paused.hotfix?.noteEn ?? buildStatusText(paused, "en"), href: "#download", image: "/media/screens/arena-frostlands.webp" }
       : { tag: "新手指南", date: null, title: "第一次玩，從這裡開始", text: "先認識出牌和攻擊，再慢慢試出自己的打法。", href: "/guide", image: "/media/screens/hero-battlefield.webp" },
     { tag: "試玩募集", date: null, title: "你的每一局，都讓遊戲更好", text: "哪張卡太強？哪裡卡住？歡迎留下最真實的想法。", href: "#support", image: "/media/screens/main-menu.webp" },
   ];
@@ -22,7 +22,7 @@ export function LatestNews() {
         <div className="news-grid">{items.map((item) => <Link href={item.href} prefetch={false} className="news-item" key={item.title}>
           <div className="news-image"><Image src={mediaUrl(item.image)} alt="" fill sizes="(max-width: 700px) 100vw, 33vw" /><span className="news-arrow" aria-hidden="true">↗</span></div>
           <div className="news-meta"><span>{item.tag}</span>{item.date && <time dateTime={item.date}>{item.date.replaceAll("-", ".")}</time>}</div>
-          <h3>{item.title}</h3><p>{item.text}</p>
+          <h3>{item.title}</h3><p>{item.text}</p>{"textEn" in item && <p lang="en">{item.textEn}</p>}
         </Link>)}</div>
       </div>
     </section>

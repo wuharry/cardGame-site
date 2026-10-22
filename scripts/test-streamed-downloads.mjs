@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadTsModule } from "./lib/load-ts-module.mjs";
+import { availableFixture } from "./lib/download-fixtures.mjs";
 
 let releasePath;
 let helpPath;
@@ -26,17 +27,17 @@ const versions = await load("../src/data/game-version.ts", { "./releases": relea
 const help = helpPath
   ? await loadTsModule(pathToFileURL(resolve(helpPath)))
   : await load("../src/data/install-help.ts");
+// Exercise the available flow with explicitly synthetic artifacts even during a full suspension.
+const fixtureBuilds = releases.BUILDS.map((build) => build.id === "android" ? { ...build, status: "suspended" } : availableFixture(build));
 const component = await load("../src/components/download-panel.tsx", {
-  "@/data/releases": releases,
+  "@/data/releases": { ...releases, BUILDS: fixtureBuilds },
   "@/data/game": { GAME_FACTS },
   "@/data/install-help": help,
   "next/link": { __esModule: true, default: (props) => createElement("a", props) },
 });
 const panel = renderToStaticMarkup(createElement(component.DownloadPanel));
-const desktops = releases.BUILDS.filter((build) => releases.downloadUrl(build));
+const desktops = fixtureBuilds.filter((build) => releases.downloadUrl(build));
 assert.deepEqual(desktops.map((build) => build.id).sort(), ["linux", "macos", "windows"]);
-assert.equal(GAME_FACTS.version, "2026.10.19-R15");
-assert.equal(GAME_FACTS.protocol, 27);
 assert.equal(releases.RELEASE_NOTES[0].version, GAME_FACTS.version);
 assert.ok(panel.includes('id="download"') && panel.includes('id="download-windows"'), "Existing download anchors remain available");
 assert.ok(!panel.includes("itch.io 備用頁") && !/href="https:\/\/wuharry\.itch\.io/.test(panel), "Unverified older itch packages are not offered");
@@ -46,14 +47,10 @@ assert.ok(panel.includes("同一版素材下載完成後，下次不用重載") 
 assert.ok(!/href="[^"]+\.pck"/.test(panel) && !panel.includes("protocol"), "Players are not asked to open raw content packs or interpret protocol numbers");
 for (const build of desktops) {
   assert.equal(build.delivery, "streamed");
-  assert.equal(build.version, "2026.10.19-R15");
-  assert.equal(build.build, 2026101902);
-  assert.equal(build.minimumBuild, 2026101902);
-  assert.equal(build.protocol, 27);
   assert.equal(build.size, `${(build.bytes / 1024 ** 2).toFixed(1)} MiB`);
   assert.equal(build.content.bytes, 422201600);
   assert.match(build.content.sha256, /^[a-f0-9]{64}$/);
-  assert.equal(build.content.url, `${releases.RELEASE_BASE}/${build.content.filename}`);
+  assert.equal(build.content.url, `${build.releaseBase}/${build.content.filename}`);
   assert.equal(releases.websiteDownloadUrl(build), releases.downloadUrl(build));
   assert.ok(panel.includes(`href="${releases.downloadUrl(build)}" download="${build.file}"`), `${build.id} directly downloads its exact ZIP`);
   assert.equal(releases.downloadMirrorPageUrl(build), null);
@@ -61,7 +58,7 @@ for (const build of desktops) {
 assert.equal((panel.match(/首次另下載約 422 MB/g) ?? []).length, 3);
 assert.equal((panel.match(/First launch adds about 422 MB/g) ?? []).length, 3);
 assert.equal((panel.match(/程式 ZIP · Game ZIP/g) ?? []).length, 3);
-const update = versions.versionManifest();
+const update = versions.versionManifest(fixtureBuilds);
 assert.equal(update.schema_version, 1);
 assert.equal(update.platforms.android, undefined);
 for (const build of desktops) {
@@ -85,11 +82,12 @@ assert.ok(guide.includes("60 張起始牌組") && guide.includes("八章圖解�
 if (releasePath) {
   assert.equal(resolve(releasePath).split(/[\\/]/).at(-1), "release.json", "Compare with the final public manifest, never a private configuration");
   const final = JSON.parse(await readFile(releasePath, "utf8"));
-  assert.equal(final.version, GAME_FACTS.version);
-  assert.equal(final.build, 2026101902);
-  assert.equal(final.protocol, GAME_FACTS.protocol);
   assert.equal(final.delivery, "streamed");
-  for (const build of desktops) {
+  const actualBuilds = releases.BUILDS.filter((build) => build.delivery === "streamed" && build.version === final.version);
+  assert.ok(actualBuilds.length, "The final manifest matches actual retained metadata, never synthetic fixtures");
+  for (const build of actualBuilds) {
+    assert.equal(final.build, build.build);
+    assert.equal(final.protocol, build.protocol);
     const artifact = final.artifacts.find((item) => item.platform === build.id);
     assert.ok(artifact, `${build.id} has a final packaged artifact`);
     assert.equal(build.file, artifact.filename);
@@ -98,4 +96,4 @@ if (releasePath) {
     assert.deepEqual(build.content, artifact.content);
   }
 }
-console.log(`PASS R15 streamed downloads: exact desktop ZIPs, separate content sizes, bilingual start/rulebook/cache guidance, no stale mirror, Android gate, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; final release.json matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
+console.log(`PASS streamed download fixtures: exact desktop ZIPs, separate content sizes, bilingual start/rulebook/cache guidance, no stale mirror, Android gate, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; actual final release.json matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);

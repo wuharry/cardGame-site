@@ -1,11 +1,11 @@
 import { pageMetadata } from "@/data/seo";
 import Link from "next/link";
-import { BUILDS, downloadUrl } from "@/data/releases";
+import { BUILDS, buildStatusText, downloadUrl } from "@/data/releases";
 
 const androidAvailable = BUILDS.some((build) => build.id === "android" && downloadUrl(build));
 export const metadata = pageMetadata("/install/android", "Android APK 安裝教學", androidAvailable
   ? "下載紙鴉牌 APK 後，從 Chrome 下載清單或 Downloads 開啟檔案，並依 Android 系統畫面安裝。"
-  : "紙鴉牌 Android APK 目前尚未提供公開下載；查看目前的平台狀態與準備進度。");
+  : "紙鴉牌 Android APK 目前暫停下載；查看目前的平台狀態與熱修進度。");
 
 export default function AndroidInstallPage() {
   const android = BUILDS.find((build) => build.id === "android");
@@ -20,7 +20,16 @@ export default function AndroidInstallPage() {
         <p className="body-cjk mt-6">
           {suspended ? "Android APK 暫停下載，修正版發布前不提供安裝。" : "目前尚未提供可下載的 Android APK，請以官網下載頁的狀態為準。"}
         </p>
-        {android?.note && <p className="body-cjk mt-4 leading-7">{android.note}</p>}
+        {android && <p lang="en" className="body-cjk mt-4">{buildStatusText(android, "en")}</p>}
+        {suspended && android.hotfix && <div className="body-cjk mt-4 leading-7">
+          <p>{android.hotfix.note}</p>
+          <p lang="en">{android.hotfix.noteEn}</p>
+        </div>}
+        {(android?.note || android?.noteEn) && <details className="body-cjk mt-4 leading-7">
+          <summary>歷史版本說明 · Historical release notes</summary>
+          {android.note && <p className="mt-3">{android.note}</p>}
+          {android.noteEn && <p lang="en" className="mt-3">{android.noteEn}</p>}
+        </details>}
       </main>
     );
   }

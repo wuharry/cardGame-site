@@ -24,8 +24,10 @@ const response = route.GET();
 assert.equal(response.status, 200);
 assert.equal(response.headers.get("Cache-Control"), "no-store");
 assert.deepEqual(await response.json(), versions.versionManifest());
-assert.equal(versions.versionManifest().platforms.android, undefined, "Suspended Android is absent from live update downloads");
-assert.deepEqual(Object.keys(versions.versionManifest().platforms).sort(), ["linux", "macos", "windows"]);
+assert.deepEqual(versions.versionManifest([]), { schema_version: 1, platforms: {} }, "No platforms remains a valid manifest");
+for (const build of releases.BUILDS.filter((item) => !releases.downloadUrl(item))) {
+  assert.equal(versions.versionManifest().platforms[build.id], undefined, `${build.id} is absent from live update downloads`);
+}
 for (const build of releases.BUILDS.filter((item) => releases.downloadUrl(item))) {
   const names = { windows: "Windows", macos: "macOS", linux: "Linux", android: "Android" };
   const extension = build.id === "android" ? "apk" : "zip";

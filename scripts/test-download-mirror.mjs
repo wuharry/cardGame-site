@@ -2,6 +2,7 @@ import { strict as assert } from "node:assert";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { loadTsModule } from "./lib/load-ts-module.mjs";
+import { availableFixture } from "./lib/download-fixtures.mjs";
 
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports);
 
@@ -10,7 +11,7 @@ const versions = await load("../src/data/game-version.ts", { "./releases": relea
 const game = await load("../src/data/game.ts");
 const installHelp = await load("../src/data/install-help.ts");
 const fixture = {
-  ...releases.BUILDS.find((build) => build.id === "windows"),
+  ...availableFixture(releases.BUILDS.find((build) => build.id === "windows")),
   mirrorProvider: undefined,
   mirrorPageUrl: undefined,
 };
@@ -78,7 +79,7 @@ const noSummary = await renderPanel([{ ...fixture, note: undefined, noteEn: unde
 check(!noSummary.includes("版本說明與驗收範圍"), "No empty release-notes disclosure is generated");
 
 const mixedBuilds = releases.BUILDS.map((build) => ({
-  ...build,
+  ...(build.id === "android" ? build : availableFixture(build)),
   mirrorProvider: build.id === "windows" ? "itch.io" : undefined,
   mirrorPageUrl: build.id === "windows" ? mirrorUrl : undefined,
 }));
@@ -93,19 +94,21 @@ for (const id of ["macos", "linux"]) {
 check(JSON.stringify(versions.versionManifest(mixedBuilds)) === JSON.stringify(versions.versionManifest(mixedBuilds.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Mixed-platform website routing cannot change the canonical game update API");
 
 const published = await renderPanel(releases.BUILDS);
-check((published.match(/itch\.io 備用頁/g) ?? []).length === 0 && (published.match(/Download from GitHub/g) ?? []).length === 3, "Current R15 desktops retain GitHub downloads without unverified old-version backups");
-for (const id of ["windows", "macos", "linux"]) {
-  const build = releases.BUILDS.find((item) => item.id === id);
+const available = releases.BUILDS.filter((build) => releases.downloadUrl(build));
+check((published.match(/Download from GitHub/g) ?? []).length === available.length, "Live download actions match only available platforms");
+for (const build of available) {
+  const { id } = build;
   const platform = await renderPanel([build]);
   check(releases.websiteDownloadUrl(build) === releases.downloadUrl(build), `${id} starts its exact GitHub ZIP from the website`);
-  check(releases.downloadMirrorPageUrl(build) === null, `${id} has no backup until the exact R15 file is independently verified there`);
-  check(!platform.includes('href="https://wuharry.itch.io/deckmarch#download"') && platform.includes(build.file), `${id} cannot send players to an old-version itch download`);
-  check(platform.includes(`href="${releases.downloadUrl(build)}"`) && platform.includes(`下載 ${build.platform} ZIP`), `${id} retains the same-file GitHub main download`);
+  check(platform.includes(build.file), `${id} identifies its exact package`);
+  check(platform.includes(`href="${releases.downloadUrl(build)}"`), `${id} retains the same-file GitHub main download`);
   const visible = platform.slice(0, platform.indexOf("<details"));
   const entry = id === "windows" ? "TwilightCodex.exe" : id === "macos" ? `${build.displayName}.app` : "launch.sh";
-  check(visible.includes(entry) && !visible.includes(installHelp.installationHelp(build)[0].body), `${id} shows its short entry step and keeps the long help collapsed`);
+  if (id !== "android") check(visible.includes(entry) && !visible.includes(installHelp.installationHelp(build)[0].body), `${id} shows its short entry step and keeps the long help collapsed`);
 }
-check(!published.includes(`href="${android.releaseBase ?? releases.RELEASE_BASE}/${android.file}"`), "Published desktop mirrors do not re-enable the Android APK");
+for (const build of releases.BUILDS.filter((item) => !releases.downloadUrl(item))) {
+  check(!published.includes(`href="${build.releaseBase ?? releases.RELEASE_BASE}/${build.file}"`), `${build.id} cannot leak its retained package`);
+}
 check(JSON.stringify(versions.versionManifest(releases.BUILDS)) === JSON.stringify(versions.versionManifest(releases.BUILDS.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Published desktop mirrors leave all canonical update metadata unchanged");
 
 console.log(`PASS download mirror and bilingual notes: ${checks} checks for main/backup links, bilingual summaries, unavailable builds and unchanged game update API`);

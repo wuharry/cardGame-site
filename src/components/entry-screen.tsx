@@ -1,29 +1,32 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BUILDS, downloadUrl } from "@/data/releases";
+import { BUILDS, buildStatusText, downloadUrl } from "@/data/releases";
 import { GAME_FACTS } from "@/data/game";
 import { mediaUrl } from "@/data/media";
 import { DownloadLink } from "@/components/download-link";
 
 export function EntryScreen() {
   const available = BUILDS.filter((build) => downloadUrl(build));
+  const paused = BUILDS.find((build) => build.status === "suspended");
   return (
     <section className="codex-hero" aria-labelledby="hero-title">
       <Image src={mediaUrl("/media/screens/town.webp")} alt="" fill loading="eager" fetchPriority="high" sizes="100vw" className="hero-backdrop" />
       <div className="hero-shade" />
       <div className="hero-inner">
         <div className="hero-copy">
-          <p className="overline"><span className="status-dot" /> 獨立開發・試玩進行中</p>
+          <p className="overline"><span className="status-dot" /> 獨立開發・{available.length ? "試玩進行中" : "下載暫停"}</p>
           <p className="hero-english">DECKMARCH</p>
           <h1 id="hero-title">紙鴉牌</h1>
           <div className="hero-rule" aria-hidden="true"><span>✦</span></div>
           <h2>落下的每張牌，<br />都是下一步伏筆。</h2>
           <p className="hero-description">召喚夥伴、搭配法術，組出自己的打法。<br className="desktop-break" />先和電腦練習，再約朋友玩一局。</p>
           <div className="hero-actions">
-            <DownloadLink className="codex-button">下載試玩 <span aria-hidden="true">↓</span></DownloadLink>
+            {available.length ? <DownloadLink className="codex-button">下載試玩 <span aria-hidden="true">↓</span></DownloadLink>
+              : <button type="button" disabled className="codex-button">{paused ? buildStatusText(paused) : "版本準備中"}</button>}
             <Link href="#about" className="codex-button ghost">探索遊戲 <span aria-hidden="true">↘</span></Link>
           </div>
-          <p className="hero-platforms">{available.map((build) => build.platform).join(" / ") || "版本準備中"}<span>免費試玩 · 回合制卡牌對戰</span></p>
+          {!available.length && paused && <p lang="en" className="hero-platforms">{buildStatusText(paused, "en")}</p>}
+          <p className="hero-platforms">{available.map((build) => build.platform).join(" / ") || "各平台暫停下載"}<span>免費試玩 · 回合制卡牌對戰</span></p>
         </div>
         <div className="hero-cards" aria-label="遊戲原創卡圖：樹靈守衛、冰霜女巫、死靈法師">
           <div className="arcane-ring" aria-hidden="true" />
