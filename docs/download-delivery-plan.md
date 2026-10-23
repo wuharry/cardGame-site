@@ -1,5 +1,64 @@
 # 下載與安裝改善
 
+## 2026-10-22：macOS R17 單平台恢復下載
+
+**本版只開放已通過原生成品與公開首次下載驗收的 macOS R17；Windows、Linux 維持熱修中，APK 繼續停用。** 下載區、首頁入口、版本頁與 schema 1 更新 API 共用同一平台開關。成品來源為 `47b1509d`；正式專服已同步 protocol 28，部署等待修正為 `a3425a22`，沒有重建或改寫已凍結的玩家 ZIP／素材。
+
+| 版本欄位 | 正式發布設定 |
+| --- | --- |
+| Version／BUILD | `2026.10.22-R17`／`2026102201` |
+| Minimum BUILD／Protocol | `2026102101`／`28` |
+| macOS ZIP | `TwilightCodex-macOS-20261022-R17.zip`；83,713,638 bytes（79.8 MiB） |
+| ZIP SHA-256 | `c2f768a3fde7303d98b2cf71a6a07027c4fd4af4e4f024d205ff52cb221ad8f1` |
+| macOS content | `PaperRaven-macOS-20261022-R17-Content.pck`；425,476,328 bytes（顯示約 425 MB） |
+| Content SHA-256 | `6e0ab36a330deb6743c5889a8b557220a1a210c0bbc367dc4bceca11c1dd894b` |
+| macOS releaseBase | `https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.22-r17` |
+| Windows／Linux／Android | 保持 `suspended`；Android `file: null`，沒有舊包／APK fallback |
+
+macOS 使用自己的 `releaseBase`；全域 `RELEASE_BASE` 保留 R15，其餘三平台的歷史檔名、大小、hash、版本與素材不改。原有歷史 `RELEASE_NOTES` 保留，另加入 R17。未驗收的舊 itch.io 鏡像不重新啟用。
+
+| 遊戲與附件驗收 | 實際結果 |
+| --- | --- |
+| 正式服務 | protocol 28 就緒；真實外網 ENet／RPC 握手與暫停模式拒絕驗證 PASS |
+| macOS 簽章 | codesign strict PASS；ad-hoc，尚未 Apple 公證 |
+| 凍結成品、預種快取啟動 | headless／Metal GUI 均 PASS；退出碼 0、零錯誤／警告 |
+| 公開 HTTPS 附件 | 四個附件完整 bytes／SHA-256 與本機一致，不含專服或私人檔 |
+| 公開首次素材下載 | headless／Metal GUI 都用獨立空快取實測下載、掛載、主選單與正常退出，PASS；沒有預種素材或修改 executable |
+| 驗收限制 | 真人對戰、實機爬塔整局、長時間 GPU／音訊播放及其他平台實機尚未驗收 |
+
+前次 GUI 因正式服 protocol 27 出現 RPC checksum mismatch 的 FAIL 保留在遊戲 QA；同步專服後使用同份凍結 bytes 重跑才取得上述 PASS。首次下載不是拿私人快取結果代替。公開成品與最新狀態見 [R17 發布頁](https://github.com/wuharry/twilight-codex-downloads/releases/tag/v2026.10.22-r17)。
+
+網站驗證入口為 `node scripts/test-download-status.mjs`、`node scripts/test-game-version.mjs`、`node scripts/test-download-mirror.mjs`、`node scripts/test-android-install-guide.mjs`、`node scripts/test-streamed-downloads.mjs /ABSOLUTE_PATH/release.json`、`npm run lint` 與 `npm run build`。最後一支同時核對真正的 R17 ZIP／素材 manifest，不只使用 synthetic fixture。正式部署後仍需核對 Vercel commit、首頁實際連結與 `/api/game-version` 僅含 macOS，不能只看本機 build。
+
+English: R17 restores only the verified macOS ZIP and matching streamed content. The production server now runs protocol 28. Native headless and Metal-window checks passed both with verified private cache and with fresh public HTTPS downloads, reaching the main menu and exiting normally with zero errors or warnings. macOS remains ad-hoc signed, not Apple-notarized. Human matches, full device tower runs and sustained performance remain unverified. Windows, Linux and Android remain suspended; historical release metadata stays intact.
+
+## 2026-10-22：各平台熱修停用（網站候選，尚未部署）
+
+Windows、macOS、Linux 與 Android 初始皆為 `suspended`，顯示「熱修中，近期發布」／「Hotfix in progress, update coming soon」。`Build.hotfix` 保存公告日期及中英文原因；`file`、`version`、bytes、SHA-256、素材 URL、歷史 `note`／`noteEn` 及 `RELEASE_NOTES` 保留原值供稽核，不把 R15 的發行或驗收紀錄改寫成尚未發行，也不填 R17 的猜測網址或 hash。
+
+首頁主 CTA 停用，導覽列仍可進下載狀態區。下載區、首頁公告、版本頁和 Android 安裝頁顯示目前熱修公告，停用平台的舊說明標為歷史紀錄。`downloadUrl()`、`websiteDownloadUrl()`、`releasePageUrl()` 及 `downloadMirrorPageUrl()` 都沿用同一個 `available` 判定，停用時不產生原包、GitHub 版本頁或 itch.io 入口。`/api/game-version` 保持 schema 1、HTTP 200 與 `Cache-Control: no-store`；全部停用時回傳 `{"schema_version":1,"platforms":{}}`，不回退舊版。這次沒有移除外部服務上保留的歷史附件。
+
+單平台恢復下載時，先以主代理提供的實際成品更新該平台的檔名、版本、bytes、SHA-256、BUILD／最低 BUILD、protocol、日期與驗收說明；素材分離版本另核對 `delivery`／`content`。新 tag 必須填該平台的 `releaseBase`，避免沿用歷史 R15 的全域 `RELEASE_BASE`。通過驗收後才將該平台改成 `available`，移除該平台的 `hotfix`；其餘平台保持 `suspended`。鏡像另依相同成品的驗收結果啟用，不因 GitHub 已恢復就套用舊鏡像。
+
+後續候選規劃為 `2026.10.22-R17`、BUILD `2026102201`、protocol `28`、最低 BUILD `2026102101`；這些僅為主代理提供的待驗收規劃，本次不寫進公開成品 metadata。macOS 可在目前這台 Mac 原生驗收；Windows／Linux 仍需對應原生環境，Android 仍需 S24 FE，未驗收的平台持續停用。
+
+`scripts/test-download-status.mjs` 驗證全部入口沒有舊下載／版本頁／素材／鏡像 URL、空平台 API 可用，以及任一單平台可獨立恢復下載。原有下載、鏡像與素材下載測試改用明確標記的 synthetic fixture 驗證可用流程，不修改真正 `BUILDS` 的停用狀態。`test-streamed-downloads.mjs <release.json>` 的選用成品比對仍讀真正 metadata，依該份 manifest 的版本核對平台，不與 fixture 比對。
+
+本機檢查入口：`node scripts/test-download-status.mjs`、`node scripts/test-game-version.mjs`、`node scripts/test-download-mirror.mjs`、`node scripts/test-android-install-guide.mjs`、`node scripts/test-streamed-downloads.mjs`、既有管理功能 Node 測試、`npm run lint`、`npm run build`。production server 可另跑 `node scripts/test-seo.mjs <URL>` 和 `node scripts/test-mobile-site.mjs <URL>`；不擷取截圖。commit、push、正式部署與公開網址驗收由主代理執行。本機 PATH 與 `node_modules/.bin` 均沒有現成 Vercel CLI，未安裝工具；既有文件記錄 `main` 推送可觸發 Vercel 部署，本次未重新查證遠端部署設定。
+
+本次本機驗證結果：
+
+| 檢查 | 結果 |
+| --- | --- |
+| 下載狀態、game-version、鏡像、Android 安裝、streamed fixture Node 測試 | PASS；下載狀態含 84 項，鏡像含 70 項，Android 含 36 項 |
+| admin-api、play-analytics、match-duration、player-commerce Node 測試 | PASS |
+| lint、production build、`git diff --check` | PASS |
+| 與 `origin/main` 比對歷史 metadata、`RELEASE_BASE`、全部 `RELEASE_NOTES` | PASS；僅變更四平台狀態並新增熱修公告 |
+| 本機 production 五個公開頁面、API 與前端 JavaScript 的舊附件 URL 檢查 | PASS；API 回傳 schema 1 空平台，公開頁沒有舊附件／版本頁／鏡像 URL |
+| production SEO | PASS；48 項 |
+| 完整手機測試 | FAIL；手機導覽、歷史返回、深連結、平台停用、響應式與 runtime 檢查已通過，後續首屏字型預算斷言為 4 份，預期 1 份。未改測試門檻或字型程式，未斷言這是既有問題 |
+| 正式部署、公開網址、R17 實包與平台原生驗收 | NOT RUN；由主代理後續處理 |
+
 ## 2026-10-21：最新 main 的 Android 重打包
 
 依使用者要求改為從最新遊戲 `main` 重新匯出，不再以取得先前試玩的同一份 R15 APK 為唯一途徑。既有手機可玩回報保留；新成品的來源、資源、原簽章與安裝驗收另行記錄。此 Mac 的指定 Android 私人簽章目錄仍無原 keystore／signing.json；官網維持 `preparing`、`file: null`，不提供舊 APK 或未簽候選。安裝教學顯示共用平台狀態，不再硬寫「尚待 S24 FE 試玩」。桌面 R15 下載與版本 API 不變。

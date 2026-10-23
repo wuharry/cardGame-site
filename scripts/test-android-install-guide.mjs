@@ -72,7 +72,7 @@ for (const value of [future.file, future.version, future.size, future.requiremen
 check(!changed.includes(actual.file), "Guide does not retain the old release filename");
 
 for (const status of ["planned", "preparing", "suspended"]) {
-  const unavailable = { ...future, status, note: "fixture-suspension-reason" };
+  const unavailable = { ...future, status, hotfix: undefined, note: "fixture-suspension-reason" };
   const page = await renderGuide([unavailable]);
   const card = await renderPanel([unavailable]);
   check(!page.includes(`href="${releases.downloadUrl(future)}"`) && !card.includes(`href="${releases.downloadUrl(future)}"`) && !card.includes('href="/install/android"'), status + " Android build cannot offer a download or active card installation flow");

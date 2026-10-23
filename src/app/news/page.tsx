@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PatchNotes } from "@/components/patch-notes";
-import { BUILDS } from "@/data/releases";
+import { BUILDS, buildStatusText } from "@/data/releases";
 
 export const metadata = pageMetadata("/news", "最新消息與更新紀錄", "紙鴉牌的最新玩家版本、平台下載狀態與歷次開發更新。");
 
@@ -20,8 +20,10 @@ export default function NewsPage() {
           <Link className="text-link" href="/#download">查看目前下載版本 →</Link>
           {suspended.map((build) => (
             <aside className="platform-notice" key={build.id}>
-              <strong>{build.platform} 暫停下載</strong>
-              <p>{build.note}</p>
+              <strong>{build.platform} · {buildStatusText(build)}</strong>
+              <p lang="en">{buildStatusText(build, "en")}</p>
+              <p>{build.hotfix?.note ?? build.note}</p>
+              {build.hotfix?.noteEn && <p lang="en">{build.hotfix.noteEn}</p>}
             </aside>
           ))}
         </header>

@@ -1,6 +1,6 @@
 import { BUILDS, downloadUrl, type Build } from "./releases";
 
-/** Reads the same verified artifacts as the website; planned platforms are omitted. */
+/** Only available artifacts reach clients. An empty platforms object is a valid schema 1 response. */
 export function versionManifest(builds: readonly Build[] = BUILDS) {
   const platforms: Record<string, {
     build: number; minimum_build: number; protocol: number; version: string;

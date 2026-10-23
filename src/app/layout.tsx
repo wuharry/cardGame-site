@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cinzel, Barlow, Barlow_Condensed } from "next/font/google";
 import { HOME_TITLE, HOME_DESCRIPTION, SITE_NAME, SITE_ORIGIN } from "@/data/seo";
+import { LayoutOnInteraction } from "@/components/layout-on-interaction";
 import "../fonts/site-font.css";
 import "./globals.css";
 import "./marketing.css";
@@ -75,7 +76,9 @@ export default function RootLayout({
       lang="zh-Hant-TW"
       className={`${cinzel.variable} ${barlow.variable} ${barlowCondensed.variable} h-full`}
     >
-      <body className="min-h-full antialiased">{children}</body>
+      {/* Mounted in the root layout: an interaction on /guide must release
+          layout before client navigation reaches /#download. */}
+      <body className="min-h-full antialiased"><LayoutOnInteraction />{children}</body>
     </html>
   );
 }

@@ -91,4 +91,35 @@ try {
   assert(await normal.evaluate(() => performance.getEntriesByType("resource").filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2")).length > 1), "Scrolling loads the remaining original glyphs instead of dropping them");
   console.log("PASS cold first-screen font budget and original typeface after scrolling");
   await normal.close();
+
+  // Estimated offscreen heights once pushed #download away after arrival (10/19).
+  // Keep sampling past the jump and the font swap, not only at click time.
+  const downloadTop = p => p.evaluate(() => Math.round(document.querySelector("#download h2").getBoundingClientRect().top));
+  for (const [name, arrive] of [
+    ["cold /#download", async p => { await p.goto(base + "/#download", { waitUntil: "commit" }); await p.waitForSelector("#download h2"); }],
+    ["header download ×2", async p => {
+      await p.goto(base + "/", { waitUntil: "load" });
+      const link = p.locator(".site-header a.header-download");
+      await link.click(); await p.waitForTimeout(300); await link.click();
+    }],
+    ["/guide → /#download", async p => {
+      await p.goto(base + "/guide", { waitUntil: "load" });
+      await p.locator('main a[href="/#download"]').first().click(); await p.waitForURL("**/#download");
+    }],
+    // Screen readers and voice control may send only a click, with no pointer or key event.
+    ["/guide → /#download (click only)", async p => {
+      await p.goto(base + "/guide", { waitUntil: "load" });
+      await p.locator('main a[href="/#download"]').first().dispatchEvent("click"); await p.waitForURL("**/#download");
+      assert(await p.evaluate(() => document.documentElement.hasAttribute("data-full-layout")), "A click alone restores real section heights");
+    }],
+  ]) {
+    const jump = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await arrive(jump);
+    const tops = [await downloadTop(jump)];
+    for (const wait of [1000, 2000]) { await jump.waitForTimeout(wait); tops.push(await downloadTop(jump)); }
+    await jump.evaluate(() => document.fonts.ready); await jump.waitForLoadState("networkidle"); tops.push(await downloadTop(jump));
+    assert(tops.every(top => top >= 0 && top < 844 && Math.abs(top - tops[0]) <= 4), `${name} keeps #download in view: ${tops}`);
+    await jump.close();
+  }
+  console.log("PASS #download stays in place after cold fragment, repeated clicks, cross-page jump and font swap");
 } finally { await browser.close(); }
