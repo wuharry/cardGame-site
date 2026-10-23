@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.21-r16";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -58,97 +58,109 @@ const R13_SUMMARY = {
 
 export const BUILDS: Build[] = [
   {
-    id: "windows",
-    displayName: "紙鴉牌",
-    platform: "Windows",
-    en: "ZIP · x86_64",
-    status: "available",
-    file: "TwilightCodex-Windows-20261019-R15.zip",
-    version: "2026.10.19-R15",
-    size: "58.8 MiB",
-    bytes: 61682457,
-    updated: "2026-10-20",
-    sha256: "aaaf94a07909077b38dfbaac31f1927976b337afc47aec8b55dab09de8c6d696",
-    build: 2026101902,
-    minimumBuild: 2026101902,
-    protocol: 27,
-    delivery: "streamed",
-    content: {
-      filename: "PaperRaven-Windows-20261019-R15-Content.pck",
-      bytes: 422201600,
-      sha256: "fd8775c7b3c41e0239e6e0c8f6d1685d09e5619c35fb4c31fbe94d9f299c9b8d",
-      url: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15/PaperRaven-Windows-20261019-R15-Content.pck",
+    "id": "windows",
+    "displayName": "紙鴉牌",
+    "platform": "Windows",
+    "en": "ZIP · x86_64",
+    "status": "available",
+    "file": "TwilightCodex-Windows-20261021-R16.zip",
+    "version": "2026.10.21-R16",
+    "size": "58.9 MiB",
+    "bytes": 61811219,
+    "updated": "2026-10-22",
+    "sha256": "22cc3dec8c91e923a1684d092ed0102e515547b68d21d053e0f5a1a09b3d8b81",
+    "build": 2026102101,
+    "minimumBuild": 2026102101,
+    "protocol": 28,
+    "delivery": "streamed",
+    "content": {
+      "filename": "PaperRaven-Windows-20261021-R16-Content.pck",
+      "bytes": 425475944,
+      "sha256": "ae8f32c906501af1cddeeebc4986cb603c5a20ba24c3c42e8604224226a01add",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.21-r16/PaperRaven-Windows-20261021-R16-Content.pck"
     },
-    requirement: "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    note: `${R15_SUMMARY.zh} 完整解壓後執行 TwilightCodex.exe；附啟動診斷工具。${R15_VALIDATION.zh}`,
-    noteEn: `${R15_SUMMARY.en} Extract the entire ZIP and run TwilightCodex.exe. Startup diagnostics are included. ${R15_VALIDATION.en}`,
+    "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
+    "note": "R16 拉開前後排距離，改善放牌誤觸回收的問題，能放置的卡槽也會變色。新增 30 層爬塔與單人對戰續玩。開啟遊戲後按「開始」下載素材；同版本素材會保留，下次不用重載。 完整解壓後執行 TwilightCodex.exe。",
+    "noteEn": "R16 separates the front and back rows, improves placement near the recycle area, and adds colored slot feedback. It also adds a 30-floor tower and resumable solo battles. Press Start to download content; the same version stays cached. Extract the entire ZIP and run TwilightCodex.exe."
   },
   {
-    id: "macos",
-    displayName: "紙鴉牌",
-    platform: "macOS",
-    en: "ZIP · Universal",
-    status: "available",
-    file: "TwilightCodex-macOS-20261019-R15.zip",
-    version: "2026.10.19-R15",
-    size: "79.7 MiB",
-    bytes: 83581195,
-    updated: "2026-10-20",
-    sha256: "a38db2611e6d97cbd68dc6f2388af127fc4413c8e29687cc84a3762e5b82d7ae",
-    build: 2026101902,
-    minimumBuild: 2026101902,
-    protocol: 27,
-    delivery: "streamed",
-    content: {
-      filename: "PaperRaven-macOS-20261019-R15-Content.pck",
-      bytes: 422201600,
-      sha256: "b30c6906acba01474281c3e3ce78fd43e3c809893d43d3a45ad75869563de5aa",
-      url: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15/PaperRaven-macOS-20261019-R15-Content.pck",
+    "id": "macos",
+    "displayName": "紙鴉牌",
+    "platform": "macOS",
+    "en": "ZIP · Universal",
+    "status": "available",
+    "file": "TwilightCodex-macOS-20261021-R16.zip",
+    "version": "2026.10.21-R16",
+    "size": "79.8 MiB",
+    "bytes": 83710624,
+    "updated": "2026-10-22",
+    "sha256": "c4e986cce1e43adb715146a0eff798f98e6862488fa61bf2c7b09e66d1b3c346",
+    "build": 2026102101,
+    "minimumBuild": 2026102101,
+    "protocol": 28,
+    "delivery": "streamed",
+    "content": {
+      "filename": "PaperRaven-macOS-20261021-R16-Content.pck",
+      "bytes": 425475944,
+      "sha256": "cf6ca947359c727cab80c52c5ac6511d0b46e35026429c7baa40131b58570745",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.21-r16/PaperRaven-macOS-20261021-R16-Content.pck"
     },
-    requirement: "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    note: `${R15_SUMMARY.zh} macOS 13+，Apple Silicon／Intel 通用版；完整解壓後開啟包內 .app。採 ad-hoc 簽章，尚未 Apple 公證。${R15_VALIDATION.zh}`,
-    noteEn: `${R15_SUMMARY.en} Universal ZIP for macOS 13+ on Apple Silicon and Intel. Extract and open the .app. Ad-hoc signed, not Apple-notarized. ${R15_VALIDATION.en}`,
+    "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
+    "note": "R16 拉開前後排距離，改善放牌誤觸回收的問題，能放置的卡槽也會變色。新增 30 層爬塔與單人對戰續玩。開啟遊戲後按「開始」下載素材；同版本素材會保留，下次不用重載。 使用 Finder 解壓後開啟紙鴉牌.app；採 ad-hoc 簽章，尚未 Apple 公證。",
+    "noteEn": "R16 separates the front and back rows, improves placement near the recycle area, and adds colored slot feedback. It also adds a 30-floor tower and resumable solo battles. Press Start to download content; the same version stays cached. Unzip in Finder and open 紙鴉牌.app. Ad-hoc signed; not Apple-notarized."
   },
   {
-    id: "linux",
-    displayName: "紙鴉牌",
-    platform: "Linux",
-    en: "ZIP · x86_64",
-    status: "available",
-    file: "TwilightCodex-Linux-20261019-R15.zip",
-    version: "2026.10.19-R15",
-    size: "61.2 MiB",
-    bytes: 64157003,
-    updated: "2026-10-20",
-    sha256: "bac43bd18eb429c2564149a6a9ffadd6ec731efd716c9a8567bd6b17bbc0d801",
-    build: 2026101902,
-    minimumBuild: 2026101902,
-    protocol: 27,
-    delivery: "streamed",
-    content: {
-      filename: "PaperRaven-Linux-20261019-R15-Content.pck",
-      bytes: 422201600,
-      sha256: "21fa1f030ecc054e37551e49e16117e3526fee174ac1187ab315064c78b62dd7",
-      url: "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.19-r15/PaperRaven-Linux-20261019-R15-Content.pck",
+    "id": "linux",
+    "displayName": "紙鴉牌",
+    "platform": "Linux",
+    "en": "ZIP · x86_64",
+    "status": "available",
+    "file": "TwilightCodex-Linux-20261021-R16.zip",
+    "version": "2026.10.21-R16",
+    "size": "61.3 MiB",
+    "bytes": 64285686,
+    "updated": "2026-10-22",
+    "sha256": "44442de64c7ec8952a8cb14f0b6a6256e995b7d7f9689b273341fd54745a76fc",
+    "build": 2026102101,
+    "minimumBuild": 2026102101,
+    "protocol": 28,
+    "delivery": "streamed",
+    "content": {
+      "filename": "PaperRaven-Linux-20261021-R16-Content.pck",
+      "bytes": 425475944,
+      "sha256": "c2c3292f0da2dd5a0d1324ab09191ded6e2c2e338131b14a93cecf41c833170e",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.21-r16/PaperRaven-Linux-20261021-R16-Content.pck"
     },
-    requirement: "x86_64 · Ubuntu 24.04+，或其他 glibc 2.39+ 發行版",
-    note: `${R15_SUMMARY.zh} Linux x86_64，需 glibc 2.39+，例如 Ubuntu 24.04+；完整解壓並保留執行權限，執行 launch.sh。${R15_VALIDATION.zh}`,
-    noteEn: `${R15_SUMMARY.en} Linux x86_64 requires glibc 2.39+, such as Ubuntu 24.04+. Extract all files, retain executable permissions and run launch.sh. ${R15_VALIDATION.en}`,
+    "requirement": "Linux · x86_64 · 滑鼠與鍵盤",
+    "note": "R16 拉開前後排距離，改善放牌誤觸回收的問題，能放置的卡槽也會變色。新增 30 層爬塔與單人對戰續玩。開啟遊戲後按「開始」下載素材；同版本素材會保留，下次不用重載。 完整解壓後執行 launch.sh。",
+    "noteEn": "R16 separates the front and back rows, improves placement near the recycle area, and adds colored slot feedback. It also adds a 30-floor tower and resumable solo battles. Press Start to download content; the same version stays cached. Extract the entire ZIP and run launch.sh."
   },
   {
-    id: "android",
-    displayName: "紙鴉牌",
-    platform: "Android",
-    en: "APK · arm64 · Preview",
-    status: "preparing",
-    file: null,
-    version: "2026.10.19-R15",
-    size: null,
-    updated: "2026-10-21",
-    requirement: "本次支援基準：Android 9+ · arm64（64 位元 ARM）",
-    note: "既有 R15 已由開發者完成手機實機試玩，確認達到可玩程度。目前依最新 main 重新打包，新成品仍待原簽章、資源與安裝檢查，完成後開放測試下載；目前不提供舊 R9 APK。",
-    noteEn: "The developer confirmed playable performance with an earlier R15 build on a physical Android phone. A new build from the latest main is being prepared; downloads will open after original-signature, resource and installation checks. The older R9 APK is not offered.",
-  },
+    "id": "android",
+    "displayName": "紙鴉牌",
+    "platform": "Android",
+    "en": "APK · arm64 · Preview",
+    "status": "available",
+    "file": "TwilightCodex-Android-20261021-R16.apk",
+    "version": "2026.10.21-R16",
+    "size": "53.5 MiB",
+    "bytes": 56107671,
+    "updated": "2026-10-22",
+    "sha256": "83f920e80e43ee7b19666f9df3efa9524f321f4eab9e437aee6e4421c8afab75",
+    "build": 2026102101,
+    "minimumBuild": 2026102101,
+    "protocol": 28,
+    "delivery": "streamed",
+    "content": {
+      "filename": "PaperRaven-Android-20261021-R16-Content.pck",
+      "bytes": 84298428,
+      "sha256": "35fcff4a1732523f1df490206740bb96f08140c0b2761246cfd48ef7d37e88b7",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.21-r16/PaperRaven-Android-20261021-R16-Content.pck"
+    },
+    "requirement": "Android 9+ · arm64（64 位元 ARM）",
+    "note": "R16 拉開前後排距離，改善放牌誤觸回收的問題，能放置的卡槽也會變色。新增 30 層爬塔與單人對戰續玩。開啟遊戲後按「開始」下載素材；同版本素材會保留，下次不用重載。 Android 測試版已核對原簽章，可作為同一應用程式更新；這份新版尚未完成手機實機驗收。",
+    "noteEn": "R16 separates the front and back rows, improves placement near the recycle area, and adds colored slot feedback. It also adds a 30-floor tower and resumable solo battles. Press Start to download content; the same version stays cached. The Android preview uses the original signing identity. Physical-device acceptance of this new build has not been run."
+  }
 ];
 
 /** 沒有實際 HTTPS 下載位置時不產生可點擊的連結。 */
@@ -206,6 +218,19 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+  {
+    "version": "2026.10.21-R16",
+    "date": "2026-10-22",
+    "title": "紙鴉牌 Deckmarch R16：放牌操作改善、爬塔與 Android 測試版",
+    "changes": [
+      "R16 拉開前後排距離，改善放牌誤觸回收的問題，能放置的卡槽也會變色。新增 30 層爬塔與單人對戰續玩。開啟遊戲後按「開始」下載素材；同版本素材會保留，下次不用重載。",
+      "前後排與回收區分開判定，滑鼠和觸控拖牌都加入卡槽顏色提示；可放置時為藍色，正在選擇的位置會亮起青綠色。",
+      "完成新手教學後可直接使用 60 張起始牌組。進階玩法另有遊戲截圖與標註，之後再看也可以。",
+      "多人對戰需要雙方更新至 R16。既有帳號、收藏、牌組與存檔保留。",
+      "Android APK 使用原有簽章，這份新版的手機實機安裝、操作與持續效能仍待驗收；macOS 尚未 Apple 公證。",
+      "English: R16 separates the front and back rows, improves placement near the recycle area, and adds colored slot feedback. It also adds a 30-floor tower and resumable solo battles. Press Start to download content; the same version stays cached. Completing the tutorial provides a ready-to-play 60-card starter deck. Update both players to R16 for online play. Existing accounts, collections, decks and saves are retained. The Android APK is a preview signed with the original identity; this new build has not completed physical-device acceptance. macOS is not Apple-notarized."
+    ]
+  },
   {
     version: "2026.10.19-R15",
     date: "2026-10-20",

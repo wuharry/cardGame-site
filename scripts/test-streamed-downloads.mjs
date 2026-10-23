@@ -33,10 +33,10 @@ const component = await load("../src/components/download-panel.tsx", {
   "next/link": { __esModule: true, default: (props) => createElement("a", props) },
 });
 const panel = renderToStaticMarkup(createElement(component.DownloadPanel));
-const desktops = releases.BUILDS.filter((build) => releases.downloadUrl(build));
-assert.deepEqual(desktops.map((build) => build.id).sort(), ["linux", "macos", "windows"]);
-assert.equal(GAME_FACTS.version, "2026.10.19-R15");
-assert.equal(GAME_FACTS.protocol, 27);
+const downloads = releases.BUILDS.filter((build) => releases.downloadUrl(build));
+assert.deepEqual(downloads.map((build) => build.id).sort(), ["android", "linux", "macos", "windows"]);
+assert.equal(GAME_FACTS.version, "2026.10.21-R16");
+assert.equal(GAME_FACTS.protocol, 28);
 assert.equal(releases.RELEASE_NOTES[0].version, GAME_FACTS.version);
 assert.ok(panel.includes('id="download"') && panel.includes('id="download-windows"'), "Existing download anchors remain available");
 assert.ok(!panel.includes("itch.io 備用頁") && !/href="https:\/\/wuharry\.itch\.io/.test(panel), "Unverified older itch packages are not offered");
@@ -44,32 +44,33 @@ assert.ok(panel.includes("新手教學") && panel.includes("60 張起始牌組")
 assert.ok(panel.includes("Read the built-in rulebook while it downloads") && panel.includes("下載時可以先看內建說明書"), "The waiting-time activity is visible in both languages");
 assert.ok(panel.includes("同一版素材下載完成後，下次不用重載") && panel.includes("same version stays cached"), "Cache explanation is scoped to the same content version");
 assert.ok(!/href="[^"]+\.pck"/.test(panel) && !panel.includes("protocol"), "Players are not asked to open raw content packs or interpret protocol numbers");
-for (const build of desktops) {
+for (const build of downloads) {
   assert.equal(build.delivery, "streamed");
-  assert.equal(build.version, "2026.10.19-R15");
-  assert.equal(build.build, 2026101902);
-  assert.equal(build.minimumBuild, 2026101902);
-  assert.equal(build.protocol, 27);
+  assert.equal(build.version, GAME_FACTS.version);
+  assert.equal(build.build, 2026102101);
+  assert.equal(build.minimumBuild, 2026102101);
+  assert.equal(build.protocol, GAME_FACTS.protocol);
   assert.equal(build.size, `${(build.bytes / 1024 ** 2).toFixed(1)} MiB`);
-  assert.equal(build.content.bytes, 422201600);
+  assert.ok(Number.isSafeInteger(build.content.bytes) && build.content.bytes > 0);
   assert.match(build.content.sha256, /^[a-f0-9]{64}$/);
   assert.equal(build.content.url, `${releases.RELEASE_BASE}/${build.content.filename}`);
   assert.equal(releases.websiteDownloadUrl(build), releases.downloadUrl(build));
-  assert.ok(panel.includes(`href="${releases.downloadUrl(build)}" download="${build.file}"`), `${build.id} directly downloads its exact ZIP`);
+  assert.ok(panel.includes(`href="${releases.downloadUrl(build)}" download="${build.file}"`), `${build.id} directly downloads its exact package`);
+  assert.ok(build.file.endsWith(build.id === "android" ? ".apk" : ".zip"));
   assert.equal(releases.downloadMirrorPageUrl(build), null);
 }
-assert.equal((panel.match(/首次另下載約 422 MB/g) ?? []).length, 3);
-assert.equal((panel.match(/First launch adds about 422 MB/g) ?? []).length, 3);
+assert.equal((panel.match(/首次另下載約 /g) ?? []).length, 4);
+assert.equal((panel.match(/First launch adds about /g) ?? []).length, 4);
 assert.equal((panel.match(/程式 ZIP · Game ZIP/g) ?? []).length, 3);
+assert.equal((panel.match(/程式 APK · Game APK/g) ?? []).length, 1);
 const update = versions.versionManifest();
 assert.equal(update.schema_version, 1);
-assert.equal(update.platforms.android, undefined);
-for (const build of desktops) {
+for (const build of downloads) {
   assert.equal(update.platforms[build.id].download_url, releases.downloadUrl(build));
   assert.equal(update.platforms[build.id].bytes, build.bytes, "Update byte count identifies the ZIP, not the content pack");
 }
 assert.ok(Buffer.byteLength(JSON.stringify(update), "utf8") < 16 * 1024, "Game update response remains within the existing client limit");
-assert.ok(!/href="[^"]+\.apk"/.test(panel), "Android remains unavailable");
+assert.ok(/href="[^"]+\.apk"/.test(panel), "Android preview offers the final APK");
 
 // The guide must describe the same draw-loss boundary and starter route as R15.
 const deckRule = game.RESOURCE_RULES.find((rule) => rule.label === "Deck");
@@ -86,10 +87,10 @@ if (releasePath) {
   assert.equal(resolve(releasePath).split(/[\\/]/).at(-1), "release.json", "Compare with the final public manifest, never a private configuration");
   const final = JSON.parse(await readFile(releasePath, "utf8"));
   assert.equal(final.version, GAME_FACTS.version);
-  assert.equal(final.build, 2026101902);
+  assert.equal(final.build, 2026102101);
   assert.equal(final.protocol, GAME_FACTS.protocol);
   assert.equal(final.delivery, "streamed");
-  for (const build of desktops) {
+  for (const build of downloads) {
     const artifact = final.artifacts.find((item) => item.platform === build.id);
     assert.ok(artifact, `${build.id} has a final packaged artifact`);
     assert.equal(build.file, artifact.filename);
@@ -98,4 +99,4 @@ if (releasePath) {
     assert.deepEqual(build.content, artifact.content);
   }
 }
-console.log(`PASS R15 streamed downloads: exact desktop ZIPs, separate content sizes, bilingual start/rulebook/cache guidance, no stale mirror, Android gate, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; final release.json matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
+console.log(`PASS R16 streamed downloads: three desktop ZIPs and Android APK, separate content sizes, bilingual start/rulebook/cache guidance, no stale mirror, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; final release.json matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);

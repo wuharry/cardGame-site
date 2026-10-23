@@ -87,6 +87,7 @@ function FeaturedBuild({ build }: { build: Build }) {
     windows: { zh: "完整解壓縮 → TwilightCodex.exe", en: "Extract all → TwilightCodex.exe" },
     macos: { zh: `Finder 解壓縮 → ${build.displayName || "紙鴉牌"}.app`, en: `Unzip in Finder → ${build.displayName || "紙鴉牌"}.app` },
     linux: { zh: "解壓縮 → launch.sh", en: "Extract → launch.sh" },
+    android: { zh: "開啟 APK → 依系統提示安裝", en: "Open the APK → follow Android install prompts" },
   };
   const firstStep = firstSteps[build.id];
   const contentSize = build.delivery === "streamed" && build.content && build.content.bytes > 0

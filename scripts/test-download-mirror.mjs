@@ -61,8 +61,8 @@ check(fallback.includes(`href="${canonical}"`) && !fallback.includes(mirrorUrl) 
 const unavailable = await renderPanel([{ ...mirror, status: "suspended" }]);
 check(!unavailable.includes(`href="${mirrorUrl}"`) && !unavailable.includes(`href="${canonical}"`), "Suspension disables both download sources");
 const android = releases.BUILDS.find((build) => build.id === "android");
-check(releases.websiteDownloadUrl({ ...android, mirrorProvider: mirror.mirrorProvider, mirrorPageUrl: mirrorUrl }) === null, "Current Android actual-device gate cannot be bypassed by mirror metadata");
-check(releases.downloadMirrorPageUrl({ ...android, mirrorProvider: mirror.mirrorProvider, mirrorPageUrl: mirrorUrl }) === null, "Android gate also blocks backup page links");
+check(releases.websiteDownloadUrl({ ...android, status: "suspended", mirrorProvider: mirror.mirrorProvider, mirrorPageUrl: mirrorUrl }) === null, "Suspended Android cannot be bypassed by mirror metadata");
+check(releases.downloadMirrorPageUrl({ ...android, status: "suspended", mirrorProvider: mirror.mirrorProvider, mirrorPageUrl: mirrorUrl }) === null, "Android suspension also blocks backup page links");
 
 const chineseSummary = "繁體中文版本摘要測試。";
 const englishSummary = "English release summary fixture.";
@@ -93,19 +93,19 @@ for (const id of ["macos", "linux"]) {
 check(JSON.stringify(versions.versionManifest(mixedBuilds)) === JSON.stringify(versions.versionManifest(mixedBuilds.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Mixed-platform website routing cannot change the canonical game update API");
 
 const published = await renderPanel(releases.BUILDS);
-check((published.match(/itch\.io 備用頁/g) ?? []).length === 0 && (published.match(/Download from GitHub/g) ?? []).length === 3, "Current R15 desktops retain GitHub downloads without unverified old-version backups");
+check((published.match(/itch\.io 備用頁/g) ?? []).length === 0 && (published.match(/Download from GitHub/g) ?? []).length === 4, "All four platforms use direct GitHub downloads without unverified backups");
 for (const id of ["windows", "macos", "linux"]) {
   const build = releases.BUILDS.find((item) => item.id === id);
   const platform = await renderPanel([build]);
   check(releases.websiteDownloadUrl(build) === releases.downloadUrl(build), `${id} starts its exact GitHub ZIP from the website`);
-  check(releases.downloadMirrorPageUrl(build) === null, `${id} has no backup until the exact R15 file is independently verified there`);
+  check(releases.downloadMirrorPageUrl(build) === null, `${id} has no unverified backup`);
   check(!platform.includes('href="https://wuharry.itch.io/deckmarch#download"') && platform.includes(build.file), `${id} cannot send players to an old-version itch download`);
   check(platform.includes(`href="${releases.downloadUrl(build)}"`) && platform.includes(`下載 ${build.platform} ZIP`), `${id} retains the same-file GitHub main download`);
   const visible = platform.slice(0, platform.indexOf("<details"));
   const entry = id === "windows" ? "TwilightCodex.exe" : id === "macos" ? `${build.displayName}.app` : "launch.sh";
   check(visible.includes(entry) && !visible.includes(installHelp.installationHelp(build)[0].body), `${id} shows its short entry step and keeps the long help collapsed`);
 }
-check(!published.includes(`href="${android.releaseBase ?? releases.RELEASE_BASE}/${android.file}"`), "Published desktop mirrors do not re-enable the Android APK");
+check(published.includes(`href="${releases.downloadUrl(android)}" download="${android.file}"`) && published.includes("下載 Android APK"), "Android has its exact APK download with an explicit install label");
 check(JSON.stringify(versions.versionManifest(releases.BUILDS)) === JSON.stringify(versions.versionManifest(releases.BUILDS.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Published desktop mirrors leave all canonical update metadata unchanged");
 
 console.log(`PASS download mirror and bilingual notes: ${checks} checks for main/backup links, bilingual summaries, unavailable builds and unchanged game update API`);
