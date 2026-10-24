@@ -20,7 +20,6 @@ const nextConfig: NextConfig = {
       return source ? [{ source, headers: [
         { key: "Content-Type", value: "application/vnd.android.package-archive" },
         { key: "Content-Disposition", value: `attachment; filename="${build.file}"` },
-        { key: "ETag", value: `"${build.sha256}"` },
         { key: "Cache-Control", value: "public, max-age=31536000, immutable, no-transform" },
       ] }] : [];
     })];

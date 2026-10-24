@@ -37,7 +37,7 @@ assert.equal(head.headers.get("content-length"), String(build.bytes));
 assert.ok(head.headers.get("content-disposition")?.includes(`filename="${build.file}"`));
 assert.ok(!head.headers.get("content-encoding"), "APK must not be transformed or compressed in transit");
 report.headers = Object.fromEntries(["content-type", "content-length", "content-disposition", "cache-control", "accept-ranges", "etag"].map((name) => [name, head.headers.get(name)]));
-assert.equal(head.headers.get("etag"), `"${build.sha256}"`);
+assert.match(head.headers.get("etag") ?? "", /^(W\/)?"[^"\r\n]+"$/, "ETag is an opaque cache validator, not the APK's SHA-256");
 check("HEAD, exact length, APK type, attachment filename and no redirects");
 
 const start = performance.now();
@@ -74,10 +74,17 @@ if (head.headers.has("etag")) {
   await unchanged.arrayBuffer();
   check("unchanged cached file returns 304");
 }
-const matched = await request(url, { headers: { Range: "bytes=0-15", "If-Range": `"${build.sha256}"` } });
-assert.equal(matched.status, 206);
-assert.equal((await matched.arrayBuffer()).byteLength, 16);
-check("matching If-Range resumes the pinned APK");
+const matched = await request(url, { headers: { Range: "bytes=0-15", "If-Range": head.headers.get("etag") } });
+if (head.headers.get("etag").startsWith("W/")) {
+  assert.equal(matched.status, 200, "A weak If-Range validator cannot resume a partial file");
+  assert.equal(matched.headers.get("content-length"), String(build.bytes));
+  await matched.body.cancel();
+  check("weak If-Range restarts the complete response");
+} else {
+  assert.equal(matched.status, 206);
+  assert.equal((await matched.arrayBuffer()).byteLength, 16);
+  check("matching strong If-Range resumes the pinned APK");
+}
 const stale = await request(url, { headers: { Range: "bytes=0-15", "If-Range": '"old-version"' } });
 assert.equal(stale.status, 200);
 assert.equal(stale.headers.get("content-length"), String(build.bytes));

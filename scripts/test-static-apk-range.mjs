@@ -23,9 +23,12 @@ for (const range of ["bytes=", "not-a-range", "bytes=0-1,3-4"]) {
   assert.equal(proxy(request(range)).request.headers.get("range"), null);
 }
 const stale = request("bytes=0-1", { headers: new Headers({ range: "bytes=0-1", "if-range": '"old-version"' }) });
-assert.equal(proxy(stale).request.headers.get("range"), null, "Stale validators must restart a complete transfer");
-stale.headers.set("if-range", `"${build.sha256}"`);
-assert.equal(proxy(stale).request.headers.get("range"), "bytes=0-1");
+assert.deepEqual(proxy(stale), { passThrough: true }, "The static host owns If-Range validation; a proxy cannot infer it from the APK hash");
+stale.headers.set("if-range", '"opaque-host-validator"');
+assert.deepEqual(proxy(stale), { passThrough: true });
+assert.equal(stale.headers.get("range"), "bytes=0-1", "Delegation preserves the original conditional range");
+stale.headers.set("if-range", 'W/"opaque-host-validator"');
+assert.equal(proxy(stale).request.headers.get("range"), null, "Weak validators cannot be used to resume partial content");
 assert.equal(proxy(request("bytes=0-1", { method: "HEAD" })).request.headers.get("range"), null);
 assert.equal(proxy(request("bytes=0-1", { nextUrl: { pathname: "/api/game-version" } })).passThrough, true);
 assert.deepEqual(config.matcher, [{ source: "/downloads/android/:path*", has: [{ type: "header", key: "range" }] }]);

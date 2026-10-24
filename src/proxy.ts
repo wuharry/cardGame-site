@@ -10,8 +10,11 @@ export function proxy(request: NextRequest) {
     headers.delete("range");
     return NextResponse.next({ request: { headers } });
   };
-  const ifRange = headers.get("if-range");
-  if (request.method !== "GET" || (ifRange !== null && ifRange !== `"${build.sha256}"`)) return fullResponse();
+  if (request.method !== "GET") return fullResponse();
+  // ETags belong to the static host (Vercel may override custom ETags).
+  // Only that host can decide whether an If-Range validator still matches.
+  if (headers.get("if-range")?.startsWith("W/")) return fullResponse();
+  if (headers.has("if-range")) return NextResponse.next();
   const range = /^bytes=(\d*)-(\d*)$/.exec(headers.get("range") ?? "");
   // A server may ignore malformed or multiple ranges and send the full representation.
   if (!range || (!range[1] && !range[2])) return fullResponse();
