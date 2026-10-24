@@ -41,6 +41,8 @@ export interface Build {
   mirrorProvider?: "itch.io";
   /** itch.io 公開專案頁；不保存會過期的 CDN 簽名網址。 */
   mirrorPageUrl?: string;
+  /** 官網建置時校驗並附帶同一份 APK；遊戲更新 API 仍使用 GitHub。 */
+  websiteDelivery?: "static-apk";
 }
 
 const R15_SUMMARY = {
@@ -152,6 +154,7 @@ export const BUILDS: Build[] = [
   },
   {
     "id": "android",
+    "websiteDelivery": "static-apk",
     "displayName": "紙鴉牌",
     "platform": "Android",
     "en": "APK · arm64",
@@ -190,9 +193,20 @@ export function downloadUrl(build: Build): string | null {
   }
 }
 
-/** 官網主下載直接使用同一份 GitHub 成品，平台選擇與安裝說明留在本站。 */
+/** 檔名與內容雜湊共同固定網址，換版不會命中另一份 APK 的快取。 */
+export function staticApkPath(build: Build): string | null {
+  if (!downloadUrl(build) || build.websiteDelivery !== "static-apk") return null;
+  if (build.id !== "android" || !build.file || !/^[A-Za-z0-9][A-Za-z0-9._-]*\.apk$/.test(build.file)
+    || !build.sha256 || !/^[a-f0-9]{64}$/.test(build.sha256)
+    || !Number.isSafeInteger(build.bytes) || !build.bytes || build.bytes < 1 || build.bytes > 100_000_000) {
+    throw new Error(`Invalid static APK metadata: ${build.id}`);
+  }
+  return `/downloads/android/${build.sha256}/${build.file}`;
+}
+
+/** Android 在本站直接傳檔，其他平台沿用 GitHub；不在玩家點擊時代理上游。 */
 export function websiteDownloadUrl(build: Build): string | null {
-  return downloadUrl(build);
+  return staticApkPath(build) ?? downloadUrl(build);
 }
 
 /** 備用入口只接受官方公開專案頁，不保存會過期的 CDN 或私人下載網址。 */

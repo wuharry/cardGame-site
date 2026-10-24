@@ -1,6 +1,6 @@
 import { pageMetadata } from "@/data/seo";
 import Link from "next/link";
-import { BUILDS, buildStatusText, downloadUrl } from "@/data/releases";
+import { BUILDS, buildStatusText, downloadUrl, websiteDownloadUrl } from "@/data/releases";
 
 const androidAvailable = BUILDS.some((build) => build.id === "android" && downloadUrl(build));
 export const metadata = pageMetadata("/install/android", "Android APK 安裝教學", androidAvailable
@@ -9,7 +9,7 @@ export const metadata = pageMetadata("/install/android", "Android APK 安裝教�
 
 export default function AndroidInstallPage() {
   const android = BUILDS.find((build) => build.id === "android");
-  const href = android ? downloadUrl(android) : null;
+  const href = android ? websiteDownloadUrl(android) : null;
 
   if (!android || !href || !android.file) {
     const suspended = android?.status === "suspended";
@@ -51,9 +51,11 @@ export default function AndroidInstallPage() {
         <p className="mt-3 text-sm text-quill">{android.version} · {android.size} · Android 預覽版</p>
         <p className="body-cjk mt-2 text-sm">{android.requirement}</p>
         <p className="mt-3 break-all text-sm text-quill"><code>{android.file}</code></p>
-        <a href={href} className="mt-5 block border border-brass bg-brass px-5 py-3 text-center text-lg text-ink hover:bg-brass-hi">
+        <a href={href} download={android.file} className="mt-5 block border border-brass bg-brass px-5 py-3 text-center text-lg text-ink hover:bg-brass-hi">
           下載 Android APK
         </a>
+        {href !== downloadUrl(android) && <a href={downloadUrl(android) ?? undefined} download={android.file}
+          className="mt-3 block text-center text-sm text-brass-hi underline underline-offset-4">GitHub 備用下載（同一份 APK）</a>}
         <p className="body-cjk mt-3 text-sm">已下載同一份 APK 時，直接照下方步驟開啟，不必重新下載。</p>
       </section>
 

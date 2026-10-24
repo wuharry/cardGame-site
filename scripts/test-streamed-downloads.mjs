@@ -54,8 +54,9 @@ for (const build of downloads) {
   assert.ok(Number.isSafeInteger(build.content.bytes) && build.content.bytes > 0);
   assert.match(build.content.sha256, /^[a-f0-9]{64}$/);
   assert.equal(build.content.url, `${releases.RELEASE_BASE}/${build.content.filename}`);
-  assert.equal(releases.websiteDownloadUrl(build), releases.downloadUrl(build));
-  assert.ok(panel.includes(`href="${releases.downloadUrl(build)}" download="${build.file}"`), `${build.id} directly downloads its exact package`);
+  const websiteUrl = build.id === "android" ? `/downloads/android/${build.sha256}/${build.file}` : releases.downloadUrl(build);
+  assert.equal(releases.websiteDownloadUrl(build), websiteUrl);
+  assert.ok(panel.includes(`href="${websiteUrl}" download="${build.file}"`), `${build.id} directly downloads its exact package`);
   assert.ok(build.file.endsWith(build.id === "android" ? ".apk" : ".zip"));
   assert.equal(releases.downloadMirrorPageUrl(build), null);
 }

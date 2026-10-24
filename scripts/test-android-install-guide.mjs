@@ -58,7 +58,8 @@ check(!currentBrandPanel.includes("玩家包仍使用舊名稱"), "A future pack
 for (const value of [actual.file, actual.version, actual.size, actual.requirement]) {
   check(guide.includes(value), "Guide uses current shared release metadata: " + value);
 }
-check(guide.includes(`href="${releases.downloadUrl(actual)}"`), "Guide download uses the same official direct URL");
+check(guide.includes(`href="${releases.downloadUrl(actual)}"`), "Guide retains the canonical same-file GitHub fallback");
+check(guide.includes(`href="${releases.websiteDownloadUrl(actual)}" download="${actual.file}"`), "Guide primary action uses the same static APK as the home page");
 check(guide.includes("只有下載完成，沒有安裝視窗"), "No-popup symptom is separated from installation rejection");
 check(guide.includes("已看到安裝視窗，但顯示錯誤"), "Installer errors have a separate recovery path");
 check(guide.includes("不要關閉 Play 安全防護") && guide.includes("不要先解除安裝"), "Guidance preserves protection and existing player data");

@@ -20,6 +20,9 @@
 # production
 /build
 
+# Generated, hash-verified public APK copies; regenerated before each build.
+/public/downloads/android/
+
 # misc
 .DS_Store
 *.pem

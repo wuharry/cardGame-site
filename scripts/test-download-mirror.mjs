@@ -93,7 +93,9 @@ for (const id of ["macos", "linux"]) {
 check(JSON.stringify(versions.versionManifest(mixedBuilds)) === JSON.stringify(versions.versionManifest(mixedBuilds.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Mixed-platform website routing cannot change the canonical game update API");
 
 const published = await renderPanel(releases.BUILDS);
-check((published.match(/itch\.io 備用頁/g) ?? []).length === 0 && (published.match(/Download from GitHub/g) ?? []).length === 4, "All four platforms use direct GitHub downloads without unverified backups");
+check((published.match(/itch\.io 備用頁/g) ?? []).length === 0, "Unverified itch packages remain disabled");
+check((published.match(/Download from GitHub/g) ?? []).length === 3 && (published.match(/Download from this site/g) ?? []).length === 1,
+  "Desktop packages use GitHub; Android's primary APK is served by the website");
 for (const id of ["windows", "macos", "linux"]) {
   const build = releases.BUILDS.find((item) => item.id === id);
   const platform = await renderPanel([build]);
@@ -105,7 +107,10 @@ for (const id of ["windows", "macos", "linux"]) {
   const entry = id === "windows" ? "TwilightCodex.exe" : id === "macos" ? `${build.displayName}.app` : "launch.sh";
   check(visible.includes(entry) && !visible.includes(installHelp.installationHelp(build)[0].body), `${id} shows its short entry step and keeps the long help collapsed`);
 }
-check(published.includes(`href="${releases.downloadUrl(android)}" download="${android.file}"`) && published.includes("下載 Android APK"), "Android has its exact APK download with an explicit install label");
+const staticApk = `/downloads/android/${android.sha256}/${android.file}`;
+check(releases.websiteDownloadUrl(android) === staticApk && published.includes(`href="${staticApk}" download="${android.file}"`), "Android's primary download identifies the exact APK hash and filename");
+check(published.includes(`href="${releases.downloadUrl(android)}" download="${android.file}"`) && published.includes("GitHub 備用下載（同一份 APK）"), "Android retains the canonical same-file fallback");
+check(published.indexOf(`href="${staticApk}"`) < published.indexOf(`href="${releases.downloadUrl(android)}"`), "The static APK precedes the GitHub fallback");
 check(JSON.stringify(versions.versionManifest(releases.BUILDS)) === JSON.stringify(versions.versionManifest(releases.BUILDS.map((build) => ({ ...build, mirrorProvider: undefined, mirrorPageUrl: undefined })))), "Published desktop mirrors leave all canonical update metadata unchanged");
 
 console.log(`PASS download mirror and bilingual notes: ${checks} checks for main/backup links, bilingual summaries, unavailable builds and unchanged game update API`);

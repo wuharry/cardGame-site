@@ -1,5 +1,30 @@
 # 下載與安裝改善
 
+## 2026-10-24：Android 同站 APK 下載候選（尚未部署／手機複驗）
+
+**候選將 Android 主下載改為官網靜態 APK，移除玩家下載時的 GitHub 跨站轉址；是否解除 Chrome 卡住，仍待同手機複驗。** 使用者回報原下載在 Chrome 停於滿格、沒有錯誤，按「暫停 → 繼續」後可開啟 APK。這只證實恢復方式有效，尚未證明根因。GitHub 附件的全檔 bytes／SHA-256 原本就正確，不把它稱為損壞的 APK。
+
+- `Build.websiteDelivery: "static-apk"` 只用於 Android 官網主按鈕與安裝頁。網址由已發布檔名和 SHA-256 固定，為 `/downloads/android/<sha256>/<file>.apk`。兩頁均保留同一份 GitHub APK 作備用；`/api/game-version`、三個桌面包與遊戲內素材網址不變。
+- `npm run build` 的 `prebuild` 執行 `scripts/prepare-android-download.mjs`：從公開、固定版本 GitHub 附件下載，核對完整大小和 SHA-256，成功後才把暫存檔改為正式 `.apk`。中斷、錯誤狀態、錯誤長度、超量或校驗失敗都使建置失敗；已存在的副本每次重驗。建置用檔在忽略的 `public/downloads/android/`，不把 APK 加進 Git。
+- 下載由靜態主機直接傳送，正常全檔請求不經 Function 代理；明確設定 APK MIME、attachment 檔名、內容 SHA-256 ETag、不可變快取及 `no-transform`。沒有偽造 Content-Length，由主機依實際檔案產生。這會使用現有網站的傳輸額度，未開通新帳號、方案或計費服務。
+- 本機 Next 16.4.2 的靜態檔案服務把超出檔尾的 Range 回成 HTTP 500；同樣問題也可在既有 `file.svg` 重現。`src/proxy.ts` 僅匹配 APK 的 Range 請求，正規化有效單段範圍，超界回正確的 416，舊 If-Range 改為全檔 200；APK 位元組仍由靜態主機傳送。一般網頁、API、素材與普通 APK 全檔請求均不匹配。這是候選驗證找到的框架邊界問題，沒有證據可說它就是原手機問題。
+
+本機可先從已封存的同一成品準備，之後仍會驗證內容，不會信任路徑或檔名：
+
+```powershell
+node scripts/prepare-android-download.mjs --from-file D:/PaperRaven-Releases/20261023-R18/public-assets/TwilightCodex-Android-20261023-R18.apk
+node scripts/test-static-apk.mjs
+node scripts/test-static-apk-range.mjs
+npm run build
+node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3118
+# 另一個 terminal；正式部署後將 URL 換成官網 HTTPS origin 再跑一次。
+node scripts/verify-static-apk.mjs http://127.0.0.1:3118
+```
+
+驗收包含主／備下載位置、原更新 API、HEAD／GET 完整 bytes 與 SHA-256、尾段 206、超界 416、ETag 304 與 If-Range。`scripts/test-download-*`、`scripts/test-android-install-guide.mjs`、`scripts/test-streamed-downloads.mjs` 及既有桌面安裝測試仍要通過。原始結果保留在 `build/apk-static-delivery-20261024/`。最初的 416 測試實測得到 500；另一次 304 測試因測試客戶端預設強制重新傳檔得到 200，確認改用明確的條件式再驗證後仍要求 304，沒有降低預期狀態碼。
+
+交付界線：owned paths 為官網下載資料／元件、`next.config.ts`、Range gate 和準備／驗證工具；input 是已公開 R18 APK，output 是校驗後的靜態副本及主／備按鈕。部署及正式 HTTPS 驗收尚未執行；上線仍需明確授權。手機應在相同 Chrome／網路先比對新主下載和 GitHub 備用下載，各重複數次，確認無須暫停／繼續便完成；沒有這項證據前，狀態維持「改善候選」，不宣稱永久修復。若新主下載仍卡住，保留副本與診斷，撤回 `websiteDelivery` 即可恢復原主下載路徑，不重打包或改寫 APK。
+
 ## 2026-10-22：macOS R17 單平台恢復下載
 
 **本版只開放已通過原生成品與公開首次下載驗收的 macOS R17；Windows、Linux 維持熱修中，APK 繼續停用。** 下載區、首頁入口、版本頁與 schema 1 更新 API 共用同一平台開關。成品來源為 `47b1509d`；正式專服已同步 protocol 28，部署等待修正為 `a3425a22`，沒有重建或改寫已凍結的玩家 ZIP／素材。

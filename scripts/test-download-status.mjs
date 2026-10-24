@@ -98,7 +98,9 @@ for (const build of releases.BUILDS) {
   const url = releases.downloadUrl(build);
   allowed.add(url); allowed.add(releases.releasePageUrl(build));
   check(build.version === "2026.10.23-R18" && build.build === 2026102301, "Every offered package has the frozen R18 identity");
-  check(live.panel.includes(`href="${url}" download="${build.file}"`), `${build.id} offers its exact package`);
+  const websiteUrl = releases.websiteDownloadUrl(build);
+  allowed.add(websiteUrl);
+  check(live.panel.includes(`href="${websiteUrl}" download="${build.file}"`), `${build.id} offers its exact package from the configured primary source`);
 }
 check(live.panel.includes('href="/install/android"') && live.android.includes('.apk'), "Android installs the actual R18 APK");
 for (const [name, html] of Object.entries(live)) {

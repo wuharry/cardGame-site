@@ -127,7 +127,7 @@ function FeaturedBuild({ build }: { build: Build }) {
             >
               {build.id === "android" ? "下載 Android APK" : `下載 ${build.platform} ZIP`}
             </span>
-            <span lang="en" className="mt-1 block text-xs">{build.size} · Download from GitHub</span>
+            <span lang="en" className="mt-1 block text-xs">{build.size} · {href.startsWith("/") ? "Download from this site" : "Download from GitHub"}</span>
           </a>
         ) : (
           <div aria-disabled="true" className="notch border border-brass-dim px-6 py-4 text-center">
@@ -170,6 +170,11 @@ function FeaturedBuild({ build }: { build: Build }) {
 
         {href && build.id === "android" && (
           <div className="space-y-3">
+            {href !== downloadUrl(build) && <a
+              href={downloadUrl(build) ?? undefined}
+              download={build.file ?? undefined}
+              className="block text-center text-sm text-brass-hi underline underline-offset-4"
+            >GitHub 備用下載（同一份 APK）</a>}
             <Link
               href="/install/android"
               className="block border border-brass-dim px-5 py-3 text-center text-base text-brass-hi transition-colors hover:border-brass hover:text-parchment"
