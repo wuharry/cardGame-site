@@ -7,6 +7,7 @@ const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imp
 const helpers = await load("../src/app/admin/play-analytics-types.ts");
 const charts = await load("../src/app/admin/play-analytics.tsx", {
   "./play-analytics-types": helpers, "./admin-api": {}, "./match-duration": { default: () => null }, "./admin.module.css": {},
+  "./dashboard-visuals": { DashboardOverview: () => null, WinLossBar: () => null },
 });
 const now = Date.parse("2026-10-13T08:00:00Z");
 const sample = { minute: "2026-10-13T07:00:00Z", online_connections: 0, lobby_connections: 0, playing_connections: 0 };

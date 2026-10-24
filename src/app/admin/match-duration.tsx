@@ -5,6 +5,7 @@ import { AdminError, type AdminAPI } from "./admin-api";
 import { durationLabel, hasMeasurement, matchCompletion, matchFilterParams, matchModes, matchReasons,
   matchSourceLabel, readMatchAnalytics, type MatchAnalytics, type MatchFilters, type MatchSource } from "./play-analytics-types";
 import styles from "./admin.module.css";
+import DurationSpectrum from "./duration-spectrum";
 
 const date = (value: string | null) => value ? new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "未記錄";
 const mode = (value: string) => matchModes[value as keyof typeof matchModes] ?? value;
@@ -14,6 +15,7 @@ export const missingMatchRPC = (error: unknown) => error instanceof AdminError &
 
 export function MatchDurationView({ data }: { data: MatchAnalytics }) {
   return <>
+    <DurationSpectrum data={data} />
     <p className={styles.note}>依目前篩選顯示歷史累計，不限近 28 日；含管理者參與的對局。自行回報包含登入者及匿名者。</p>
     <p className={styles.note}>耗時樣本只計有記錄的有效耗時；歷史缺值顯示「未記錄」，不補 0。中位數是一半樣本低於的時間；P90 是九成樣本低於的時間。正式伺服器每局只計一次，各組統計直接採用後端對局樣本，不用帳號累計重算平均。</p>
     <p className={styles.note}>表格可左右捲動；鍵盤可聚焦表格後用方向鍵捲動。</p>

@@ -24,7 +24,7 @@ export function dailyRows(rows: PlayDashboard["daily"], newestFirst = false) {
 
 // Treat a missing/expired heartbeat as unknown. Never turn lack of data into zero players.
 export function livePresence(data: PlayDashboard, now = Date.now()) {
-  if (!data.servers.length || data.servers.some(s => !s.fresh || now - Date.parse(s.received_at) >= 45000)) return null;
+  if (!data.servers.length || data.servers.some(s => !s.fresh || !Number.isFinite(Date.parse(s.received_at)) || now - Date.parse(s.received_at) >= 45000)) return null;
   return data.servers.reduce((sum, s) => ({ online: sum.online + s.presence.online_players,
     lobby: sum.lobby + s.presence.lobby_players, playing: sum.playing + s.presence.playing_players }),
     { online: 0, lobby: 0, playing: 0 });

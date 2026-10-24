@@ -1,0 +1,1005 @@
+{
+  "source_revision": "aafbb9bb845fb7b86f6b67e4b40744750f50c54d",
+  "source_release": "2026.10.23-R18",
+  "cards": {
+    "abyss_devourer": {
+      "cost": 10,
+      "rarity": 2
+    },
+    "adventurer": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "alchemist": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "alchemy_apothecary": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "alchemy_apprentice": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "alchemy_grandmaster": {
+      "cost": 5,
+      "rarity": 3
+    },
+    "alchemy_herbalist": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "arcana_abyss_echo": {
+      "cost": 5,
+      "rarity": 1
+    },
+    "arcana_alchemy_cauldron": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "arcana_alchemy_supply": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_allforge": {
+      "cost": 6,
+      "rarity": 2
+    },
+    "arcana_armor_break_ray": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_army_reassembly": {
+      "cost": 7,
+      "rarity": 1
+    },
+    "arcana_arrow_rain": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "arcana_battle_fury": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_blood_swap": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "arcana_bloodwing_pact": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_bone_barrier": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_bone_recruitment": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_bone_rite": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_borrowed_life": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_corpse_curse": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_corroding_curse": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_dead_muster": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "arcana_dead_wrath": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_dice_all_in": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_dice_gambit": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_dice_precision": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "arcana_dice_risky_insight": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "arcana_dice_spirit_pact": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_domain_break": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_end_ritual": {
+      "cost": 10,
+      "rarity": 2
+    },
+    "arcana_eternal_winter_edict": {
+      "cost": 7,
+      "rarity": 2
+    },
+    "arcana_fate_scry": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "arcana_fireblast": {
+      "cost": 3,
+      "rarity": 0,
+      "art": "/media/cards/arcana_fireblast.webp"
+    },
+    "arcana_flame_staff": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_forbidden_rite": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "arcana_forged_will": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_frost_shackles": {
+      "cost": 3,
+      "rarity": 1,
+      "art": "/media/cards/arcana_frost_shackles.webp"
+    },
+    "arcana_frozen_pulse": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "arcana_gate_of_dead_army": {
+      "cost": 9,
+      "rarity": 2
+    },
+    "arcana_gravefire_drain": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "arcana_hellhound_call": {
+      "cost": 4,
+      "rarity": 0
+    },
+    "arcana_holy_blessing": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_insight": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_life_spring": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "arcana_mage_defense_shield": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_mage_foretell": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "arcana_mage_gate_assault": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_mage_gate_supply": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_mage_recall": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "arcana_mage_star_chart": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_memory_tide": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "arcana_night_shelter": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_raise_dead": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_shockwave": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "arcana_skeletal_reinforcements": {
+      "cost": 4,
+      "rarity": 0
+    },
+    "arcana_skyfire_fall": {
+      "cost": 8,
+      "rarity": 2
+    },
+    "arcana_soul_harvest": {
+      "cost": 9,
+      "rarity": 2
+    },
+    "arcana_star_tempest": {
+      "cost": 3,
+      "rarity": 1,
+      "art": "/media/cards/arcana_star_tempest.webp"
+    },
+    "arcana_starsea_rewind": {
+      "cost": 8,
+      "rarity": 3
+    },
+    "arcana_thunder_pierce": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "arcana_toxic_miasma": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_tribal_dragon_cinderwave": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_tribal_dwarf_temper": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_tribal_fairy_regrowth": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_tribal_orc_secondwind": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_tribal_storm_grid": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_tribal_tide_returnflow": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "arcana_twin_thunder": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "archer": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "armored_axeman": {
+      "cost": 5,
+      "rarity": 1,
+      "art": "/media/cards/armored_axeman.webp"
+    },
+    "armored_orc": {
+      "cost": 6,
+      "rarity": 2
+    },
+    "armored_skeleton": {
+      "cost": 4,
+      "rarity": 0
+    },
+    "bat": {
+      "cost": 1,
+      "rarity": 1
+    },
+    "black_knight_a": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "black_knight_b": {
+      "cost": 6,
+      "rarity": 2
+    },
+    "black_knight_c": {
+      "cost": 7,
+      "rarity": 1
+    },
+    "blood_monster_a": {
+      "cost": 4,
+      "rarity": 0
+    },
+    "blood_monster_b": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "bone_drummer": {
+      "cost": 4,
+      "rarity": 2
+    },
+    "bone_king": {
+      "cost": 9,
+      "rarity": 3
+    },
+    "bone_scavenger": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "bone_shield_guard": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "catfolk_rogue": {
+      "cost": 3,
+      "rarity": 0,
+      "art": "/media/cards/catfolk_rogue.webp"
+    },
+    "corpse_eater": {
+      "cost": 6,
+      "rarity": 2
+    },
+    "demon_a": {
+      "cost": 4,
+      "rarity": 0
+    },
+    "demon_b": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "demon_c": {
+      "cost": 6,
+      "rarity": 1
+    },
+    "demon_d": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "demon_e": {
+      "cost": 7,
+      "rarity": 1
+    },
+    "demoness_a": {
+      "cost": 4,
+      "rarity": 0
+    },
+    "demoness_b": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "desert_nomad": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "dice_blast_warlock": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "dice_critical_commander": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "dice_doom_archmage": {
+      "cost": 7,
+      "rarity": 3
+    },
+    "dice_engraver": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "dice_fire_apprentice": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "dice_ignition_gambler": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "dice_misfire_guard": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "dice_probability_scholar": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "dice_reroll_mage": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "dice_thunder_colossus": {
+      "cost": 6,
+      "rarity": 2
+    },
+    "dice_thunder_fighter": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "domain_dragon_emberpeak": {
+      "cost": 3,
+      "rarity": 2
+    },
+    "domain_dwarf_forge": {
+      "cost": 3,
+      "rarity": 2
+    },
+    "domain_fairy_forest": {
+      "cost": 3,
+      "rarity": 2,
+      "art": "/media/cards/domain_fairy_forest.webp"
+    },
+    "domain_orc_warcamp": {
+      "cost": 3,
+      "rarity": 2
+    },
+    "domain_storm_city": {
+      "cost": 3,
+      "rarity": 2
+    },
+    "domain_tide_moonharbor": {
+      "cost": 3,
+      "rarity": 2
+    },
+    "dwarf_smith": {
+      "cost": 3,
+      "rarity": 1,
+      "art": "/media/cards/dwarf_smith.webp"
+    },
+    "elite_orc": {
+      "cost": 7,
+      "rarity": 2
+    },
+    "equip_blood_pact_greatblade": {
+      "cost": 7,
+      "rarity": 2
+    },
+    "equip_dice_fate_scope": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "equip_dice_scorch_staff": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "equip_domain_break_staff": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "equip_giant_warplate": {
+      "cost": 6,
+      "rarity": 1
+    },
+    "equip_mithril_plate": {
+      "cost": 2,
+      "rarity": 0,
+      "art": "/media/cards/equip_mithril_plate.webp"
+    },
+    "equip_titan_starcore": {
+      "cost": 9,
+      "rarity": 3
+    },
+    "equip_undying_crown": {
+      "cost": 7,
+      "rarity": 2
+    },
+    "eyeball_monster": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "flame_golem": {
+      "cost": 6,
+      "rarity": 1
+    },
+    "frog_shaman": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "frost_witch": {
+      "cost": 3,
+      "rarity": 1,
+      "art": "/media/cards/frost_witch.webp"
+    },
+    "funeral_acolyte": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "gargoyle_sentinel": {
+      "cost": 4,
+      "rarity": 1,
+      "art": "/media/cards/gargoyle_sentinel.webp"
+    },
+    "ghostfire": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "goblin_bomber": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "gravedigger_apprentice": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "gravekeeper": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "greatsword_skeleton": {
+      "cost": 5,
+      "rarity": 1
+    },
+    "halfling_scout": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "harpy_hunter": {
+      "cost": 3,
+      "rarity": 0,
+      "art": "/media/cards/harpy_hunter.webp"
+    },
+    "hellbat": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "hellhound": {
+      "cost": 4,
+      "rarity": 0
+    },
+    "illusion_apprentice": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "illusion_judge": {
+      "cost": 6,
+      "rarity": 3
+    },
+    "illusion_mentor": {
+      "cost": 4,
+      "rarity": 2
+    },
+    "illusion_projection": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "illusion_substitute": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "illusion_weaver": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "knight": {
+      "cost": 4,
+      "rarity": 1,
+      "art": "/media/cards/knight.webp"
+    },
+    "knight_templar": {
+      "cost": 6,
+      "rarity": 1
+    },
+    "kobold_miner": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "lancer": {
+      "cost": 4,
+      "rarity": 0
+    },
+    "lava_slime": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "lizard_warrior": {
+      "cost": 4,
+      "rarity": 0,
+      "art": "/media/cards/lizard_warrior.webp"
+    },
+    "mage_destiny_guard": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "mage_fairy_archer": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "mage_final_astrologer": {
+      "cost": 6,
+      "rarity": 3
+    },
+    "mage_gate_beast": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "mage_gate_traveler": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "mage_star_scribe": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "mage_stargazer_apprentice": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "mage_storm_guard": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "mage_teleporter": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "mage_ward_apprentice": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "mage_ward_breaker": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "mage_ward_keeper": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "mind_backlash": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "mind_king": {
+      "cost": 6,
+      "rarity": 3
+    },
+    "mind_reader": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "mind_silence": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "mind_spellthief": {
+      "cost": 4,
+      "rarity": 2
+    },
+    "mind_whisperer": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "minotaur": {
+      "cost": 7,
+      "rarity": 2
+    },
+    "mushroom_mage": {
+      "cost": 2,
+      "rarity": 0,
+      "art": "/media/cards/mushroom_mage.webp"
+    },
+    "necromancer": {
+      "cost": 5,
+      "rarity": 1,
+      "art": "/media/cards/necromancer.webp"
+    },
+    "orc": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "orc_rider": {
+      "cost": 6,
+      "rarity": 2
+    },
+    "pirate_captain": {
+      "cost": 5,
+      "rarity": 1,
+      "art": "/media/cards/pirate_captain.webp"
+    },
+    "priest": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "quick_absolute_denial": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "quick_astral_severance": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "quick_causality_reversal": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "quick_reversal_edict": {
+      "cost": 2,
+      "rarity": 1,
+      "art": "/media/cards/quick_reversal_edict.webp"
+    },
+    "quick_royal_decree": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "quick_soul_substitution": {
+      "cost": 4,
+      "rarity": 2
+    },
+    "quick_time_gap_barrier": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "quick_void_rebuke": {
+      "cost": 2,
+      "rarity": 1,
+      "art": "/media/cards/quick_void_rebuke.webp"
+    },
+    "ratfolk_plague_doctor": {
+      "cost": 3,
+      "rarity": 1,
+      "art": "/media/cards/ratfolk_plague_doctor.webp"
+    },
+    "red_obsidian_ancient_dragon": {
+      "cost": 13,
+      "rarity": 3
+    },
+    "skeleton": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "skeleton_archer": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "sky_leviathan": {
+      "cost": 12,
+      "rarity": 2
+    },
+    "slime": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "slime_king": {
+      "cost": 3,
+      "rarity": 2
+    },
+    "soldier": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "soul_ferryman": {
+      "cost": 5,
+      "rarity": 1
+    },
+    "steel_forge_titan": {
+      "cost": 9,
+      "rarity": 2
+    },
+    "swordsman": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "tf_azure_adventurer": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "tf_crimson_captain": {
+      "cost": 5,
+      "rarity": 1
+    },
+    "tf_dawn_paladin": {
+      "cost": 5,
+      "rarity": 0
+    },
+    "tf_dusk_mage": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "tf_feather_bard": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "tf_grove_ranger": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "tf_scarlet_duelist": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "tf_sun_monk": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "tf_tide_healer": {
+      "cost": 3,
+      "rarity": 0
+    },
+    "tf_veil_warlock": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "tf_verdant_guard": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "tf_wild_champion": {
+      "cost": 5,
+      "rarity": 0
+    },
+    "thunderhorn_behemoth": {
+      "cost": 11,
+      "rarity": 2
+    },
+    "tombsea_colossus": {
+      "cost": 11,
+      "rarity": 2
+    },
+    "transmute_alchemist": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "transmute_armor": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "transmute_collector": {
+      "cost": 1,
+      "rarity": 0
+    },
+    "transmute_embryo": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "transmute_perfect": {
+      "cost": 6,
+      "rarity": 3
+    },
+    "transmute_reforge": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "treant_guardian": {
+      "cost": 4,
+      "rarity": 0,
+      "art": "/media/cards/treant_guardian.webp"
+    },
+    "tribal_dragon_ashguard": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "tribal_dragon_flamecrown": {
+      "cost": 7,
+      "rarity": 3
+    },
+    "tribal_dwarf_forgeking": {
+      "cost": 7,
+      "rarity": 3
+    },
+    "tribal_dwarf_runesmith": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "tribal_fairy_canopy_queen": {
+      "cost": 7,
+      "rarity": 3
+    },
+    "tribal_fairy_grovecaller": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "tribal_fairy_rootkeeper": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "tribal_orc_bloodrunner": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "tribal_orc_warchief": {
+      "cost": 7,
+      "rarity": 3
+    },
+    "tribal_storm_conductor": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "tribal_storm_highmarshal": {
+      "cost": 7,
+      "rarity": 3
+    },
+    "tribal_storm_relocator": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "tribal_tide_currentguide": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "tribal_tide_leviathan_oracle": {
+      "cost": 6,
+      "rarity": 3
+    },
+    "wandering_bard": {
+      "cost": 3,
+      "rarity": 0,
+      "art": "/media/cards/wandering_bard.webp"
+    },
+    "ward_blast_sigil": {
+      "cost": 2,
+      "rarity": 1,
+      "art": "/media/cards/ward_blast_sigil.webp"
+    },
+    "ward_bloodthorn_array": {
+      "cost": 5,
+      "rarity": 1
+    },
+    "ward_corpse_rising": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "ward_decoy_puppet": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "ward_dice_blast": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "ward_dice_deflect": {
+      "cost": 2,
+      "rarity": 0
+    },
+    "ward_mage_hidden_shield": {
+      "cost": 2,
+      "rarity": 1
+    },
+    "ward_mirror_prison": {
+      "cost": 4,
+      "rarity": 2
+    },
+    "ward_reincarnation_sigil": {
+      "cost": 6,
+      "rarity": 2
+    },
+    "ward_royal_tomb_trap": {
+      "cost": 7,
+      "rarity": 2
+    },
+    "ward_soulburn_sigil": {
+      "cost": 3,
+      "rarity": 1
+    },
+    "ward_thorn_sigil": {
+      "cost": 1,
+      "rarity": 0,
+      "art": "/media/cards/ward_thorn_sigil.webp"
+    },
+    "warlock": {
+      "cost": 4,
+      "rarity": 1
+    },
+    "werebear": {
+      "cost": 7,
+      "rarity": 1
+    },
+    "werewolf": {
+      "cost": 5,
+      "rarity": 2
+    },
+    "wizard": {
+      "cost": 4,
+      "rarity": 0
+    }
+  }
+}

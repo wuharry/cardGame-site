@@ -5,6 +5,7 @@ import { AdminAPI, AdminError } from "./admin-api";
 import { countAxis, dailyRows, hasMeasurement, livePresence, measuredSegments, tickIndices, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
 import MatchDuration from "./match-duration";
 import styles from "./admin.module.css";
+import { DashboardOverview, WinLossBar } from "./dashboard-visuals";
 
 const date = (s: string) => new Date(s).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
 const modes: Record<string, string> = { pve: "單人 AI", lan: "區網", pvp: "外網", hotseat: "本機雙人" };
@@ -187,21 +188,13 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
 
   const live = data ? livePresence(data, clock) : null;
   const guestFresh = data && clock - Date.parse(data.generated_at) < 90000;
-  return <section aria-label="遊玩統計">
+  return <section id="analytics" aria-label="遊玩統計">
     <div className={styles.toolbar}><div><h2>遊玩概況</h2><small>台北日期 · 累計指標與近 28 日趨勢 · 排除管理者註冊／收藏</small></div>
       <div><small>{data ? `資料更新：${date(data.generated_at)}` : "登入後載入統計"}</small>
         <button disabled={busy || disabled} onClick={() => setRevision(v => v + 1)}>{busy ? "更新中…" : "更新統計"}</button></div></div>
     {error && <p className={styles.message} role="status">{error} {data && "下方保留上次數據。"}</p>}
-    <div className={styles.kpis}>{[
-      ["註冊玩家", data?.counts.registered], ["已建立收藏", data?.counts.collection_users],
-      ["曾進正式對戰", data?.counts.admitted_users], ["曾正式完賽", data?.counts.completed_users],
-      ["遊客回報裝置", data?.counts.guest_installs], ["曾遊玩的遊客裝置", data?.counts.guest_played],
-    ].map(([label, n]) => <div key={label}><span>{label}</span><strong>{n ?? "—"}</strong></div>)}</div>
-    <div className={styles.kpis}>
-      <div><span>遊戲主機在線連線</span><strong>{live?.online ?? "待確認"}</strong><small>{live ? `大廳 ${live.lobby} · 對戰 ${live.playing}` : "尚未回報或心跳已過期"}</small></div>
-      <div><span>最近活動遊客裝置</span><strong>{guestFresh ? data.counts.guest_online : "待確認"}</strong><small>最近 90 秒收到回報；包含單人遊玩</small></div>
-      <div><span>正式完成對局（累計）</span><strong>{data?.counts.formal_matches ?? "—"}</strong><small>由正式伺服器驗證</small></div>
-    </div><p className={styles.note}>遊客裝置 ID 清除存檔／重裝後可能改變，不能視為不同人數；離線活動要等連網才看得到。遊客活動數與主機連線可能重疊，不能相加。</p>
+    <DashboardOverview data={data} now={clock} live={live} guestFresh={!!guestFresh} />
+    <p className={styles.note}>遊客裝置 ID 清除存檔／重裝後可能改變，不能視為不同人數；離線活動要等連網才看得到。遊客活動數與主機連線可能重疊，不能相加。</p>
     {data && <><div className={styles.chartGrid}>
       <article className={styles.panel}><h3>每日玩家活動 · 近 28 日</h3><DailyChart data={data} /></article>
       <article className={styles.panel}><h3>主機連線 · 最近 24 小時</h3><OnlineChart data={data} />
@@ -218,7 +211,7 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
     <MatchDuration api={api} disabled={disabled} onExpired={clearPrivateData} />
     <section className={styles.panel}><h3>每位玩家勝敗率 · 正式伺服器紀錄（累計）</h3><p className={styles.note}>勝率＝勝／（勝＋敗），平手另列。樣本少時只供觀察；未完賽顯示無樣本。</p>
       <div className={styles.tableScroll}><table><thead><tr><th>玩家</th><th>場次／勝敗平</th><th>勝率</th><th>敗率</th><th>目前狀態</th></tr></thead><tbody>{rates?.players.map(p => <tr key={p.id}>
-        <td>{p.email}<small>{p.id}</small></td><td>{p.total} 場 · {p.wins}／{p.losses}／{p.draws}</td><td>{percent(p.win_rate)}</td><td>{percent(p.loss_rate)}</td>
+        <td>{p.email}<small>{p.id}</small></td><td>{p.total} 場 · {p.wins}／{p.losses}／{p.draws}</td><td><WinLossBar wins={p.wins} losses={p.losses} draws={p.draws} /></td><td>{percent(p.loss_rate)}</td>
         <td>{live && p.verified_match_online ? "正式對戰中" : "未確認對戰在線"}</td></tr>)}</tbody></table></div>
       <footer className={styles.pagination}><button disabled={busy || disabled || ratePage === 0} onClick={() => setRatePage(p => p - 1)}>上一頁戰績</button><span>第 {ratePage + 1} 頁</span>
         <button disabled={busy || disabled || (rates?.players.length ?? 0) < 25} onClick={() => setRatePage(p => p + 1)}>下一頁戰績</button></footer>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PlayerCommerce as Commerce } from "./admin-api";
 import styles from "./admin.module.css";
+import { currencyFlow } from "./dashboard-metrics";
 
 const date = (value: string) => new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
 const actions: Record<string, string> = { buy_emote: "購買台詞", equip_emote: "裝備台詞", unequip_emote: "卸下台詞",
@@ -15,8 +16,23 @@ export default function PlayerCommerce({ value }: { value?: Commerce | null }) {
   const transactions = value.transactions.filter((item) =>
     `${item.request_id} ${item.item_id} ${item.item_text ?? ""} ${item.terminal_error}`.toLowerCase().includes(query.trim().toLowerCase()));
   return <section aria-label="商店與資產">
-    <h3>金幣 {value.gold.toLocaleString("zh-TW")} · 鑽石 {value.diamonds.toLocaleString("zh-TW")}</h3>
+    <div className={styles.balanceGrid}>{([ ["金幣", value.gold, "amber"], ["鑽石", value.diamonds, "blue"] ] as const).map(([label, balance, tone]) =>
+      <article className={styles.metricCard} data-tone={tone} key={label} aria-label={`${label} ${balance.toLocaleString("zh-TW")}`}>
+        <span className={styles.metricLabel}>目前{label}</span><strong className={styles.metricValue}>{balance.toLocaleString("zh-TW")}</strong><small>伺服器帳本餘額</small></article>)}</div>
     <p className={styles.note}>來源為伺服器帳本。目前沒有儲值功能；以下查詢不會變更玩家資產。</p>
+    <h3>近期交易收支</h3><p className={styles.note}>僅下方篩選結果，最多最近 50 筆；不是全歷史產出。失敗交易不計入收支，金幣與鑽石分開計算。</p>
+    <div className={styles.flowGrid}>{(["gold", "diamonds"] as const).map(currency => {
+      const flow = currencyFlow(transactions, currency);
+      const label = currency === "gold" ? "金幣" : "鑽石";
+      const maximum = Math.max(1, flow.incoming, flow.outgoing);
+      return <article key={currency} className={styles.flowCard}><h4>{label} · 本批淨變動</h4>
+        <strong className={styles.flowNet}>{flow.measured ? `${flow.net > 0 ? "+" : ""}${flow.net.toLocaleString("zh-TW")}` : "未記錄"}</strong>
+        {flow.measured > 0 && <div className={styles.flowBars}>
+          <div><span>流入 +{flow.incoming.toLocaleString("zh-TW")}</span><div><i style={{ width: `${flow.incoming / maximum * 100}%` }} /></div></div>
+          <div><span>流出 −{flow.outgoing.toLocaleString("zh-TW")}</span><div><i style={{ width: `${flow.outgoing / maximum * 100}%` }} /></div></div>
+        </div>}
+        <small>有效 {flow.measured} 筆 · 缺少餘額 {flow.missing} 筆 · 排除失敗 {flow.rejected} 筆</small></article>;
+    })}</div>
     <h3>持有台詞 · 已裝備 {value.equipped_emotes.length} / 4</h3>
     <div className={styles.tableScroll}><table><thead><tr><th>台詞／狀態</th><th>取得時間</th><th>取得交易編號</th></tr></thead><tbody>
       {value.owned_emotes.map((item) => <tr key={item.id}><td>{item.text}<small>{value.equipped_emotes.includes(item.id) ? "使用中" : "已擁有"} · {item.id}</small></td>

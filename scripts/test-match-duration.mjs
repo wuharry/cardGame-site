@@ -6,8 +6,11 @@ import { loadTsModule } from "./lib/load-ts-module.mjs";
 const load = (path, imports = {}) => loadTsModule(new URL(path, import.meta.url), imports, { allowNodeModules: true });
 const types = await load("../src/app/admin/play-analytics-types.ts");
 const { AdminError } = await load("../src/app/admin/admin-api.ts");
+const metrics = await load("../src/app/admin/dashboard-metrics.ts", { "./play-analytics-types": types });
+const spectrum = await load("../src/app/admin/duration-spectrum.tsx", { "./dashboard-metrics": metrics, "./admin.module.css": {} });
 const view = await load("../src/app/admin/match-duration.tsx", {
   "./play-analytics-types": types, "./admin-api": { AdminError }, "./admin.module.css": {},
+  "./duration-spectrum": spectrum,
 });
 assert.deepEqual(types.matchFilterParams({ mode: "ante", version: " 1.2.3 ", reason: "concede" }), {
   p_mode: "ante", p_version: "1.2.3", p_reason: "concede",

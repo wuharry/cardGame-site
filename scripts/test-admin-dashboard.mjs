@@ -1,0 +1,70 @@
+import { strict as assert } from "node:assert";
+import { readFile } from "node:fs/promises";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { loadTsModule } from "./lib/load-ts-module.mjs";
+
+const load = (file, imports = {}) => loadTsModule(new URL(file, import.meta.url), imports);
+const types = await load("../src/app/admin/play-analytics-types.ts");
+const metrics = await load("../src/app/admin/dashboard-metrics.ts", { "./play-analytics-types": types });
+const visuals = await load("../src/app/admin/dashboard-visuals.tsx", { "./play-analytics-types": types, "./dashboard-metrics": metrics, "./admin.module.css": {} });
+const spectrum = await load("../src/app/admin/duration-spectrum.tsx", { "./dashboard-metrics": metrics, "./admin.module.css": {} });
+const catalog = JSON.parse(await readFile(new URL("../src/app/admin/card-catalog.json", import.meta.url)));
+const names = JSON.parse(await readFile(new URL("../src/app/admin/card-names.json", import.meta.url)));
+const cards = await load("../src/app/admin/player-cards.tsx", { "./card-catalog.json": catalog, "./card-names.json": names,
+  "./admin.module.css": {}, "next/image": { __esModule: true, default: ({ src, alt }) => createElement("img", { src, alt }) } });
+const render = (component, props) => renderToStaticMarkup(createElement(component, props));
+let checks = 0;
+const check = (condition, message) => { assert.ok(condition, message); checks++; };
+const daily = Array.from({ length: 14 }, (_, i) => ({ day: new Date(Date.UTC(2026, 9, i + 1)).toISOString().slice(0, 10), registered: i < 7 ? 1 : 2, matches: i < 7 ? 0 : 3, guest_active: 0 }));
+const data = { daily: [...daily].reverse() };
+const frozen = JSON.stringify(data);
+assert.deepEqual(metrics.weekTrend(data, "registered"), { previous: 7, current: 14, change: 100 });
+check(metrics.weekTrend(data, "matches").change === null, "A zero baseline never produces an infinite percent");
+check(metrics.weekTrend({ daily: daily.slice(1) }, "registered") === null, "Partial two-week windows do not invent a trend");
+check(metrics.weekTrend({ daily: daily.map((row, i) => i === 2 ? { ...row, registered: null } : row) }, "registered") === null, "Missing days are not measured zero");
+check(metrics.weekTrend({ daily: [...daily.slice(0, 13), { ...daily[13], day: "2026-10-18" }] }, "registered") === null, "Non-contiguous dates cannot be compared as consecutive weeks");
+check(JSON.stringify(data) === frozen, "Trend calculation leaves RPC data unchanged");
+check(metrics.recentDays([daily[0], daily[10], daily[13]]).length === 2, "Seven-day sparklines use calendar days, not the last seven observations");
+
+const values = [0, 179.9, 180, 479.9, 480, 900, 900.1, null, -1];
+const matches = values.map((duration_seconds, i) => ({ match_id: `m${i}`, source: "server", duration_seconds }));
+const buckets = metrics.durationBuckets([...matches, matches[0], { match_id: "reported", source: "self_reported", duration_seconds: 1200 }], "server");
+assert.deepEqual(buckets.buckets, [2, 2, 2, 1]);
+check(buckets.total === 7 && buckets.unknown === 2, "Duration bands have exact boundaries, source separation, deduplication and missing values");
+const html = render(spectrum.default, { data: { matches } });
+check(html.includes("非全歷史分布") && html.includes("未記錄 2 場") && html.includes("少於 20 場"), "Spectrum states its recent-sample scope and suppresses small-sample alerts");
+const warning = render(spectrum.default, { data: { matches: Array.from({ length: 20 }, (_, i) => ({ source: "server", match_id: String(i), duration_seconds: i < 2 ? 1000 : 200 })) } });
+check(warning.includes("長局超過 5%") && warning.includes("不代表死鎖"), "Long matches are observations, never a diagnosis");
+check(!render(spectrum.default, { data: { matches: [] } }).includes("NaN"), "Empty spectra have no fabricated percentage");
+
+check(metrics.winSplit(2, 3, 10).rate === 40, "Draws do not dilute the win/loss denominator");
+const emptyWins = render(visuals.WinLossBar, { wins: 0, losses: 0, draws: 2 });
+check(emptyWins.includes("尚無勝敗樣本") && !emptyWins.includes("width:"), "No-match records do not render a fake balanced win rate");
+const wins = render(visuals.WinLossBar, { wins: 2, losses: 3, draws: 10 });
+check(wins.includes("40.0%") && wins.includes("平 10"), "Win-loss bar keeps exact figures and a separate draw count");
+assert.deepEqual(metrics.recentStreak([{ match_id: "old", completed_at: "2026-10-01", outcome: "loss" }, { match_id: "new", completed_at: "2026-10-03", outcome: "win" }, { match_id: "middle", completed_at: "2026-10-02", outcome: "win" }]), { wins: 2, limited: false });
+check(metrics.recentStreak([{ match_id: "only", completed_at: "2026-10-01", outcome: "win" }]).limited, "A truncated all-win history is only a lower bound");
+
+const tx = (request_id, gold_before, gold_after, diamonds_before = null, diamonds_after = null, terminal_error = "") => ({ request_id, gold_before, gold_after, diamonds_before, diamonds_after, terminal_error });
+const transactions = [tx("gain", 0, 100, 20, 20), tx("spend", 100, 70, 20, 10), tx("unknown", null, null), tx("failed", 0, 9999, 0, 9999, "rejected")];
+assert.deepEqual(metrics.currencyFlow([...transactions, transactions[0]], "gold"), { incoming: 100, outgoing: 30, net: 70, measured: 2, missing: 1, rejected: 1 });
+check(metrics.currencyFlow(transactions, "diamonds").outgoing === 10, "Currency units remain separate");
+check(metrics.currencyFlow([tx("legacy", 0, 0)], "diamonds").measured === 0, "Missing diamond amounts do not become zero-flow evidence");
+
+assert.deepEqual(Object.keys(catalog.cards).sort(), Object.keys(names).sort());
+check(catalog.source_revision === "aafbb9bb845fb7b86f6b67e4b40744750f50c54d" && catalog.cards.knight.cost === 4, "Card metadata is pinned to the published resource snapshot");
+const expensive = Object.entries(catalog.cards).find(([, card]) => card.cost > 8)[0];
+const curve = cards.manaCurve({ knight: 3, bat: 1, [expensive]: 2, "unreleased-fixture-card": 4 });
+check(curve.known === 6 && curve.unknown === 4 && curve.buckets[8] === 2 && curve.buckets[4] === 3, "Mana curve weights copies and collects 8+ costs without guessing unknown cards");
+check(cards.manaCurve({ constructor: 2 }).unknown === 2, "Unknown IDs cannot resolve inherited object properties as card metadata");
+const tile = render(cards.PlayerCards, { cards: { knight: 2, "unreleased-fixture-card": 1 } });
+check(tile.includes("4 費") && tile.includes("×2") && tile.includes("卡牌資料未提供"), "Card tiles label cost, rarity, copies and unknown metadata");
+const sparkline = render(visuals.Sparkline, { values: [2, null, 0], label: "測試" });
+check((sparkline.match(/<polyline/g) ?? []).length === 2 && (sparkline.match(/<circle/g) ?? []).length === 2, "Sparklines break at missing observations but retain measured zero");
+const gap = render(visuals.Sparkline, { values: [1, 2], dates: ["2026-10-01", "2026-10-03"], label: "缺日" });
+check((gap.match(/<polyline/g) ?? []).length === 2, "Missing calendar dates also break the sparkline");
+const overview = render(visuals.DashboardOverview, { data: null, now: Date.now(), live: null, guestFresh: false });
+check(overview.includes("待確認") && overview.includes("尚無心跳") && !overview.includes("ms"), "Unknown host status never invents healthy latency");
+check(types.livePresence({ servers: [{ fresh: true, received_at: "invalid", presence: { online_players: 5 } }] }) === null, "Invalid heartbeat timestamps stay unknown");
+console.log(`PASS admin dashboard: ${checks} checks for honest trends, duration samples, finances, cards, streak bounds, win rates and missing observations`);

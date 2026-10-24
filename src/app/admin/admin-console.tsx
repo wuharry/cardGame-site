@@ -7,6 +7,9 @@ import cards from "./card-names.json";
 import styles from "./admin.module.css";
 import PlayAnalytics from "./play-analytics";
 import PlayerCommerce from "./player-commerce";
+import { PlayerCards, ManaCurve } from "./player-cards";
+import { WinLossBar } from "./dashboard-visuals";
+import { recentStreak } from "./dashboard-metrics";
 
 const date = (value?: string | null) => value ? new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "—";
 const name = (id: string) => (cards as Record<string, string>)[id] ?? id;
@@ -154,8 +157,9 @@ export default function AdminConsole() {
 
   return <main className={styles.root}>
     <header className={styles.header}>
-      <div><p className={styles.eyebrow}>DECKMARCH / OPERATIONS</p><h1>玩家管理</h1>
-        <p>正式帳號、收藏與對戰紀錄</p></div>
+      <div><p className={styles.eyebrow}>DECKMARCH / OPERATIONS</p><h1>玩家管理<span className={styles.headerCaption}>營運控制台</span></h1>
+        <p>掌握遊玩活動、對局與玩家資產</p>
+        {session && <nav className={styles.quickNav} aria-label="後台區段"><a href="#analytics">營運總覽</a><a href="#players">玩家查詢</a></nav>}</div>
       <div className={styles.headerRight}><Link href="/">回官網</Link>{session && <>
         <span>{session.email}</span><button disabled={busy || !!pending} onClick={() => void work(async () => {
           await api.signOut(); setSession(null); setList(null); setDetail(null); setSent(false);
@@ -206,7 +210,7 @@ export default function AdminConsole() {
         <div><span>本次搜尋結果</span><strong>{list?.total ?? "—"}</strong></div>
         <div><span>管理權限</span><strong>{session.access_level === "operator" ? "查詢與管理" : "唯讀查詢"}</strong></div>
       </section>
-      <section className={styles.panel}>
+      <section id="players" className={styles.panel}>
         <div className={styles.toolbar}><h2>註冊玩家</h2><form onSubmit={(e) => { e.preventDefault(); void work(() => loadList()); }}>
           <input aria-label="搜尋 Email 或玩家 ID" placeholder="搜尋 Email 或玩家 ID" value={search} maxLength={100}
             onChange={(e) => setSearch(e.target.value)} disabled={busy || !!pending} />
@@ -234,6 +238,9 @@ export default function AdminConsole() {
           <span>包券 {detail.wallet?.pack_tickets ?? "尚未初始化"}</span><span>新手抽數 {detail.wallet?.starter_draws_remaining ?? "尚未初始化"}</span>
           <span>戰績 {detail.record.wins} 勝／{detail.record.losses} 敗／{detail.record.draws} 平</span>
         </div>
+        <div className={styles.playerPerformance}><WinLossBar wins={detail.record.wins} losses={detail.record.losses} draws={detail.record.draws} />
+          {recentStreak(detail.matches).wins >= 2 && <span className={styles.streakBadge}>近期紀錄{recentStreak(detail.matches).limited ? "至少 " : " "}{recentStreak(detail.matches).wins} 連勝</span>}
+        </div>
         {detail.restriction.reason && <p>停權／恢復原因：{detail.restriction.reason}</p>}
         <nav aria-label="玩家資料分類" className={styles.tabs}>{[
           ["commerce", "商店與資產"], ["collection", "持有卡牌"], ["receipts", "抽卡紀錄"], ["matches", "對局紀錄"], ["deck", "最近對局牌組"], ["audit", "管理操作紀錄"], ["mail", "禮物信件"],
@@ -255,9 +262,7 @@ export default function AdminConsole() {
           </footer>
         </div>}
         {tab === "commerce" && <PlayerCommerce key={detail.user.id} value={detail.commerce} />}
-        {tab === "collection" && <><p className={styles.note}>雲端持有量，不是玩家端自行回報。</p><div className={styles.cardGrid}>
-          {Object.entries(detail.collection).sort((a, b) => name(a[0]).localeCompare(name(b[0]), "zh-TW")).map(([id, copies]) =>
-            <div key={id}><span>{name(id)}<small>{id}</small></span><strong>×{copies}</strong></div>)}</div>
+        {tab === "collection" && <><p className={styles.note}>雲端持有量，不是玩家端自行回報。費用與稀有度取自公開 R18 卡池；未收錄卡片保留識別碼，不猜數值。</p><PlayerCards cards={detail.collection} />
           {!Object.keys(detail.collection).length && <p className={styles.empty}>玩家目前沒有持有卡牌。</p>}</>}
         {tab === "receipts" && <div className={styles.tableScroll}><table><thead><tr><th>時間</th><th>來源／數量</th><th>結果</th></tr></thead><tbody>
           {detail.receipts.map((r) => <tr key={r.source + r.request_id}><td>{date(r.created_at)}</td><td>{r.source === "starter" ? "新手抽卡" : r.pack_id} · {r.draw_count} 張</td>
@@ -266,8 +271,8 @@ export default function AdminConsole() {
           {detail.matches.map((m) => <tr key={m.match_id}><td>{date(m.completed_at)}</td><td>{outcome[m.outcome as keyof typeof outcome] ?? m.outcome}</td><td>{m.opponent_id}</td><td>{m.reason === "disconnect" ? "離開／斷線" : "擊敗"}</td></tr>)}</tbody></table>
           {!detail.matches.length && <p className={styles.empty}>尚無正式對局紀錄。</p>}</div>}
         {tab === "deck" && <><p className={styles.note}>牌組草稿仍保存在玩家本機。這裡是最近一次通過伺服器入場驗證的牌表，可能與目前草稿不同。</p>
-          {detail.last_submitted_deck ? <><p>{detail.last_submitted_deck.deck_id} · {date(detail.last_submitted_deck.submitted_at)}</p><div className={styles.cardGrid}>
-            {Object.entries(detail.last_submitted_deck.cards).map(([id, copies]) => <div key={id}><span>{name(id)}</span><strong>×{copies}</strong></div>)}</div></>
+          {detail.last_submitted_deck ? <><p>{detail.last_submitted_deck.deck_id} · {date(detail.last_submitted_deck.submitted_at)}</p>
+            <ManaCurve cards={detail.last_submitted_deck.cards} /><PlayerCards cards={detail.last_submitted_deck.cards} /></>
             : <p className={styles.empty}>尚無通過驗證的對局牌組。</p>}</>}
         {tab === "audit" && <div className={styles.tableScroll}><table><thead><tr><th>時間／操作</th><th>原因／操作者</th><th>前 → 後</th></tr></thead><tbody>
           {detail.audit.map((a) => <tr key={a.request_id}><td>{date(a.created_at)}<small>{actions[a.action as keyof typeof actions] ?? a.action}</small></td>
