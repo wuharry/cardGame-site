@@ -1,0 +1,45 @@
+PASS Empty passwords and invalid account addresses do not reach Auth
+PASS Password setup only emails an existing account and normalizes the address
+PASS Password setup cannot request an administrator role
+PASS Login requires database administrator verification
+PASS Normal login sends the exact password through the password grant, never an OTP
+PASS RPC uses the signed-in user's JWT
+PASS No service-role credential in browser requests
+PASS Retry preserves the complete ambiguous mutation and UUID
+PASS Gift action uses the mail RPC and preserves the reviewed title, recipient, tickets and request ID
+PASS Mail retry after lost response or auth failure retains one immutable intent
+PASS Session refresh stays in memory and updates the JWT
+PASS Concurrent chart/list requests share one token refresh
+PASS Sign-out blocks later private queries before any HTTP request
+PASS An ordinary authenticated player is rejected and its browser session is cleared
+PASS Malformed setup verification codes do not reach Auth
+PASS A new password cannot be set before verified administrator recovery
+PASS Configured longer numeric OTPs remain valid and surrounding whitespace is trimmed
+PASS Setup OTP still requires database administrator approval
+PASS Setup rejects too-short and over-72-byte passwords before a change request
+PASS Supabase Auth password rules remain authoritative and its structured error is sanitized
+PASS Password setup updates the verified user's password through authenticated PUT without trimming it
+PASS Password setup rechecks the backend role, then signs out instead of silently preserving the OTP session
+PASS Password setup requires fresh verification within ten minutes
+PASS A role revoked after OTP verification blocks the password change before any PUT
+PASS Wrong credentials use a generic account/password error
+PASS A malformed error body does not leak raw data or turn into a JavaScript exception
+PASS Incomplete login responses revoke any returned access session and never enable RPCs
+PASS A cancelled login revokes only its late-returned session
+PASS A stale password response cannot replace or clear a newer authenticated login
+PASS Cancelled OTP recovery cannot later revive password-change permission
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Cancelling and re-verifying the same account blocks a stale password PUT after its role check
+    at check (file:///E:/cardgame-site/scripts/test-admin-api.mjs:20:42)
+    at file:///E:/cardgame-site/scripts/test-admin-api.mjs:217:3 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '=='
+}
+
+Node.js v22.17.0

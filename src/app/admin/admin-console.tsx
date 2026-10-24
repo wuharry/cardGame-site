@@ -18,6 +18,10 @@ export default function AdminConsole() {
   const lock = useRef(false);
   const [session, setSession] = useState<AdminSession | null>(null);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [setup, setSetup] = useState(false);
+  const [setupSession, setSetupSession] = useState<AdminSession | null>(null);
   const [code, setCode] = useState("");
   const [sent, setSent] = useState(false);
   const [resendAt, setResendAt] = useState(0);
@@ -56,14 +60,18 @@ export default function AdminConsole() {
     try { await fn(); }
     catch (error) {
       setMessage(error instanceof Error ? error.message : "操作失敗，請稍後重試。");
-      if (error instanceof AdminError && error.status === 401) {
-        await api.signOut(); setSession(null); setDetail(null); setList(null); setPending(null);
+      if (error instanceof AdminError && [401, 403].includes(error.status)) {
+        setSession(null); setSetupSession(null); setSent(false);
+        setPassword(""); setConfirmPassword(""); setCode(""); setDetail(null); setList(null); setPending(null);
+        await api.signOut();
       }
     } finally { lock.current = false; setBusy(false); }
   };
 
   const login = async () => {
-    const s = await api.signIn(email.trim(), code.trim());
+    const credential = password;
+    setPassword(""); setConfirmPassword("");
+    const s = await api.signIn(email.trim(), credential);
     setSession(s); setCode(""); await loadList();
     const saved = sessionStorage.getItem(journalKey(s.account_id));
     if (saved) {
@@ -74,6 +82,32 @@ export default function AdminConsole() {
         setPending(change); setAttempted(true);
         setMessage("找到一筆尚未確認的操作，請重試同一筆以確認結果。");
       } catch (error) { throw new AdminError(error instanceof Error ? `待確認操作無法恢復：${error.message}` : "待確認操作無法恢復。"); }
+    }
+  };
+
+  const cancelSetup = async () => {
+    setSetup(false); setSetupSession(null); setSent(false);
+    setPassword(""); setConfirmPassword(""); setCode("");
+    await api.signOut();
+  };
+
+  const setupPassword = async () => {
+    if (!sent) {
+      if (Date.now() < resendAt) { setMessage("請等一分鐘再寄送驗證碼。"); return; }
+      await api.sendSetupCode(email.trim()); setSent(true); setResendAt(Date.now() + 60000);
+      setMessage("驗證碼已寄出，請查看管理者信箱。");
+    } else if (!setupSession) {
+      const verified = await api.verifySetupCode(email.trim(), code.trim());
+      setSetupSession(verified); setCode("");
+      setMessage("管理者身分已驗證，請設定管理後台專用密碼。");
+    } else {
+      const credential = password;
+      const confirmed = confirmPassword;
+      setPassword(""); setConfirmPassword("");
+      if (credential !== confirmed) throw new AdminError("兩次輸入的密碼不同，請重新輸入。");
+      await api.updatePassword(credential);
+      setSetup(false); setSetupSession(null); setSent(false); setCode("");
+      setMessage("密碼已設定，請使用 Email 與新密碼登入。");
     }
   };
 
@@ -125,25 +159,41 @@ export default function AdminConsole() {
       <div className={styles.headerRight}><Link href="/">回官網</Link>{session && <>
         <span>{session.email}</span><button disabled={busy || !!pending} onClick={() => void work(async () => {
           await api.signOut(); setSession(null); setList(null); setDetail(null); setSent(false);
+          setPassword(""); setConfirmPassword(""); setSetupSession(null); setSetup(false);
         })}>登出</button></>}</div>
     </header>
     {message && <p role="status" className={styles.message}>{message}</p>}
     {!session ? <section className={styles.login}>
-      <span className={styles.badge}>管理者登入</span><h2>用遊戲帳號登入</h2>
-      <p>輸入已授權的 Email，使用紙鴉牌寄出的數字驗證碼登入。一般玩家帳號無法查閱其他人的資料。</p>
-      <p id="admin-login-help" className={styles.note}>此頁僅使用 Email 一次性驗證碼。請勿輸入 Google、Steam 或信箱密碼。</p>
-      <form onSubmit={(event) => { event.preventDefault(); void work(sent ? login : async () => {
-        if (Date.now() < resendAt) { setMessage("請等一分鐘再寄送驗證碼。"); return; }
-        await api.sendCode(email.trim()); setSent(true); setResendAt(Date.now() + 60000);
-        setMessage("驗證碼已寄出，請查看信箱。");
-      }); }}>
-        <label>Email<input type="email" name="email" autoComplete="email" required value={email} disabled={busy || sent}
+      <span className={styles.badge}>{setup ? "管理者密碼設定" : "管理者登入"}</span>
+      <h2>{setup ? "首次設定／忘記密碼" : "帳號密碼登入"}</h2>
+      <p>{setup ? "先驗證已授權的管理者信箱，再設定新密碼。此流程不會建立新帳號。"
+        : "使用已授權的 Email 與管理後台密碼登入。一般玩家帳號無法查閱其他人的資料。"}</p>
+      <p id="admin-login-help" className={styles.note}>{setup
+        ? "新密碼至少 12 個字元。請設定管理後台專用密碼。"
+        : "請輸入管理後台專用密碼，並非 Google／Gmail 的密碼。"}</p>
+      <form onSubmit={(event) => { event.preventDefault(); void work(setup ? setupPassword : login); }}>
+        <label>管理者 Email<input type="email" name="email" autoComplete="username" autoCapitalize="none" required value={email}
+          disabled={busy || (setup && sent)} maxLength={254}
           onChange={(event) => setEmail(event.target.value)} /></label>
-        {sent && <label>Email 數字驗證碼<input type="text" name="verification-code" autoComplete="one-time-code" inputMode="numeric"
+        {setup && sent && !setupSession && <label>Email 數字驗證碼<input type="text" name="verification-code" autoComplete="one-time-code" inputMode="numeric"
           pattern="[0-9]{6,10}" minLength={6} maxLength={10} aria-describedby="admin-login-help" required value={code}
-          onChange={(event) => setCode(event.target.value)} /></label>}
-        <button className={styles.primary} disabled={busy}>{busy ? "處理中…" : sent ? "登入管理後台" : "寄送驗證碼"}</button>
-        {sent && <button type="button" disabled={busy} onClick={() => { setSent(false); setCode(""); }}>修改 Email／重新寄送</button>}
+          disabled={busy} onChange={(event) => setCode(event.target.value)} /></label>}
+        {(!setup || setupSession) && <label>{setup ? "新密碼" : "管理後台密碼"}
+          <input type="password" name="password" autoComplete={setup ? "new-password" : "current-password"}
+            aria-describedby="admin-login-help" minLength={setup ? 12 : undefined} maxLength={setup ? 72 : 4096}
+            required value={password} disabled={busy} onChange={(event) => setPassword(event.target.value)} /></label>}
+        {setup && setupSession && <label>確認新密碼<input type="password" name="confirm-password" autoComplete="new-password"
+          minLength={12} maxLength={72} required value={confirmPassword} disabled={busy}
+          onChange={(event) => setConfirmPassword(event.target.value)} /></label>}
+        <button className={styles.primary} disabled={busy}>{busy ? "處理中…" : !setup ? "登入管理後台"
+          : !sent ? "寄送設定驗證碼" : !setupSession ? "驗證管理者身分" : "儲存新密碼"}</button>
+        {setup ? <>
+          {sent && !setupSession && <button type="button" disabled={busy} onClick={() => { setSent(false); setCode(""); setMessage(""); }}>
+            修改 Email／重新寄送</button>}
+          <button type="button" disabled={busy} onClick={() => void work(cancelSetup)}>返回帳號密碼登入</button>
+        </> : <button type="button" disabled={busy} onClick={() => {
+          setSetup(true); setPassword(""); setConfirmPassword(""); setCode(""); setMessage("");
+        }}>首次設定／忘記密碼</button>}
       </form>
       <p className={styles.note}>此頁查詢正式雲端資料。未註冊的本機訪客不列入註冊玩家。</p>
     </section> : <>

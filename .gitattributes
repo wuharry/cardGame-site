@@ -1,0 +1,3 @@
+# Keep authentication QA logs as exact bytes; screenshots contain blank forms only.
+docs/admin-password-20261024/logs/*.log -text whitespace=-blank-at-eol,-blank-at-eof,-space-before-tab,cr-at-eol
+docs/admin-password-20261024/screenshots/*.png -filter -diff -merge -text

@@ -19,56 +19,141 @@ export class AdminAPI {
   private expiresAt = 0;
   private epoch = 0;
   private refreshing: Promise<void> | null = null;
+  private signingInEpoch: number | null = null;
+  private setupAccount = "";
+  private setupVerifiedAt = 0;
 
-  private async request(path: string, body: unknown, token = ""): Promise<unknown> {
+  private async request(path: string, body: unknown, token = "", method: "POST" | "PUT" = "POST"): Promise<unknown> {
     let response: Response;
     try {
       response = await fetch(`${ORIGIN}${path}`, {
-        method: "POST", headers: { apikey: PUBLIC_KEY, "Content-Type": "application/json",
+        method, headers: { apikey: PUBLIC_KEY, "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify(body), cache: "no-store", signal: AbortSignal.timeout(15000),
       });
-    } catch { throw new AdminError("連線未完成。若是補發操作，請重試同一筆，不要重新建立操作。", true); }
+    } catch { throw new AdminError(path === "/auth/v1/user"
+      ? "密碼設定結果未確認，請回到登入頁試用新密碼。"
+      : path.startsWith("/auth/v1/") ? "連線未完成，請稍後重試。"
+      : "連線未完成。若是補發操作，請重試同一筆，不要重新建立操作。", true); }
     let data: unknown;
     try { data = await response.json(); }
-    catch { throw new AdminError("服務回覆無法辨識，請重試同一筆操作。", true, response.status); }
+    catch { throw new AdminError(path === "/auth/v1/user"
+      ? "密碼設定結果未確認，請回到登入頁試用新密碼。"
+      : "服務回覆無法辨識，請稍後重試。", true, response.status); }
     if (!response.ok) {
-      const error = data as { code?: string; message?: string; msg?: string; error_description?: string };
+      const error = data && typeof data === "object"
+        ? data as { code?: string; error_code?: string; message?: string; msg?: string; error_description?: string } : {};
+      const code = typeof error.error_code === "string" ? error.error_code : typeof error.code === "string" ? error.code : "";
       const raw = error.message ?? error.msg ?? error.error_description ?? "服務拒絕這次操作";
-      const message = error.code === "42501" ? "這個帳號沒有玩家管理權限。"
-        : error.code === "PGRST202" ? "管理資料庫尚未安裝，請先完成後台遷移。"
+      const authMessage = !path.startsWith("/auth/v1/") ? ""
+        : response.status === 429 ? "操作過於頻繁，請稍後再試。"
+        : response.status >= 500 ? "登入服務暫時無法使用，請稍後再試。"
+        : path.includes("grant_type=password") ? "帳號或管理後台密碼不正確。"
+        : path.endsWith("/verify") ? "驗證碼不正確或已過期，請重新取得。"
+        : path.endsWith("/otp") ? "無法寄送驗證碼，請確認管理者信箱或稍後再試。"
+        : code === "same_password" ? "新密碼不可與目前密碼相同。"
+        : code === "weak_password" ? "新密碼不符合帳號安全規則，請改用更強的密碼。"
+        : code === "reauthentication_needed" ? "信箱驗證已到期，請重新驗證後設定密碼。"
+        : response.status === 401 ? "登入已到期，請重新登入。" : "帳號操作未完成，請重新驗證後再試。";
+      const message = authMessage || (code === "42501" ? "這個帳號沒有玩家管理權限。"
+        : code === "PGRST202" ? "管理資料庫尚未安裝，請先完成後台遷移。"
         : raw.includes("card copy cap") ? "補發後會超過同卡三張，資料沒有變更。"
         : raw.includes("wallet not initialized") ? "玩家尚未初始化收藏，請先讓他在遊戲登入並同步收藏。"
         : raw.includes("request conflict") ? "操作編號已用於不同內容，請查核操作紀錄。"
-        : response.status === 401 ? "登入已到期，請重新登入。" : raw;
+        : response.status === 401 ? "登入已到期，請重新登入。" : raw);
       // Auth/rate-limit/schema failures cannot disprove a previous committed attempt.
       // Only a recognized business rejection may discard a persisted mutation UUID.
-      throw new AdminError(message, !["22023", "23514"].includes(error.code ?? ""), response.status);
+      throw new AdminError(message, !["22023", "23514"].includes(code), response.status);
     }
     return data;
   }
 
-  async sendCode(email: string) {
-    // Signup is allowed, just as in the game. It creates NO management permission.
-    // Only an owner-created invitation + Auth-verified email can activate an administrator.
-    return this.request("/auth/v1/otp", { email, create_user: true });
+  private normalizedEmail(email: string) {
+    const normalized = email.trim().toLowerCase();
+    if (normalized.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+      throw new AdminError("請輸入有效的管理者 Email。");
+    }
+    return normalized;
   }
 
-  async signIn(email: string, code: string) {
+  async signIn(email: string, password: string) {
+    if (!password || password.length > 4096) throw new AdminError("請輸入管理後台密碼。");
+    // Passwords are exact values: never trim or reinterpret them as an OTP.
+    return this.authenticate("/auth/v1/token?grant_type=password", {
+      email: this.normalizedEmail(email), password,
+    });
+  }
+
+  async sendSetupCode(email: string) {
+    if (this.access || this.signingInEpoch !== null) throw new AdminError("請先結束目前的登入操作。");
+    // Recovery can authenticate an existing owner, never register a new account.
+    return this.request("/auth/v1/otp", { email: this.normalizedEmail(email), create_user: false });
+  }
+
+  async verifySetupCode(email: string, code: string) {
     const token = code.trim();
-    // Email OTP supports 6–10 digits. Reject passwords before making an Auth request.
     if (!/^[0-9]{6,10}$/.test(token)) {
-      throw new AdminError("請輸入信中的 6 至 10 位數字驗證碼。此處不接受信箱或其他服務的密碼。");
+      throw new AdminError("請輸入信中的 6 至 10 位數字驗證碼。");
     }
-    const result = await this.request("/auth/v1/verify", { email, token, type: "email" }) as {
-      access_token?: string; refresh_token?: string; expires_in?: number;
-    };
-    if (!result.access_token || !result.refresh_token) throw new AdminError("登入回覆不完整。");
-    this.access = result.access_token;
-    this.refresh = result.refresh_token;
-    this.expiresAt = Date.now() + (result.expires_in ?? 3600) * 1000;
-    try { return await this.rpc<AdminSession>("tcg_admin_session", {}); }
-    catch (error) { await this.signOut(); throw error; }
+    return this.authenticate("/auth/v1/verify", { email: this.normalizedEmail(email), token, type: "email" }, true);
+  }
+
+  private async revoke(token: string) {
+    if (token) { try { await this.request("/auth/v1/logout?scope=local", {}, token); } catch { /* Memory is already cleared. */ } }
+  }
+
+  private async authenticate(path: string, body: unknown, setup = false): Promise<AdminSession> {
+    if (this.access || this.signingInEpoch !== null) throw new AdminError("請先結束目前的登入操作。");
+    const current = this.epoch;
+    this.signingInEpoch = current;
+    try {
+      const result = await this.request(path, body) as {
+        access_token?: unknown; refresh_token?: unknown; expires_in?: unknown;
+      } | null;
+      const access = typeof result?.access_token === "string" ? result.access_token : "";
+      if (current !== this.epoch) {
+        await this.revoke(access);
+        throw new AdminError("已取消登入，請重新登入。");
+      }
+      if (!access || access.length > 8192 || typeof result?.refresh_token !== "string" || !result.refresh_token
+          || result.refresh_token.length > 8192 || typeof result.expires_in !== "number"
+          || !Number.isFinite(result.expires_in) || result.expires_in <= 0 || result.expires_in > 86400) {
+        await this.revoke(access);
+        throw new AdminError("登入回覆不完整，請重新登入。");
+      }
+      this.access = access;
+      this.refresh = result.refresh_token;
+      this.expiresAt = Date.now() + result.expires_in * 1000;
+      const session = await this.rpc<AdminSession>("tcg_admin_session", {});
+      if (!session?.account_id || !session.email || !["viewer", "operator"].includes(session.access_level)) {
+        throw new AdminError("管理權限回覆不完整，請重新登入。");
+      }
+      if (setup) { this.setupAccount = session.account_id; this.setupVerifiedAt = Date.now(); }
+      return session;
+    } catch (error) {
+      if (current === this.epoch && this.access) await this.signOut();
+      throw error;
+    } finally {
+      if (this.signingInEpoch === current) this.signingInEpoch = null;
+    }
+  }
+
+  async updatePassword(password: string) {
+    if (password.length < 12) throw new AdminError("新密碼至少需要 12 個字元。");
+    if (new TextEncoder().encode(password).length > 72) throw new AdminError("新密碼過長，請縮短後重試。");
+    if (!this.setupAccount || Date.now() - this.setupVerifiedAt > 10 * 60 * 1000) {
+      throw new AdminError("請先重新驗證管理者信箱。", false, 401);
+    }
+    const current = this.epoch;
+    // Recheck the database role immediately before changing this same Auth user.
+    const session = await this.rpc<AdminSession>("tcg_admin_session", {});
+    if (current !== this.epoch) throw new AdminError("已取消密碼設定，請重新驗證。");
+    if (session.account_id !== this.setupAccount) throw new AdminError("管理帳號已改變，請重新驗證。", false, 401);
+    const result = await this.request("/auth/v1/user", { password }, this.access, "PUT") as { id?: string } | null;
+    if (current !== this.epoch) throw new AdminError("已取消密碼設定，請使用新密碼確認登入。");
+    if (result?.id !== this.setupAccount) throw new AdminError("密碼設定結果未確認，請回到登入頁試用新密碼。", true);
+    // Prove the next visit uses password login; setup credentials never persist.
+    await this.signOut();
   }
 
   async rpc<T>(name: string, body: unknown): Promise<T> {
@@ -76,7 +161,7 @@ export class AdminAPI {
     if (!this.access) throw new AdminError("請先登入。", false, 401);
     if (Date.now() > this.expiresAt - 60000) {
       if (!this.refreshing) {
-        this.refreshing = (async () => {
+        const refreshing = (async () => {
           const refreshed = await this.request("/auth/v1/token?grant_type=refresh_token", {
             refresh_token: this.refresh,
           }) as { access_token: string; refresh_token: string; expires_in: number };
@@ -84,7 +169,9 @@ export class AdminAPI {
           if (!refreshed.access_token || !refreshed.refresh_token) throw new AdminError("請重新登入。", false, 401);
           this.access = refreshed.access_token; this.refresh = refreshed.refresh_token;
           this.expiresAt = Date.now() + refreshed.expires_in * 1000;
-        })().finally(() => { this.refreshing = null; });
+        })();
+        this.refreshing = refreshing;
+        void refreshing.finally(() => { if (this.refreshing === refreshing) this.refreshing = null; }).catch(() => {});
       }
       await this.refreshing;
     }
@@ -96,7 +183,8 @@ export class AdminAPI {
   async signOut() {
     const token = this.access;
     this.epoch++; this.access = ""; this.refresh = ""; this.expiresAt = 0;
-    if (token) { try { await this.request("/auth/v1/logout?scope=local", {}, token); } catch { /* Local session is already gone. */ } }
+    this.refreshing = null; this.signingInEpoch = null; this.setupAccount = ""; this.setupVerifiedAt = 0;
+    await this.revoke(token);
   }
 
   async change(change: Change) {

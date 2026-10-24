@@ -1,0 +1,230 @@
+{
+  "base": "2f0e73e989f1876dd091b6c2b195bc6591120018",
+  "candidate": "E:\\card-game-demo(4.5)\\build\\admin-site-20261024\\395d5c1800c1468b927252cc2616b0b2\\source",
+  "owned_paths": [
+    "src/app/admin/admin-api.ts",
+    "src/app/admin/admin-console.tsx",
+    "scripts/test-admin-api.mjs",
+    "docs/admin.md"
+  ],
+  "changed_paths": [
+    "docs/admin.md",
+    "scripts/test-admin-api.mjs",
+    "src/app/admin/admin-api.ts",
+    "src/app/admin/admin-console.tsx"
+  ],
+  "archive_eol_only_paths": [
+    ".gitignore",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "README.md",
+    "docs/download-delivery-plan.md",
+    "docs/mobile-loading-90-20261016.md",
+    "docs/security-20261014/README.md",
+    "docs/security-20261014/production-verification.json",
+    "docs/security-20261014/review-request.txt",
+    "docs/seo-performance-20261016.md",
+    "eslint.config.mjs",
+    "next.config.ts",
+    "package-lock.json",
+    "package.json",
+    "postcss.config.mjs",
+    "public/licenses/CREDITS.md",
+    "public/licenses/Godot-Ocean-Shader-MIT.txt",
+    "public/licenses/Noto-Serif-TC-OFL.txt",
+    "public/licenses/NotoSerifTC-OFL.txt",
+    "public/licenses/barlow-OFL.txt",
+    "public/licenses/barlowcondensed-OFL.txt",
+    "public/licenses/cinzel-OFL.txt",
+    "public/licenses/third-party-provenance-20261013.md",
+    "public/licenses/third-party-source-records.json",
+    "public/media/import-manifest.json",
+    "scripts/capture-game-media.gd",
+    "scripts/import-assets.mjs",
+    "scripts/lib/download-fixtures.mjs",
+    "scripts/lib/load-ts-module.mjs",
+    "scripts/prepare-site-font.mjs",
+    "scripts/shoot-sections.mjs",
+    "scripts/shoot-top.mjs",
+    "scripts/shoot.mjs",
+    "scripts/test-android-install-guide.mjs",
+    "scripts/test-desktop-install-help.mjs",
+    "scripts/test-download-mirror.mjs",
+    "scripts/test-download-status.mjs",
+    "scripts/test-game-version.mjs",
+    "scripts/test-match-duration.mjs",
+    "scripts/test-mobile-site.mjs",
+    "scripts/test-play-analytics-browser.mjs",
+    "scripts/test-play-analytics.mjs",
+    "scripts/test-player-commerce.mjs",
+    "scripts/test-seo.mjs",
+    "scripts/test-streamed-downloads.mjs",
+    "src/app/admin/admin.module.css",
+    "src/app/admin/card-names.json",
+    "src/app/admin/match-duration.tsx",
+    "src/app/admin/page.tsx",
+    "src/app/admin/play-analytics-types.ts",
+    "src/app/admin/play-analytics.tsx",
+    "src/app/admin/player-commerce.tsx",
+    "src/app/api/game-version/route.ts",
+    "src/app/credits/page.tsx",
+    "src/app/globals.css",
+    "src/app/guide/page.tsx",
+    "src/app/install/android/page.tsx",
+    "src/app/layout.tsx",
+    "src/app/marketing.css",
+    "src/app/news/page.tsx",
+    "src/app/page.tsx",
+    "src/app/robots.ts",
+    "src/app/sitemap.ts",
+    "src/components/arena-band.tsx",
+    "src/components/arena-gallery.tsx",
+    "src/components/card-discovery.tsx",
+    "src/components/card-types.tsx",
+    "src/components/collection-panel.tsx",
+    "src/components/download-link.tsx",
+    "src/components/download-panel.tsx",
+    "src/components/entry-screen.tsx",
+    "src/components/game-card.tsx",
+    "src/components/game-modes.tsx",
+    "src/components/home-sections.tsx",
+    "src/components/lane-doctrine/attack-overlay.tsx",
+    "src/components/lane-doctrine/board.tsx",
+    "src/components/lane-doctrine/index.tsx",
+    "src/components/lane-doctrine/units.tsx",
+    "src/components/layout-on-interaction.tsx",
+    "src/components/patch-notes.tsx",
+    "src/components/pixel-dice.tsx",
+    "src/components/site-footer.tsx",
+    "src/components/site-header.tsx",
+    "src/components/systems-panel.tsx",
+    "src/components/turn-flow.tsx",
+    "src/data/credits.json",
+    "src/data/game-version.ts",
+    "src/data/game.ts",
+    "src/data/install-help.ts",
+    "src/data/media.ts",
+    "src/data/releases.ts",
+    "src/data/seo.ts",
+    "src/data/site.ts",
+    "src/fonts/README.md",
+    "src/fonts/manifest.json",
+    "src/fonts/site-font.css",
+    "tsconfig.json"
+  ],
+  "excluded_uncommitted": [
+    "Android static APK delivery",
+    "src/proxy.ts",
+    "APK prebuild tooling"
+  ],
+  "source_sha256": {
+    "src/app/admin/admin-api.ts": "79fd20297072438ce565379ef07399da6e8a18c7b4d3bb599d5fd386723c744f",
+    "src/app/admin/admin-console.tsx": "de05945bbd4338c7dc32058d1df4d76fffdc38ffe508a9b15bcbbc260bfd4c1e",
+    "scripts/test-admin-api.mjs": "28d4c4cfa209750e1dc5d8e5bd50a6553654f5bf1a862e4135f73239422ccc96",
+    "docs/admin.md": "b650b693a99406914737818ba235fcdc78d04ca73fe90fb1a1f663ae9a42c5d7"
+  },
+  "checks": {
+    "api": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "node",
+        "scripts/test-admin-api.mjs"
+      ],
+      "log": "api.log",
+      "sha256": "a3e75c10fd55400312bcc3d03cb81e5287b4fffa0715b22aa3f8afad05db3c59"
+    },
+    "build": {
+      "status": "FAIL",
+      "exit_code": 1,
+      "command": [
+        "node",
+        "node_modules/next/dist/bin/next",
+        "build"
+      ],
+      "log": "build.log",
+      "sha256": "4ec31fa24bf64a3375e2da0ebe09bc23b12859ea7faf5080c0e2665ab95875c4"
+    },
+    "types": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "log": "types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lint": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "src/app/admin/admin-api.ts",
+        "src/app/admin/admin-console.tsx",
+        "scripts/test-admin-api.mjs"
+      ],
+      "log": "lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "webpack_build": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "node",
+        "node_modules/next/dist/bin/next",
+        "build",
+        "--webpack"
+      ],
+      "log": "webpack_build.log",
+      "sha256": "e875c01db57ba5ec6c3dfb7e278e493330d2ebfda82f26a4d314da54eb310c84"
+    },
+    "types_after_build": {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "log": "types_after_build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "canonical_source_sha256": {
+    "src/app/admin/admin-api.ts": "8ab1db1f8437d0a32f9ed53852a0a3e14e41380cb902f792f4dd1ed5d94f5a67",
+    "src/app/admin/admin-console.tsx": "6c3f34c821e0a7b7709e2a5616d1dec39686180ad01537ac51d350cbc6ec6225",
+    "scripts/test-admin-api.mjs": "e63909bab1565f147c697f5d38144445fc4f030e97cf898534b36a4eabe4e4d1",
+    "docs/admin.md": "8f74d4b4f4c2d681db5976df63fee68cb76a05db215b3a5cdc43f0d430db46b6"
+  },
+  "integration_base": "55810ea27f0b3b12ea75cc4ada372ecdb152767a",
+  "integration_checks": {
+    "integration-api": {
+      "command": [
+        "node",
+        "scripts/test-admin-api.mjs"
+      ],
+      "exit_code": 0,
+      "sha256": "a3e75c10fd55400312bcc3d03cb81e5287b4fffa0715b22aa3f8afad05db3c59",
+      "log": "integration-api.log"
+    },
+    "integration-types": {
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ],
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log": "integration-types.log"
+    }
+  }
+}
