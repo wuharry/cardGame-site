@@ -92,17 +92,17 @@ for (const selected of suspended) {
 const live = await views(releases.BUILDS);
 const manifest = await api(releases.BUILDS);
 assert.deepEqual(Object.keys(manifest.platforms).sort(), ["android", "linux", "macos", "windows"]);
-check((live.panel.match(/<button\b[^>]*disabled/g) ?? []).length === 0, "R18 has four available platform actions");
+check((live.panel.match(/<button\b[^>]*disabled/g) ?? []).length === 0, "R19 has four available platform actions");
 const allowed = new Set();
 for (const build of releases.BUILDS) {
   const url = releases.downloadUrl(build);
   allowed.add(url); allowed.add(releases.releasePageUrl(build));
-  check(build.version === "2026.10.23-R18" && build.build === 2026102301, "Every offered package has the frozen R18 identity");
+  check(build.version === "2026.10.25-R19" && build.build === 2026102501, "Every offered package has the frozen R19 identity");
   const websiteUrl = releases.websiteDownloadUrl(build);
   allowed.add(websiteUrl);
   check(live.panel.includes(`href="${websiteUrl}" download="${build.file}"`), `${build.id} offers its exact package from the configured primary source`);
 }
-check(live.panel.includes('href="/install/android"') && live.android.includes('.apk'), "Android installs the actual R18 APK");
+check(live.panel.includes('href="/install/android"') && live.android.includes('.apk'), "Android installs the actual R19 APK");
 for (const [name, html] of Object.entries(live)) {
   for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
     if (/https:\/\/(?:github\.com\/[^\s"<]+\/releases\/|wuharry\.itch\.io\/)/.test(href)) {
@@ -110,4 +110,4 @@ for (const [name, html] of Object.entries(live)) {
     }
   }
 }
-console.log(`PASS download status: ${checks} checks for R18, full suspension and single-platform recovery`);
+console.log(`PASS download status: ${checks} checks for R19, full suspension and single-platform recovery`);

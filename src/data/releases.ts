@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -77,26 +77,26 @@ export const BUILDS: Build[] = [
     "platform": "Windows",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Windows-20261023-R18.zip",
-    "version": "2026.10.23-R18",
-    "size": "59.4 MiB",
-    "bytes": 62243824,
-    "updated": "2026-10-23",
-    "sha256": "01fa0f893902c45b8bb8ee7259ba9388eded95c4419cbf46abf1928787d98907",
-    "build": 2026102301,
+    "file": "TwilightCodex-Windows-20261025-R19.zip",
+    "version": "2026.10.25-R19",
+    "size": "61.7 MiB",
+    "bytes": 64681851,
+    "updated": "2026-10-25",
+    "sha256": "be2c41486758a09e3aced4986b6d8e15ae9b92cf225ee4d4f92e2369cb0a321e",
+    "build": 2026102501,
     "minimumBuild": 2026102101,
     "protocol": 28,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-Windows-20261023-R18-Content.pck",
-      "bytes": 427755508,
-      "sha256": "f09debfb281be4a5619c7c2a260bc9c350ef7db9a97e29167d969171e411436d",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18/PaperRaven-Windows-20261023-R18-Content.pck"
+      "filename": "PaperRaven-Windows-20261025-R19-Content.pck",
+      "bytes": 445177900,
+      "sha256": "9cbc80c64940a5aab4f331d4e781dfc6ae8009840c92ed48fd4c96457dbbd0a7",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19/PaperRaven-Windows-20261025-R19-Content.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
     "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    "note": "R18 改善發牌與回合切換，加強嘲諷、後排保護與施法目標提示。按「開始」下載素材；同版本會保留快取。",
-    "noteEn": "R18 improves dealing and turn transitions, and clarifies taunt, rear protection and spell targets. Press Start to download content; the same version stays cached."
+    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。",
+    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached."
   },
   {
     "id": "macos",
@@ -104,26 +104,26 @@ export const BUILDS: Build[] = [
     "platform": "macOS",
     "en": "ZIP · Universal",
     "status": "available",
-    "file": "TwilightCodex-macOS-20261023-R18.zip",
-    "version": "2026.10.23-R18",
-    "size": "80.2 MiB",
-    "bytes": 84143731,
-    "updated": "2026-10-23",
-    "sha256": "73fa31a9b197c3446846070da1783cc406903a18f17f70c973c4ff894814711e",
-    "build": 2026102301,
+    "file": "TwilightCodex-macOS-20261025-R19.zip",
+    "version": "2026.10.25-R19",
+    "size": "82.6 MiB",
+    "bytes": 86581827,
+    "updated": "2026-10-25",
+    "sha256": "017d918537f4fa8c479b122f400f3f41c15597dcb2a9726aa66d865f36445768",
+    "build": 2026102501,
     "minimumBuild": 2026102101,
     "protocol": 28,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-macOS-20261023-R18-Content.pck",
-      "bytes": 427755508,
-      "sha256": "3b9f4a08e188ad70915febca34728ccc389e8c892697b521d91e0e34384043c0",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18/PaperRaven-macOS-20261023-R18-Content.pck"
+      "filename": "PaperRaven-macOS-20261025-R19-Content.pck",
+      "bytes": 445177900,
+      "sha256": "fe5f5e10000e682862d254caeb1f9dc319f9c9fd856ce7a1bddcbed3b0b1d086",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19/PaperRaven-macOS-20261025-R19-Content.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
     "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    "note": "R18 改善發牌與回合切換，加強嘲諷、後排保護與施法目標提示。按「開始」下載素材；同版本會保留快取。 採 ad-hoc 簽章，尚未 Apple 公證；本次未重跑 macOS 原生測試。",
-    "noteEn": "R18 improves dealing and turn transitions, and clarifies taunt, rear protection and spell targets. Press Start to download content; the same version stays cached. Ad-hoc signed, not Apple-notarized; native macOS testing has not been repeated for this build."
+    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 採 ad-hoc 簽章，尚未 Apple 公證；本次未重跑 macOS 原生測試。",
+    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Ad-hoc signed, not Apple-notarized; native macOS testing has not been repeated for this build."
   },
   {
     "id": "linux",
@@ -131,54 +131,54 @@ export const BUILDS: Build[] = [
     "platform": "Linux",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Linux-20261023-R18.zip",
-    "version": "2026.10.23-R18",
-    "size": "61.7 MiB",
-    "bytes": 64718215,
-    "updated": "2026-10-23",
-    "sha256": "d523dae66389acd887f6d8f49fa625d437b073599da5ba9fb917543ae5eb790d",
-    "build": 2026102301,
+    "file": "TwilightCodex-Linux-20261025-R19.zip",
+    "version": "2026.10.25-R19",
+    "size": "64.0 MiB",
+    "bytes": 67155595,
+    "updated": "2026-10-25",
+    "sha256": "2a579c6546eb4599d02eb03aa8fe735a329e96eda3fa8be0cd6c7a7e4ddbdf1f",
+    "build": 2026102501,
     "minimumBuild": 2026102101,
     "protocol": 28,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-Linux-20261023-R18-Content.pck",
-      "bytes": 427755508,
-      "sha256": "b47844ca52e1df8d1f843b6a63e96ec047d7133ea34cc3b914aeb1e8c61fbfa1",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18/PaperRaven-Linux-20261023-R18-Content.pck"
+      "filename": "PaperRaven-Linux-20261025-R19-Content.pck",
+      "bytes": 445177900,
+      "sha256": "e3f22b4dc3ec093d962e6c167a44f2050bbf4e8028bd8c2ff3568dd2e2756f55",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19/PaperRaven-Linux-20261025-R19-Content.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
     "requirement": "Linux x86_64 · glibc 2.39+（Ubuntu 24.04+）· Vulkan 或 OpenGL 3.3",
-    "note": "R18 改善發牌與回合切換，加強嘲諷、後排保護與施法目標提示。按「開始」下載素材；同版本會保留快取。 本次完成包內資源檢查，尚未重跑 Linux 原生測試。",
-    "noteEn": "R18 improves dealing and turn transitions, and clarifies taunt, rear protection and spell targets. Press Start to download content; the same version stays cached. Packed resources were checked; native Linux testing has not been repeated for this build."
+    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 本次完成包內資源檢查，尚未重跑 Linux 原生測試。",
+    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Packed resources were checked; native Linux testing has not been repeated for this build."
   },
   {
     "id": "android",
-    "websiteDelivery": "static-apk",
     "displayName": "紙鴉牌",
     "platform": "Android",
     "en": "APK · arm64",
     "status": "available",
-    "file": "TwilightCodex-Android-20261023-R18.apk",
-    "version": "2026.10.23-R18",
-    "size": "53.9 MiB",
-    "bytes": 56558147,
-    "updated": "2026-10-23",
-    "sha256": "ed8f97360f46954b9a81c10efd4555a5b5a39040397d727e62d3f58b0c23dfc6",
-    "build": 2026102301,
+    "file": "TwilightCodex-Android-20261025-R19.apk",
+    "version": "2026.10.25-R19",
+    "size": "56.1 MiB",
+    "bytes": 58812359,
+    "updated": "2026-10-25",
+    "sha256": "2a7c4b6fa137e8936bb4dde24696a3831bc69d67b4b89125ccb32c6079c0e0d0",
+    "build": 2026102501,
     "minimumBuild": 2026102101,
     "protocol": 28,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-Android-20261023-R18-Content.pck",
-      "bytes": 90674676,
-      "sha256": "e07273863f2aa1ea1d8fdb26bf63a1041e0234298862a55615b7312cc74191be",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18/PaperRaven-Android-20261023-R18-Content.pck"
+      "filename": "PaperRaven-Android-20261025-R19-Content.pck",
+      "bytes": 108097020,
+      "sha256": "38342594c420204b49a120f4c927df163548e72a771babccd4cdfc242d1a1d26",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19/PaperRaven-Android-20261025-R19-Content.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.23-r18",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
     "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
-    "note": "R18 改善發牌與回合切換，加強嘲諷、後排保護與施法目標提示。按「開始」下載素材；同版本會保留快取。 沿用原更新簽章。上一版已由開發者實機測試，本次尚未重跑手機安裝、觸控與持續效能。",
-    "noteEn": "R18 improves dealing and turn transitions, and clarifies taunt, rear protection and spell targets. Press Start to download content; the same version stays cached. Uses the existing update signing identity. The previous version was device-tested by the developer; this APK has not repeated installation, touch or sustained-performance tests."
+    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 沿用原更新簽章。上一版已由開發者實機測試，本次尚未重跑手機安裝、觸控與持續效能。",
+    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Uses the existing update signing identity. The previous version was device-tested by the developer; this APK has not repeated installation, touch or sustained-performance tests.",
+    "websiteDelivery": "static-apk"
   }
 ];
 
@@ -252,6 +252,21 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+{
+  "version": "2026.10.25-R19",
+  "date": "2026-10-25",
+  "title": "R19：NPC／爬塔、戰場遠景與戰鬥介面更新",
+  "changes": [
+    "爬塔新關卡依層數配置 Gemini 簡單／高難、Claude 高難／大師策略；單人難度同步接入新版配置。",
+    "更新森林、洞窟與雪原遠景，修正戰鬥數值配色、三位數護盾與 Zzz 重疊。本輪完成的音效接線與圖鑑一併收錄；進一步音色優化留待下一版。",
+    "收錄 17 類獨立攻擊／3D 特效與比較場景，保留原有效果及正式技能綁定；尚未綁定的比較效果不宣稱已全面啟用。",
+    "Windows、macOS、Linux 與 Android 使用同版來源。既有帳號、收藏、牌組與存檔保留。",
+    "先下載遊戲程式，再於遊戲內下載本版素材。同版本會保留快取，不需要每次重載。",
+    "Android 沿用原簽章。上一版由開發者實機測過，本次 APK 尚未重跑手機安裝、觸控與持續效能；macOS／Linux 原生完整對局尚未驗收。",
+    "既有帳號、收藏、牌組與已獲得的通關獎勵保留；版本綁定中的舊爬塔關卡可能需要放棄後重開。協定維持 28。",
+    "English: R19 updates NPC/tower progression, arena vistas, battle UI and audio wiring. New optional VFX retain existing skill bindings. Further timbre tuning is deferred. Native macOS/Linux player and this APK device tests have not been repeated."
+  ]
+},
 {
   "version": "2026.10.23-R18",
   "date": "2026-10-23",

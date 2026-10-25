@@ -35,7 +35,7 @@ const component = await load("../src/components/download-panel.tsx", {
 const panel = renderToStaticMarkup(createElement(component.DownloadPanel));
 const downloads = releases.BUILDS.filter((build) => releases.downloadUrl(build));
 assert.deepEqual(downloads.map((build) => build.id).sort(), ["android", "linux", "macos", "windows"]);
-assert.equal(GAME_FACTS.version, "2026.10.23-R18");
+assert.equal(GAME_FACTS.version, "2026.10.25-R19");
 assert.equal(GAME_FACTS.protocol, 28);
 assert.equal(releases.RELEASE_NOTES[0].version, GAME_FACTS.version);
 assert.ok(panel.includes('id="download"') && panel.includes('id="download-windows"'), "Existing download anchors remain available");
@@ -47,7 +47,7 @@ assert.ok(!/href="[^"]+\.pck"/.test(panel) && !panel.includes("protocol"), "Play
 for (const build of downloads) {
   assert.equal(build.delivery, "streamed");
   assert.equal(build.version, GAME_FACTS.version);
-  assert.equal(build.build, 2026102301);
+  assert.equal(build.build, 2026102501);
   assert.equal(build.minimumBuild, 2026102101);
   assert.equal(build.protocol, GAME_FACTS.protocol);
   assert.equal(build.size, `${(build.bytes / 1024 ** 2).toFixed(1)} MiB`);
@@ -88,7 +88,7 @@ if (releasePath) {
   assert.equal(resolve(releasePath).split(/[\\/]/).at(-1), "release.json", "Compare with the final public manifest, never a private configuration");
   const final = JSON.parse(await readFile(releasePath, "utf8"));
   assert.equal(final.version, GAME_FACTS.version);
-  assert.equal(final.build, 2026102301);
+  assert.equal(final.build, 2026102501);
   assert.equal(final.protocol, GAME_FACTS.protocol);
   assert.equal(final.delivery, "streamed");
   for (const build of downloads) {
@@ -100,4 +100,4 @@ if (releasePath) {
     assert.deepEqual(build.content, artifact.content);
   }
 }
-console.log(`PASS R18 streamed downloads: three desktop ZIPs and Android APK, separate content sizes, bilingual start/rulebook/cache guidance, no stale mirror, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; final release.json matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
+console.log(`PASS R19 streamed downloads: three desktop ZIPs and Android APK, separate content sizes, bilingual start/rulebook/cache guidance, no stale mirror, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; final release.json matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
