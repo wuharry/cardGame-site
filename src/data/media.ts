@@ -6,6 +6,11 @@ export function mediaUrl(source: string): string {
   return asset ? `${source}?v=${asset.outputSha256.slice(0, 12)}` : source;
 }
 
+export function mediaDimensions(source: string): { width: number; height: number } {
+  const asset = manifest.find((entry) => entry.output === source);
+  return { width: asset?.width ?? 1280, height: asset?.height ?? 720 };
+}
+
 /** 擷取日期與遊戲版號分開顯示，避免將新版場景誤標成舊版對局。 */
 export function mediaCaptureCaption(source: string): string {
   const asset = manifest.find((entry) => entry.output === source);

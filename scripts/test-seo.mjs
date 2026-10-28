@@ -54,7 +54,10 @@ check(/noindex/.test(meta(await admin.text(), "robots") ?? ""), "Admin remains e
 const code = ts.transpileModule(await readFile(new URL("../next.config.ts", import.meta.url), "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText;
 for (const environment of ["preview", "production"]) {
   const exports = {};
-  new Function("exports", "process", code)(exports, { env: { VERCEL_ENV: environment } });
+  new Function("exports", "process", "require", code)(exports, { env: { VERCEL_ENV: environment } }, (name) => {
+    if (name === "./src/data/releases") return releases;
+    throw new Error(`Unexpected next.config dependency: ${name}`);
+  });
   const headers = (await exports.default.headers())[0].headers;
   check(headers.some(h => h.key === "X-Robots-Tag" && h.value.includes("noindex")) === (environment === "preview"), `${environment} indexing header is correct`);
 }

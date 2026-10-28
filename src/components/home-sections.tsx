@@ -4,6 +4,7 @@ import { GAME_MODES } from "@/data/game";
 import { mediaCaptureCaption, mediaUrl } from "@/data/media";
 import { BUILDS, RELEASE_NOTES, buildStatusText } from "@/data/releases";
 import { FEEDBACK_URL } from "@/data/site";
+import { ScreenshotViewer } from "@/components/screenshot-viewer";
 
 export function LatestNews() {
   const latest = RELEASE_NOTES[0];
@@ -35,7 +36,9 @@ export function GameIntroduction() {
       <div className="content-width">
         <header id="flow" className="section-heading centered"><p className="overline">A DIFFERENT KIND OF CARD BATTLE</p><h2>勝負，在出牌之前就已展開。</h2><p>同樣一張牌，站在哪裡、何時出手，都能改寫戰局。</p></header>
         <div id="lanes" className="battle-feature">
-          <figure className="battle-image"><Image src={mediaUrl("/media/screens/hero-battlefield.webp")} alt="R11 四路前後排原生展示畫面，包含新版介面、HD-2D 從者與手牌" width={1280} height={720} sizes="(max-width: 900px) 100vw, 60vw" /><figcaption><span className="status-dot" /> IN-GAME CAPTURE <span>{mediaCaptureCaption("/media/screens/hero-battlefield.webp")}</span></figcaption></figure>
+          <figure className="battle-image"><div className="battle-screenshot"><ScreenshotViewer source="/media/screens/hero-battlefield.webp" alt="四路前後排、HD-2D 從者與手牌"
+            caption={mediaCaptureCaption("/media/screens/hero-battlefield.webp")} sizes="(max-width: 1000px) calc(100vw - 40px), 650px" /></div>
+            <figcaption><span className="status-dot" /> IN-GAME CAPTURE <span>{mediaCaptureCaption("/media/screens/hero-battlefield.webp")}</span></figcaption></figure>
           <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>站在哪裡，<br />和出哪張牌一樣重要。</h3><p>把夥伴放到前排保護後排，再找機會突破對手的防線。不必只盯著正前方，也能攻擊其他路線。</p><Link className="text-link" href="/guide#lanes" prefetch={false}>看看怎麼進攻 <span aria-hidden="true">→</span></Link></div>
         </div>
         <div className="tactics-grid">

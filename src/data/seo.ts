@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { GAME_FACTS } from "./game";
 import { BUILDS, downloadUrl } from "./releases";
-import { mediaUrl } from "./media";
+import { mediaDimensions, mediaUrl } from "./media";
 
 // Deployment aliases must not become canonical URLs. SITE_URL may change when
 // the site moves to its own domain; previews still refer to production.
@@ -24,7 +24,7 @@ export function pageMetadata(path: string, title: string, description: string): 
     openGraph: {
       title: fullTitle, description, url: siteUrl(path), siteName: SITE_NAME,
       type: "website", locale: "zh_TW",
-      images: [{ url: image, width: 1280, height: 720, alt: "紙鴉牌實機戰場" }],
+      images: [{ url: image, ...mediaDimensions("/media/screens/hero-battlefield.webp"), alt: "紙鴉牌實機戰場" }],
     },
     twitter: { card: "summary_large_image", title: fullTitle, description, images: [image] },
   };

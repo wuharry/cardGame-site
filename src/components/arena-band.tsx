@@ -22,7 +22,7 @@ export function ArenaBand() {
       </div>
 
       <p className="body-cjk mx-auto mt-5 max-w-6xl px-5 text-[0.78rem]">
-        三個戰場均為 R11 四路版本的原生展示配置，包含新版對戰介面；不同平台與畫質設定的效果可能不同。
+        三個戰場均為遊戲原生展示配置；不同平台與畫質設定的效果可能不同。
       </p>
 
       {/* 滿版：讓圖跨出容器，打斷整站的欄寬節奏 */}

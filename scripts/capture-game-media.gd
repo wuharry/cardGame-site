@@ -4,6 +4,7 @@ extends SceneTree
 const PROBE := preload("res://tests/card_stat_readability_review.gd")
 const REVIEW := preload("res://tests/environment_art_review.gd")
 const RELEASE := preload("res://src/release/release_info.gd")
+const SIZE := Vector2i(1920, 1080)
 var surface: SubViewport
 var directory: String
 var captures: Array[Dictionary] = []
@@ -17,7 +18,7 @@ func _save(slug: String, note: String) -> void:
 	await process_frame
 	RenderingServer.force_draw(false)
 	var image := surface.get_texture().get_image()
-	assert(image.get_size() == Vector2i(1280, 720))
+	assert(image.get_size() == SIZE)
 	assert(image.save_png(directory.path_join(slug + ".png")) == OK)
 	captures.append({"slug": slug, "source": slug + ".png", "note": note})
 	print("Captured ", slug)
@@ -25,12 +26,17 @@ func _save(slug: String, note: String) -> void:
 func _run() -> void:
 	var args := OS.get_cmdline_user_args()
 	if args.size() != 3 or DisplayServer.get_name() == "headless": quit(2); return
+	# Marketing captures must never open the player's real account or settings.
+	if not OS.get_user_data_dir().contains("CodexUiChecks/"):
+		push_error("Run this capture in an isolated CodexUiChecks project")
+		quit(2)
+		return
 	directory = args[0]
 	DirAccess.make_dir_recursive_absolute(directory)
 	await process_frame
 	root.get_node("AppSettings").anonymous_play_stats = false
 	surface = SubViewport.new()
-	surface.size = Vector2i(1280, 720)
+	surface.size = SIZE
 	surface.own_world_3d = true
 	surface.gui_disable_input = true
 	surface.render_target_update_mode = SubViewport.UPDATE_ALWAYS
@@ -38,6 +44,8 @@ func _run() -> void:
 	for arena: String in ["forest", "caverns", "frostlands"]:
 		var scene := await PROBE.prepare(self, PackedStringArray([
 			"no-pointer", "arena=res://scenes/arena_" + arena + ".tscn"]))
+		root.size = SIZE
+		root.content_scale_size = SIZE
 		scene.reparent(surface, false)
 		surface.msaa_3d = root.msaa_3d
 		surface.screen_space_aa = root.screen_space_aa
@@ -60,9 +68,12 @@ func _run() -> void:
 		bm.sides.player.temp_mana = 2
 		bm._emit_state()
 		await create_timer(1.5).timeout
-		await _save("arena-" + arena, "R11 原始碼原生展示配置：四路前後排、新 HUD 與六張手牌；不是自然對局或手機效能驗收。")
+		await _save("arena-" + arena, RELEASE.VERSION + " 發布來源原生展示配置：四路前後排、六名從者與六張手牌；不是自然對局或手機效能驗收。")
 		if arena == "forest":
-			await _save("hero-battlefield", "R11 森林原生展示配置：四路前後排、HD-2D 英雄、新 HUD 與持牌方向；不是自然對局紀錄。")
+			await _save("hero-battlefield", RELEASE.VERSION + " 森林原生展示配置：四路前後排、HD-2D 英雄、攻血徽記與手牌；不是自然對局紀錄。")
+		# End the music context before the fixture stops its players. Otherwise the
+		# next scene tries to fade an already stopped R19 player with no tweeners.
+		root.get_node("AudioDirector").set_context(&"silent")
 		await REVIEW.cleanup(self, scene)
 	var temporary := DirAccess.create_temp("deckmarch-website-menu")
 	var profile := preload("res://src/account/guest_profile.gd").new()
@@ -80,19 +91,19 @@ func _run() -> void:
 	surface.add_child(menu)
 	await create_timer(1.5).timeout
 	menu._menu_scroll.scroll_vertical = 0
-	await _save("main-menu", "R11 原生主選單；暫存新訪客資料、新品牌與三十包新手額度入口。")
+	await _save("main-menu", RELEASE.VERSION + " 原生主選單；使用隔離的新訪客資料，沒有真實玩家個資。")
 	for child: Node in menu.get_children():
 		if not child is CanvasLayer: continue
 		var ui := child.get_node_or_null("UI")
 		if ui == null: continue
 		for item: CanvasItem in ui.get_children():
 			if item != ui.get_child(0): item.hide()
-	await _save("town", "R11 主選單實際使用的原創天文台背景；擷取時只隱藏選單文字層，未後製合成。")
+	await _save("town", RELEASE.VERSION + " 主選單實際使用的原創天文台背景；擷取時只隱藏選單文字層，未後製合成。")
 	await REVIEW.cleanup(self, menu)
 	var file := FileAccess.open(directory.path_join("capture-manifest.json"), FileAccess.WRITE)
 	file.store_string(JSON.stringify({"sourceVersion": RELEASE.VERSION, "sourceCommit": args[1],
 		"capturedOn": args[2], "renderer": RenderingServer.get_current_rendering_method(),
-		"platform": OS.get_name(), "width": 1280, "height": 720, "captures": captures}, "\t") + "\n")
+		"platform": OS.get_name(), "width": SIZE.x, "height": SIZE.y, "captures": captures}, "\t") + "\n")
 	file.close()
 	surface.queue_free()
 	await process_frame

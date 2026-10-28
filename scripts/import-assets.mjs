@@ -107,10 +107,12 @@ async function main() {
       .map(([, properties]) => Object.fromEntries([...properties.matchAll(/(\w+)="([^"]*)"/g)]
         .map(([, key, value]) => [key, value])))
       .find((entry) => entry.id === artId && entry.type === "Texture2D");
-    if (!artResource?.path?.startsWith("res://")) {
-      throw new Error("卡片 art 沒有指向可匯入的 Texture2D：" + resourcePath);
+    // R18+ loads card illustrations on demand; the path is still the real art.
+    const artPath = artResource?.path ?? resource.match(/^deferred_art_path\s*=\s*"([^"]+)"/m)?.[1];
+    if (!artPath?.startsWith("res://")) {
+      throw new Error("卡片 art 或 deferred_art_path 沒有指向可匯入的圖片：" + resourcePath);
     }
-    const source = artResource.path.slice("res://".length);
+    const source = artPath.slice("res://".length);
     inputs.push({ kind: "cards", slug, source, resource: resourcePath, sourceVersion, buffer: await gameImage(source) });
   }
   if (screensDirectory) {
@@ -127,8 +129,8 @@ async function main() {
       }
       const file = path.join(screensDirectory, matches[0].source);
       inputs.push({
-        kind: "screens", slug, source: path.relative(game, file).replaceAll(path.sep, "/"),
-        sourceRoot: "game-source", sourceVersion, sourceCommit: capture.sourceCommit,
+        kind: "screens", slug, source: slug + ".png",
+        sourceRoot: "capture-directory", sourceVersion, sourceCommit: capture.sourceCommit,
         capturedOn: capture.capturedOn, renderer: capture.renderer, platform: capture.platform,
         note: matches[0].note, buffer: await readFile(file),
       });
@@ -157,12 +159,12 @@ async function main() {
   const outputs = [];
   for (const { buffer, ...input } of inputs) {
     const output = await sharp(buffer)
-      .resize({ width: input.kind === "cards" ? 720 : 1600, withoutEnlargement: true })
-      .webp({ quality: input.kind === "cards" ? 82 : 86 })
+      .resize({ width: input.kind === "cards" ? 720 : 1920, withoutEnlargement: true })
+      .webp({ quality: input.kind === "cards" ? 82 : (input.slug === "town" ? 78 : 84) })
       .toBuffer({ resolveWithObject: true });
     outputs.push({
       ...input, data: output.data, sourceSha256: sha256(buffer),
-      width: output.info.width, height: output.info.height,
+      width: output.info.width, height: output.info.height, bytes: output.data.length,
       output: "/media/" + input.kind + "/" + input.slug + ".webp",
     });
   }
