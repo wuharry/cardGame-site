@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -77,26 +77,26 @@ export const BUILDS: Build[] = [
     "platform": "Windows",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Windows-20261025-R19.zip",
-    "version": "2026.10.25-R19",
+    "file": "TwilightCodex-Windows-20261028-R20.zip",
+    "version": "2026.10.28-R20",
     "size": "61.7 MiB",
-    "bytes": 64681851,
-    "updated": "2026-10-25",
-    "sha256": "be2c41486758a09e3aced4986b6d8e15ae9b92cf225ee4d4f92e2369cb0a321e",
-    "build": 2026102501,
+    "bytes": 64739486,
+    "updated": "2026-10-28",
+    "sha256": "a653c6bce834463926c506b944a2eccbac25458f63c8de4267c1e3eaaf2872ba",
+    "build": 2026102801,
     "minimumBuild": 2026102101,
     "protocol": 28,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-Windows-20261025-R19-Content.pck",
-      "bytes": 445177900,
-      "sha256": "9cbc80c64940a5aab4f331d4e781dfc6ae8009840c92ed48fd4c96457dbbd0a7",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19/PaperRaven-Windows-20261025-R19-Content.pck"
+      "filename": "PaperRaven-Windows-20261028-R20-Content.pck",
+      "bytes": 446149316,
+      "sha256": "550893a4fb1241e6e5ce11a1f6412955d83ac220f3d3c7679fc073035459dd7f",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20/PaperRaven-Windows-20261028-R20-Content.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20",
     "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。",
-    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached."
+    "note": "R20 改善教學聚焦細框、戰鬥資訊、英文卡文、角色動作與場景光影，整合新戰鬥／魔法音效。首次按「開始」下載素材，同版本保留快取。 包內資源檢查通過；本次 Windows 原生啟動、真人對局與持續效能尚未實測。",
+    "noteEn": "R20 improves tutorial focus, battle readability, English card text, selected animation timing and arena presentation, and integrates reviewed combat/magic audio. Press Start to download content; the same version stays cached. Packed resources passed checks; native Windows startup, human matches and sustained performance have not been tested for this build."
   },
   {
     "id": "macos",
@@ -104,26 +104,26 @@ export const BUILDS: Build[] = [
     "platform": "macOS",
     "en": "ZIP · Universal",
     "status": "available",
-    "file": "TwilightCodex-macOS-20261025-R19.zip",
-    "version": "2026.10.25-R19",
+    "file": "TwilightCodex-macOS-20261028-R20.zip",
+    "version": "2026.10.28-R20",
     "size": "82.6 MiB",
-    "bytes": 86581827,
-    "updated": "2026-10-25",
-    "sha256": "017d918537f4fa8c479b122f400f3f41c15597dcb2a9726aa66d865f36445768",
-    "build": 2026102501,
+    "bytes": 86640401,
+    "updated": "2026-10-28",
+    "sha256": "9c556e594a35d171fe4b448f2e2e5f7d7759518dad718484759bd7b26460e352",
+    "build": 2026102801,
     "minimumBuild": 2026102101,
     "protocol": 28,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-macOS-20261025-R19-Content.pck",
-      "bytes": 445177900,
-      "sha256": "fe5f5e10000e682862d254caeb1f9dc319f9c9fd856ce7a1bddcbed3b0b1d086",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19/PaperRaven-macOS-20261025-R19-Content.pck"
+      "filename": "PaperRaven-macOS-20261028-R20-Content.pck",
+      "bytes": 446149316,
+      "sha256": "f880ff169e0c1a1ae3a8ee146b6a18cd8ec550d437d942f6753d39b36e540b7a",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20/PaperRaven-macOS-20261028-R20-Content.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20",
     "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 採 ad-hoc 簽章，尚未 Apple 公證；本次未重跑 macOS 原生測試。",
-    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Ad-hoc signed, not Apple-notarized; native macOS testing has not been repeated for this build."
+    "note": "R20 改善教學聚焦細框、戰鬥資訊、英文卡文、角色動作與場景光影，整合新戰鬥／魔法音效。首次按「開始」下載素材，同版本保留快取。 macOS 成品啟動、主選單與正常退出已驗證；ad-hoc 簽章，未 Apple 公證。完整真人對局與持續效能待驗。",
+    "noteEn": "R20 improves tutorial focus, battle readability, English card text, selected animation timing and arena presentation, and integrates reviewed combat/magic audio. Press Start to download content; the same version stays cached. Native macOS startup, menu and normal exit passed. Ad-hoc signed, not Apple-notarized. Full human matches and sustained performance remain untested."
   },
   {
     "id": "linux",
@@ -252,6 +252,20 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+{
+  "version": "2026.10.28-R20",
+  "date": "2026-10-28",
+  "title": "R20：柔和教學、戰鬥可讀性與新音效",
+  "changes": [
+    "Windows／macOS 更新 R20；Linux／Android 保留 R19 下載。",
+    "新手教學改用柔和聚焦細框，改善拖曳提示；新增獨立震動強度與可複製的問題回報。",
+    "補齊英文卡名、技能名與規則文字，減少攻血排版的重複計算，微調部分角色的出手規律。",
+    "更新森林、洞窟、雪原等戰場的材質及光影，整合已審查的戰鬥與魔法音效。",
+    "帳號、收藏、牌組與存檔保留；帳號牌組可供離線單人練習，雲端獎勵仍由正式服務判定。",
+    "兩平台包內資源通過檢查；macOS 成品啟動、主選單與退出通過。Windows 原生、完整真人對局與持續效能未驗；macOS 未 Apple 公證。",
+    "English: R20 improves guided practice, battle readability, English card wording, selected animation timing, arena presentation and reviewed audio. Windows/macOS are updated; Linux/Android remain on R19. Existing saves are retained. Native Windows and full human matches remain untested."
+  ]
+},
 {
   "version": "2026.10.25-R19",
   "date": "2026-10-25",

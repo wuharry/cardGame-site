@@ -2,7 +2,7 @@
 export const GAME_FACTS = {
   nameZh: "紙鴉牌",
   nameEn: "Deckmarch",
-  version: "2026.10.25-R19",
+  version: "2026.10.28-R20",
   engine: "Godot 4.7",
   lanes: 4,
   heroHp: 20,
