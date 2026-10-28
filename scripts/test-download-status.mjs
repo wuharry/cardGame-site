@@ -21,7 +21,7 @@ async function views(builds) {
   const shared = { "@/data/releases": data, "@/data/game": game, "next/link": link };
   const panel = await load("../src/components/download-panel.tsx", { ...shared, "@/data/install-help": help });
   const entry = await load("../src/components/entry-screen.tsx", {
-    ...shared, "next/image": image, "@/data/media": { mediaUrl: (url) => url },
+    ...shared, "next/image": image, "@/data/media": { mediaUrl: (url) => url, mediaCaptureCaption: () => "Recorded capture" },
     "@/components/download-link": { DownloadLink: ({ children }) => createElement("a", { href: "/#download" }, children) },
   });
   const patches = await load("../src/components/patch-notes.tsx", { "@/data/releases": data });
@@ -33,7 +33,8 @@ async function views(builds) {
   });
   const latest = await load("../src/components/home-sections.tsx", {
     ...shared, "next/image": image, "@/data/site": { FEEDBACK_URL: "https://example.invalid/feedback" },
-    "@/data/media": { mediaUrl: (url) => url },
+    "@/data/media": { mediaUrl: (url) => url, mediaCaptureCaption: () => "Recorded capture" },
+    "@/components/screenshot-viewer": { ScreenshotViewer: () => null },
   });
   const android = await load("../src/app/install/android/page.tsx", { ...shared, "@/data/seo": { pageMetadata: () => ({}) } });
   return { panel: render(panel.DownloadPanel), entry: render(entry.EntryScreen), news: render(news.default),
@@ -92,12 +93,17 @@ for (const selected of suspended) {
 const live = await views(releases.BUILDS);
 const manifest = await api(releases.BUILDS);
 assert.deepEqual(Object.keys(manifest.platforms).sort(), ["android", "linux", "macos", "windows"]);
-check((live.panel.match(/<button\b[^>]*disabled/g) ?? []).length === 0, "R19 has four available platform actions");
+check((live.panel.match(/<button\b[^>]*disabled/g) ?? []).length === 0, "Four verified platforms have available actions");
 const allowed = new Set();
 for (const build of releases.BUILDS) {
   const url = releases.downloadUrl(build);
   allowed.add(url); allowed.add(releases.releasePageUrl(build));
-  check(build.version === "2026.10.25-R19" && build.build === 2026102501, "Every offered package has the frozen R19 identity");
+  if (["windows", "macos"].includes(build.id)) {
+    check(build.version === game.GAME_FACTS.version, `${build.id} offers the current desktop release`);
+  } else {
+    check(build.version === "2026.10.25-R19" && build.build === 2026102501,
+      `${build.id} keeps its accepted R19 artifact while desktop platforms update`);
+  }
   const websiteUrl = releases.websiteDownloadUrl(build);
   allowed.add(websiteUrl);
   check(live.panel.includes(`href="${websiteUrl}" download="${build.file}"`), `${build.id} offers its exact package from the configured primary source`);
@@ -110,4 +116,4 @@ for (const [name, html] of Object.entries(live)) {
     }
   }
 }
-console.log(`PASS download status: ${checks} checks for R19, full suspension and single-platform recovery`);
+console.log(`PASS download status: ${checks} checks for mixed platform releases, full suspension and single-platform recovery`);

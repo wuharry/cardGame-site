@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -77,26 +77,26 @@ export const BUILDS: Build[] = [
     "platform": "Windows",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Windows-20261028-R20.zip",
-    "version": "2026.10.28-R20",
-    "size": "61.7 MiB",
-    "bytes": 64739486,
-    "updated": "2026-10-28",
-    "sha256": "a653c6bce834463926c506b944a2eccbac25458f63c8de4267c1e3eaaf2872ba",
-    "build": 2026102801,
+    "file": "TwilightCodex-Windows-20261029-R21.zip",
+    "version": "2026.10.29-R21",
+    "size": "61.9 MiB",
+    "bytes": 64865901,
+    "updated": "2026-10-29",
+    "sha256": "d6fd47b99da35710b6a78418fc44daab0daa5d8bf17f45464af924a8e494ed0a",
+    "build": 2026102901,
     "minimumBuild": 2026102101,
     "protocol": 28,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-Windows-20261028-R20-Content.pck",
-      "bytes": 446149316,
-      "sha256": "550893a4fb1241e6e5ce11a1f6412955d83ac220f3d3c7679fc073035459dd7f",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20/PaperRaven-Windows-20261028-R20-Content.pck"
+      "filename": "TwilightCodex-Content-Windows-20261029-R21.pck",
+      "bytes": 451823292,
+      "sha256": "c6d6fd42f59ad9910a6ebaf41ed2d1dbdee59045229c26e075e75d1fc5f8e15f",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21/TwilightCodex-Content-Windows-20261029-R21.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21",
     "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    "note": "R20 改善教學聚焦細框、戰鬥資訊、英文卡文、角色動作與場景光影，整合新戰鬥／魔法音效。首次按「開始」下載素材，同版本保留快取。 包內資源檢查通過；本次 Windows 原生啟動、真人對局與持續效能尚未實測。",
-    "noteEn": "R20 improves tutorial focus, battle readability, English card text, selected animation timing and arena presentation, and integrates reviewed combat/magic audio. Press Start to download content; the same version stays cached. Packed resources passed checks; native Windows startup, human matches and sustained performance have not been tested for this build."
+    "note": "R21 加入密林、地牢與迷宮探索地圖、四方向匿名斗篷角色，以及相遇後進入卡牌決鬥的流程。可先本機走動預覽；正式探索專服仍待部署，尚未開放公共探索房間。首次按「開始」下載素材，同版本保留快取。 Windows 公開成品已通過空快取素材下載、雜湊驗證、掛載、ANGLE 主選單與正常退出；真人對局與持續效能待驗。",
+    "noteEn": "R21 adds forest, dungeon and labyrinth exploration maps, anonymous cloaked travelers with four-direction animation, and encounters that lead into card duels. Local walking previews are available; the official exploration server is pending deployment and public exploration rooms are not yet open. Press Start to download content; the same version stays cached. The public Windows build passed fresh content download, hash verification, mounting, ANGLE main-menu startup and normal exit. Human matches and sustained performance remain untested."
   },
   {
     "id": "macos",
@@ -104,26 +104,26 @@ export const BUILDS: Build[] = [
     "platform": "macOS",
     "en": "ZIP · Universal",
     "status": "available",
-    "file": "TwilightCodex-macOS-20261028-R20.zip",
-    "version": "2026.10.28-R20",
-    "size": "82.6 MiB",
-    "bytes": 86640401,
-    "updated": "2026-10-28",
-    "sha256": "9c556e594a35d171fe4b448f2e2e5f7d7759518dad718484759bd7b26460e352",
-    "build": 2026102801,
+    "file": "TwilightCodex-macOS-20261029-R21.zip",
+    "version": "2026.10.29-R21",
+    "size": "82.7 MiB",
+    "bytes": 86765769,
+    "updated": "2026-10-29",
+    "sha256": "a0f8d1d2c6693408f817c60038653d0bd83213ca7b2be32bb229cde52dfca11f",
+    "build": 2026102901,
     "minimumBuild": 2026102101,
     "protocol": 28,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-macOS-20261028-R20-Content.pck",
-      "bytes": 446149316,
-      "sha256": "f880ff169e0c1a1ae3a8ee146b6a18cd8ec550d437d942f6753d39b36e540b7a",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20/PaperRaven-macOS-20261028-R20-Content.pck"
+      "filename": "TwilightCodex-Content-macOS-20261029-R21.pck",
+      "bytes": 451823292,
+      "sha256": "fb54b40dcbac149ea59b479eee8f7ab130f84aef900100230d39588cb6a7e2cc",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21/TwilightCodex-Content-macOS-20261029-R21.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.28-r20",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21",
     "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    "note": "R20 改善教學聚焦細框、戰鬥資訊、英文卡文、角色動作與場景光影，整合新戰鬥／魔法音效。首次按「開始」下載素材，同版本保留快取。 macOS 成品啟動、主選單與正常退出已驗證；ad-hoc 簽章，未 Apple 公證。完整真人對局與持續效能待驗。",
-    "noteEn": "R20 improves tutorial focus, battle readability, English card text, selected animation timing and arena presentation, and integrates reviewed combat/magic audio. Press Start to download content; the same version stays cached. Native macOS startup, menu and normal exit passed. Ad-hoc signed, not Apple-notarized. Full human matches and sustained performance remain untested."
+    "note": "R21 加入密林、地牢與迷宮探索地圖、四方向匿名斗篷角色，以及相遇後進入卡牌決鬥的流程。可先本機走動預覽；正式探索專服仍待部署，尚未開放公共探索房間。首次按「開始」下載素材，同版本保留快取。 包內資源檢查通過；本版 macOS 原生啟動尚未實測，不能沿用 R20 的驗收。ad-hoc 簽章，未 Apple 公證；真人對局與持續效能待驗。",
+    "noteEn": "R21 adds forest, dungeon and labyrinth exploration maps, anonymous cloaked travelers with four-direction animation, and encounters that lead into card duels. Local walking previews are available; the official exploration server is pending deployment and public exploration rooms are not yet open. Press Start to download content; the same version stays cached. Packed resources passed checks. Native macOS startup has not been tested for R21; R20 results do not certify this build. Ad-hoc signed, not Apple-notarized. Human matches and sustained performance remain untested."
   },
   {
     "id": "linux",
@@ -252,6 +252,20 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+{
+  "version": "2026.10.29-R21",
+  "date": "2026-10-29",
+  "title": "R21：無名之境探索地圖與匿名旅者",
+  "changes": [
+    "Windows／macOS 更新 R21；Linux／Android 保留原 R19 附件。既有帳號、收藏、牌組與存檔保留。",
+    "加入可本機走動的密林、地牢與迷宮；探索採較低的透視視角，前景遮住本機角色時會逐漸淡出。斗篷角色具四方向行走動畫，所有旅者匿名呈現。",
+    "探索相遇接入既有卡牌決鬥，使用固定借用牌組；本模式不寫正式收藏、排位或獎勵。正式探索專服仍待部署，公共探索房間尚未開放；一般卡牌對戰服務維持原狀。",
+    "修正多人探索同步封包大小，舊版會明確提示更新並釋放連線；結算期冠軍離開後，觀戰者仍能看到最後勝負。",
+    "兩平台完成嚴格核心／素材聯集與實際包資源檢查。Windows 公開實際 ZIP 已通過空快取素材下載、雜湊驗證、掛載、ANGLE 主選單與正常退出，零錯誤／警告。",
+    "本版 macOS 原生啟動、完整真人對局、聽感與持續效能尚未驗收；macOS 為 ad-hoc 簽章，未 Apple 公證。",
+    "English: R21 adds local forest, dungeon and labyrinth exploration previews, four-direction cloaked travelers and card-duel encounters. The official exploration server is still pending deployment, so public exploration rooms are not open. Exploration uses borrowed decks without collection, ranking or reward updates. The public Windows build passed fresh content download, verification, mounting, ANGLE startup and clean exit; native macOS, human matches and sustained performance remain untested. Linux/Android stay on R19."
+  ]
+},
 {
   "version": "2026.10.28-R20",
   "date": "2026-10-28",

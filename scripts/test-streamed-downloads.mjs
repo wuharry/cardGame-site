@@ -35,7 +35,11 @@ const component = await load("../src/components/download-panel.tsx", {
 const panel = renderToStaticMarkup(createElement(component.DownloadPanel));
 const downloads = releases.BUILDS.filter((build) => releases.downloadUrl(build));
 assert.deepEqual(downloads.map((build) => build.id).sort(), ["android", "linux", "macos", "windows"]);
-assert.equal(GAME_FACTS.version, "2026.10.25-R19");
+const latestDesktop = downloads.filter((build) => ["windows", "macos"].includes(build.id));
+const latestBuild = latestDesktop[0].build;
+assert.ok(Number.isSafeInteger(latestBuild) && latestBuild >= 2026102801);
+assert.ok(latestDesktop.every((build) => build.version === GAME_FACTS.version && build.build === latestBuild),
+  "Windows and macOS share the current release while retained platforms keep their accepted packages");
 assert.equal(GAME_FACTS.protocol, 28);
 assert.equal(releases.RELEASE_NOTES[0].version, GAME_FACTS.version);
 assert.ok(panel.includes('id="download"') && panel.includes('id="download-windows"'), "Existing download anchors remain available");
@@ -46,14 +50,16 @@ assert.ok(panel.includes("同一版素材下載完成後，下次不用重載") 
 assert.ok(!/href="[^"]+\.pck"/.test(panel) && !panel.includes("protocol"), "Players are not asked to open raw content packs or interpret protocol numbers");
 for (const build of downloads) {
   assert.equal(build.delivery, "streamed");
-  assert.equal(build.version, GAME_FACTS.version);
-  assert.equal(build.build, 2026102501);
+  if (["linux", "android"].includes(build.id)) {
+    assert.equal(build.version, "2026.10.25-R19", `${build.id} remains on its accepted R19 package`);
+    assert.equal(build.build, 2026102501);
+  }
   assert.equal(build.minimumBuild, 2026102101);
   assert.equal(build.protocol, GAME_FACTS.protocol);
   assert.equal(build.size, `${(build.bytes / 1024 ** 2).toFixed(1)} MiB`);
   assert.ok(Number.isSafeInteger(build.content.bytes) && build.content.bytes > 0);
   assert.match(build.content.sha256, /^[a-f0-9]{64}$/);
-  assert.equal(build.content.url, `${releases.RELEASE_BASE}/${build.content.filename}`);
+  assert.equal(build.content.url, `${build.releaseBase ?? releases.RELEASE_BASE}/${build.content.filename}`);
   const websiteUrl = build.id === "android" ? `/downloads/android/${build.sha256}/${build.file}` : releases.downloadUrl(build);
   assert.equal(releases.websiteDownloadUrl(build), websiteUrl);
   assert.ok(panel.includes(`href="${websiteUrl}" download="${build.file}"`), `${build.id} directly downloads its exact package`);
@@ -81,17 +87,17 @@ assert.ok(starter?.value === "60 張" && starter.note.includes("直接對戰") &
 const collection = await readFile(new URL("../src/components/collection-panel.tsx", import.meta.url), "utf8");
 const guide = await readFile(new URL("../src/app/guide/page.tsx", import.meta.url), "utf8");
 assert.ok(!collection.includes("湊滿") && !collection.includes("引導練習") && collection.includes("起始牌組") && collection.includes("新手教學"), "The guide no longer presents free draws as the starting gate or uses the old tutorial name");
-assert.ok(collection.includes("舊版主選單截圖") && collection.includes('mediaCaptureCaption("/media/screens/main-menu.webp")'), "Historical screenshots keep their capture provenance and are labelled as historical");
+assert.ok(collection.includes('mediaCaptureCaption("/media/screens/main-menu.webp")'), "Menu screenshot caption comes from actual capture provenance, not the current download version");
 assert.ok(guide.includes("60 張起始牌組") && guide.includes("八章圖解說明書") && !guide.includes("八章圖解的「新手教學」"), "The guided tutorial and bundled illustrated rulebook are distinct");
 
 if (releasePath) {
   assert.equal(resolve(releasePath).split(/[\\/]/).at(-1), "release.json", "Compare with the final public manifest, never a private configuration");
   const final = JSON.parse(await readFile(releasePath, "utf8"));
   assert.equal(final.version, GAME_FACTS.version);
-  assert.equal(final.build, 2026102501);
+  assert.equal(final.build, latestBuild);
   assert.equal(final.protocol, GAME_FACTS.protocol);
   assert.equal(final.delivery, "streamed");
-  for (const build of downloads) {
+  for (const build of downloads.filter((item) => item.version === final.version)) {
     const artifact = final.artifacts.find((item) => item.platform === build.id);
     assert.ok(artifact, `${build.id} has a final packaged artifact`);
     assert.equal(build.file, artifact.filename);
@@ -100,4 +106,4 @@ if (releasePath) {
     assert.deepEqual(build.content, artifact.content);
   }
 }
-console.log(`PASS R19 streamed downloads: three desktop ZIPs and Android APK, separate content sizes, bilingual start/rulebook/cache guidance, no stale mirror, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; final release.json matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
+console.log(`PASS streamed downloads: mixed-version desktop ZIPs and Android APK, separate content sizes, bilingual start/rulebook/cache guidance, no stale mirror, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; current-platform final release.json matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
