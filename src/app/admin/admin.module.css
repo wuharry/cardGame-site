@@ -79,6 +79,9 @@
 .chartReadout > div { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 .durationFilters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
 .durationFilters label { flex: 1 1 170px; }
+/* Checkbox filters sit beside their text instead of stretching like a text field. */
+.durationFilters .checkFilter { flex: 0 0 auto; flex-direction: row; align-items: center; gap: 8px; min-height: 44px; }
+.checkFilter input { width: auto; }
 .durationSource { border-top: 1px solid #35484a; margin-top: 20px; }
 .root h4 { font-size: 15px; margin: 22px 0 12px; }
 .durationSource td { white-space: nowrap; }

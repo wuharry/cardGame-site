@@ -6,7 +6,8 @@ import { loadTsModule } from "./lib/load-ts-module.mjs";
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports, { allowNodeModules: true });
 const helpers = await load("../src/app/admin/play-analytics-types.ts");
 const charts = await load("../src/app/admin/play-analytics.tsx", {
-  "./play-analytics-types": helpers, "./admin-api": {}, "./match-duration": { default: () => null }, "./admin.module.css": {},
+  "./play-analytics-types": helpers, "./admin-api": {}, "./match-duration": { default: () => null },
+  "./card-stats": { default: () => null }, "./admin.module.css": {},
   "./dashboard-visuals": { DashboardOverview: () => null, WinLossBar: () => null },
 });
 const now = Date.parse("2026-10-13T08:00:00Z");

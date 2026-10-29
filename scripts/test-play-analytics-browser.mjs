@@ -25,7 +25,7 @@ try {
   for (const path of ["src", "public", "package.json", "tsconfig.json", "next.config.ts", "postcss.config.mjs", "next-env.d.ts"]) {
     await cp(join(repo, path), join(scratch, path), { recursive: true, filter: path => !/(^|\/)\.env(?:\.|$)/.test(path) });
   }
-  await symlink(join(repo, "node_modules"), join(scratch, "node_modules"), "dir");
+  await symlink(join(repo, "node_modules"), join(scratch, "node_modules"), process.platform === "win32" ? "junction" : "dir");
   await mkdir(join(scratch, "src/app/analytics-fixture"));
   await writeFile(join(scratch, "src/app/analytics-fixture/page.tsx"), `"use client";
 import { useState } from "react";
@@ -86,6 +86,15 @@ export default function Fixture() {
       { account_id: "fixture-legacy-account", total_seconds: null, matches: 2 },
       { account_id: "fixture-zero-account", total_seconds: 0, server_seconds: 0, self_reported_seconds: 0, matches: 1 },
     ] };
+  const cardRow = (card_id, extra = {}) => ({ card_id, decks_with: 12, deck_rate: 40, drawn: 30, played: 18, recycled: 4,
+    play_rate: 60, recycle_rate: 13.3, summoned: 16, skill_units: 9, skill_uses: 14, skill_use_rate: 56.3, skill_chances: 20,
+    skill_chance_uses: 11, chance_use_rate: 55, avg_alive_turns: 1.8, left_death: 12, left_recall: 1, left_other: 0, left_end: 3,
+    deck_wins: 7, deck_losses: 5, edit_seen: 14, edit_kept: 11, edit_keep_rate: 78.6, edit_added: 4, ...extra });
+  const cardStats = { generated_at, days: 28, source: "official", controller: "human", mode: null, version: null, matches: 15,
+    decks: 30, deck_edits: 9, modes: [{ mode: "ranked", matches: 10 }, { mode: "casual", matches: 5 }],
+    versions: [{ version: "2026.10.29-R22", matches: 6 }, { version: "2026.10.29-R21", matches: 9 }],
+    cards: [cardRow("tf_tide_healer"), cardRow("soldier", { edit_seen: 12, edit_kept: 5, edit_keep_rate: 41.7, recycle_rate: 45 }),
+      cardRow("knight", { skill_chances: 0, skill_chance_uses: 0, chance_use_rate: null, edit_seen: 0, edit_kept: 0, edit_keep_rate: null })] };
   let scenario = "normal";
   let delayDashboard = false;
   const requests = [], errors = [], outside = [];
@@ -109,6 +118,10 @@ export default function Fixture() {
           await new Promise(resolve => setTimeout(resolve, 600));
           result = { ...duration, matches: [{ ...duration.matches[0], match_id: "STALE-PRIVATE-RESULT" }] };
         }
+      } else if (name === "tcg_admin_card_stats") {
+        if (scenario === "missing") return route.fulfill({ status: 404, json: { message: "管理資料庫尚未安裝，請先完成後台遷移。" } });
+        if (scenario === "expired") return route.fulfill({ status: 403, json: { message: "沒有管理權限" } });
+        result = { ...cardStats, mode: params.p_mode, version: params.p_version, cards: params.p_version ? cardStats.cards.slice(0, 1) : cardStats.cards };
       } else if (name === "tcg_admin_play_dashboard") {
         if (delayDashboard) await new Promise(resolve => setTimeout(resolve, 600));
         result = dashboard;
@@ -173,6 +186,29 @@ export default function Fixture() {
       await accounts.evaluate(element => { element.scrollLeft = element.scrollWidth; });
       await accounts.screenshot({ path: join(output, "mobile-account-source-values.png") });
     }
+    const cards = page.getByRole("region", { name: "卡牌統計", exact: true });
+    const cardTable = cards.getByRole("region", { name: "逐卡統計表", exact: true });
+    await cardTable.getByText("tf_tide_healer", { exact: true }).waitFor();
+    assert.deepEqual(requests.find(r => r.name === "tcg_admin_card_stats").params, { p_days: 28, p_source: "official",
+      p_controller: "human", p_include_tokens: false, p_mode: null, p_version: null });
+    const soldierRow = await cardTable.getByRole("row").filter({ hasText: "soldier" }).innerText();
+    for (const text of ["士兵", "41.7%", "保留 5／12 次", "改牌時常被拿掉", "常被回收"]) assert(soldierRow.includes(text), text);
+    assert((await cardTable.getByRole("row").filter({ hasText: "knight" }).innerText()).includes("無樣本"));
+    assert((await cards.innerText()).includes("9 次改牌") && (await cards.innerText()).includes("全部模式 · 全部版本"));
+    await cards.getByRole("combobox", { name: "卡牌統計排序" }).selectOption("edit_keep_rate");
+    await cards.getByRole("checkbox", { name: "由低到高" }).check();
+    assert.deepEqual(await cardTable.locator("tbody tr td:first-child small").allInnerTexts(), ["soldier", "tf_tide_healer", "knight"],
+      "Lowest retention first, no-sample rows last");
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "Card table scrolls inside its region");
+    await cards.screenshot({ path: join(output, `${prefix}-card-stats.png`) });
+    assert((await cards.getByRole("combobox", { name: "統計模式" }).innerText()).includes("天梯（10 局）"));
+    await cards.getByRole("combobox", { name: "統計模式" }).selectOption("ranked");
+    await cards.getByRole("combobox", { name: "統計版本" }).selectOption("2026.10.29-R22");
+    await cards.getByRole("button", { name: "套用／更新卡牌統計" }).click();
+    await cards.getByText("天梯 · 2026.10.29-R22", { exact: false }).waitFor();
+    assert.deepEqual(requests.filter(r => r.name === "tcg_admin_card_stats").at(-1).params, { p_days: 28, p_source: "official",
+      p_controller: "human", p_include_tokens: false, p_mode: "ranked", p_version: "2026.10.29-R22" });
+    assert(!(await cardTable.innerText()).includes("soldier"), "Filtered card response replaces the previous rows");
     await page.getByRole("combobox", { name: "耗時模式" }).selectOption("ranked");
     await page.getByRole("textbox", { name: "耗時版本" }).fill("v1.2.3");
     await page.getByRole("combobox", { name: "耗時原因" }).selectOption("concede");
@@ -192,6 +228,10 @@ export default function Fixture() {
     await section.getByRole("button", { name: "套用／更新耗時" }).click();
     await section.getByText(/對局耗時分析尚未啟用/).waitFor();
     assert((await page.locator("body").innerText()).includes("fixture@example.invalid") && await dailyPanel.isVisible(), "Missing duration RPC does not erase overview");
+    await cards.getByRole("button", { name: "套用／更新卡牌統計" }).click();
+    await cards.getByText(/卡牌統計尚未啟用/).waitFor();
+    assert((await cards.innerText()).includes("20261029_card_stats_admin_v2.sql") && await dailyPanel.isVisible(),
+      "Missing card stats RPC names both migrations and leaves the overview");
     delayDashboard = true;
     const delayedOverview = page.waitForRequest(request => request.url().includes("tcg_admin_play_dashboard"));
     await page.getByRole("button", { name: "更新統計", exact: true }).click(); await delayedOverview;
@@ -207,7 +247,7 @@ export default function Fixture() {
     await page.getByRole("button", { name: "Fixture 登出" }).click();
     await page.getByText("PRIVATE DATA CLEARED").waitFor();
     assert(!(await page.locator("body").innerText()).includes("fixture-account-001"));
-    console.log(`PASS ${prefix}: keyboard/hover/touch, units/ticks, zero/null, series filters, exact backend params, stale responses, missing RPC isolation, revoked access/logout`);
+    console.log(`PASS ${prefix}: keyboard/hover/touch, units/ticks, zero/null, series filters, exact backend params, stale responses, missing RPC isolation, revoked access/logout, card stats filters/sort/retention`);
   }
   assert.deepEqual(errors, []); assert.deepEqual(outside, []);
   console.log(`PASS no browser errors or external backend requests; screenshots: ${output}`);
