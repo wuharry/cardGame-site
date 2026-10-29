@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AdminAPI, AdminError } from "./admin-api";
 import { countAxis, dailyRows, hasMeasurement, livePresence, measuredSegments, tickIndices, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
 import MatchDuration from "./match-duration";
+import CardStatsPanel from "./card-stats";
 import styles from "./admin.module.css";
 import { DashboardOverview, WinLossBar } from "./dashboard-visuals";
 
@@ -209,6 +210,7 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
         <small>{m.wins} 勝 · {m.losses} 敗 · {m.draws} 平 · {m.abandoned} 中途離開 · {m.started - m.wins - m.losses - m.draws - m.abandoned} 尚未結束</small></div>; }) : <p className={styles.empty}>尚無遊客回報。更新遊戲客戶端後才開始收集。</p>}
       <h3>正式完賽原因 · 近 28 日</h3><div className={styles.legend}><span>擊敗 {data.formal_outcomes.defeat}</span><span>離開／斷線 {data.formal_outcomes.disconnect}</span><span>其中平手 {data.formal_outcomes.draws}</span></div></section></>}
     <MatchDuration api={api} disabled={disabled} onExpired={clearPrivateData} />
+    <CardStatsPanel api={api} disabled={disabled} onExpired={clearPrivateData} />
     <section className={styles.panel}><h3>每位玩家勝敗率 · 正式伺服器紀錄（累計）</h3><p className={styles.note}>勝率＝勝／（勝＋敗），平手另列。樣本少時只供觀察；未完賽顯示無樣本。</p>
       <div className={styles.tableScroll}><table><thead><tr><th>玩家</th><th>場次／勝敗平</th><th>勝率</th><th>敗率</th><th>目前狀態</th></tr></thead><tbody>{rates?.players.map(p => <tr key={p.id}>
         <td>{p.email}<small>{p.id}</small></td><td>{p.total} 場 · {p.wins}／{p.losses}／{p.draws}</td><td><WinLossBar wins={p.wins} losses={p.losses} draws={p.draws} /></td><td>{percent(p.loss_rate)}</td>
