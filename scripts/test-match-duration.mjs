@@ -45,7 +45,7 @@ const original = JSON.stringify(data);
 assert.equal(types.readMatchAnalytics(data), data);
 const html = renderToStaticMarkup(createElement(view.MatchDurationView, { data }));
 for (const text of ["正式伺服器耗時", "自行回報（登入者／匿名者）耗時", "不作正式戰績證明", "正常結束", "中途結束", "無樣本", "未記錄", "0 秒", "45 秒", "40 秒", "60 秒", "90 秒",
-  "歷史累計，不限近 28 日", "含管理者參與的對局", "自行回報包含登入者及匿名者", "耗時樣本只計有記錄的有效耗時", "正式伺服器每局只計一次", "僅帳號名單排除管理者", "來源可能混合", "不能合計帳號總時再算每局平均"]) assert(html.includes(text), text);
+  "歷史累計", "包含管理者對局", "自行回報含登入與匿名玩家", "未記錄耗時不補 0", "正式伺服器每局計一次", "帳號累計排除管理者", "合計可能混合伺服器與自行回報", "不可用帳號合計推算每局平均"]) assert(html.includes(text), text);
 assert(!html.includes("匿名自行回報"), "Self-reported source is not labelled as entirely anonymous");
 const accountRows = html.match(/aria-label="帳號累積時間表"[\s\S]*?<tbody>([\s\S]*?)<\/tbody>/)[1];
 const accountRow = id => accountRows.match(new RegExp(`<tr><td>${id}</td>([\\s\\S]*?)</tr>`))[1];

@@ -20,11 +20,11 @@ export function Sparkline({ values, label, dates }: { values: (number | null)[];
 
 export function TrendBadge({ data, metric }: { data: PlayDashboard; metric: "registered" | "matches" }) {
   const trend = weekTrend(data, metric);
-  if (!trend) return <small>尚缺連續兩週完整資料</small>;
+  if (!trend) return <small>資料不足兩週</small>;
   return <div className={styles.trendLine}>
-    <span className={styles.trendBadge}>{trend.change === null ? "前期為零，不計增幅" :
+    <span className={styles.trendBadge}>{trend.change === null ? "前期為零" :
       `${trend.change > 0 ? "↑ +" : trend.change < 0 ? "↓ " : "→ "}${trend.change.toFixed(1)}%`}</span>
-    <small>近七日 {trend.current} ／前七日 {trend.previous} · 含今日</small>
+    <small>近七日 {trend.current} ／前七日 {trend.previous}</small>
   </div>;
 }
 
@@ -41,22 +41,22 @@ export function DashboardOverview({ data, now, live, guestFresh }: {
       <article className={styles.metricCard} data-tone="blue"><span className={styles.metricLabel}>註冊玩家</span>
         <strong className={styles.metricValue}>{data?.counts.registered.toLocaleString("zh-TW") ?? "—"}<small>人</small></strong>
         <Sparkline values={days.map(d => d.registered)} dates={days.map(d => d.day)} label="近七日每日新增註冊" />
-        <small>曲線：每日新增註冊</small>{data && <TrendBadge data={data} metric="registered" />}</article>
+        <small>近七日新增</small>{data && <TrendBadge data={data} metric="registered" />}</article>
       <article className={styles.metricCard} data-tone={live ? "green" : stale ? "red" : "amber"}>
-        <span className={styles.metricLabel}>遊戲主機在線連線 <span className={styles.liveDot} aria-hidden="true" /></span>
+        <span className={styles.metricLabel}>主機連線 <span className={styles.liveDot} aria-hidden="true" /></span>
         <strong className={styles.metricValue}>{live?.online ?? "待確認"}<small>{live ? "條" : ""}</small></strong>
         <span className={styles.statePill}>{heartbeat}</span>
-        <small>{live ? `大廳 ${live.lobby} · 對戰 ${live.playing}` : "尚未回報或心跳已過期"}</small>
-        <small>{age !== null && Number.isFinite(age) ? `最舊心跳 ${Math.max(0, Math.floor(age))} 秒前 · 45 秒期限` : "收到有效心跳後顯示連線數"}</small>
+        {live && <small>大廳 {live.lobby} · 對戰 {live.playing}</small>}
+        {age !== null && Number.isFinite(age) && <small>最舊心跳 {Math.max(0, Math.floor(age))} 秒前</small>}
       </article>
-      <article className={styles.metricCard} data-tone="teal"><span className={styles.metricLabel}>最近活動遊客裝置</span>
+      <article className={styles.metricCard} data-tone="teal"><span className={styles.metricLabel}>活動遊客裝置 · 90 秒內</span>
         <strong className={styles.metricValue}>{guestFresh && data ? data.counts.guest_online : "待確認"}<small>{guestFresh ? "台" : ""}</small></strong>
         <Sparkline values={days.map(d => d.guest_active)} dates={days.map(d => d.day)} label="近七日每日活躍遊客裝置" />
-        <small>最近 90 秒收到回報；包含單人遊玩</small><small>曲線：每日活躍裝置，不是即時波形</small></article>
-      <article className={styles.metricCard} data-tone="amber"><span className={styles.metricLabel}>正式完成對局（累計）</span>
+        <small>曲線為近七日每日活動</small></article>
+      <article className={styles.metricCard} data-tone="amber"><span className={styles.metricLabel}>正式完賽 · 累計</span>
         <strong className={styles.metricValue}>{data?.counts.formal_matches.toLocaleString("zh-TW") ?? "—"}<small>場</small></strong>
         <Sparkline values={days.map(d => d.matches)} dates={days.map(d => d.day)} label="近七日每日正式完賽" />
-        <small>曲線：每日正式完賽</small>{data && <TrendBadge data={data} metric="matches" />}</article>
+        <small>近七日完賽</small>{data && <TrendBadge data={data} metric="matches" />}</article>
     </div>
     <div className={styles.milestones}>{[
       ["已建立收藏", data?.counts.collection_users], ["曾進正式對戰", data?.counts.admitted_users],
@@ -69,9 +69,9 @@ export function WinLossBar({ wins, losses, draws }: { wins: number; losses: numb
   const split = winSplit(wins, losses, draws);
   return <div className={styles.winLoss}>
     <div className={styles.winLossHeading}><strong>{split.rate === null ? "尚無勝敗樣本" : `${split.rate.toFixed(1)}% 勝率`}</strong>
-      <small>{split.decided < 20 ? "少量樣本，僅供觀察" : "依正式勝敗紀錄"}</small></div>
+      {split.decided < 20 && <small>少量樣本</small>}</div>
     {split.rate !== null && <div className={styles.winTrack} role="img" aria-label={`勝 ${wins}、敗 ${losses}；勝率 ${split.rate.toFixed(1)}%，平手不計入分母；中線為 50%`}>
       <span style={{ width: `${split.rate}%` }} /><i aria-hidden="true" /></div>}
-    <div className={styles.winLossLegend}><span>勝 {wins}</span><span>敗 {losses}</span><span>平 {draws} · 另列</span>{split.rate !== null && <span>中線 50%</span>}</div>
+    <div className={styles.winLossLegend}><span>勝 {wins}</span><span>敗 {losses}</span><span>平 {draws}</span></div>
   </div>;
 }

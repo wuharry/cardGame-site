@@ -26,13 +26,13 @@ export function ManaCurve({ cards }: { cards: Record<string, number> }) {
   const curve = manaCurve(cards);
   const max = Math.max(1, ...curve.buckets);
   return <section className={styles.curvePanel} aria-label="牌組魔力曲線">
-    <div className={styles.toolbar}><div><h3>魔力曲線</h3><small>按卡牌張數加權 · 最右欄為 8 費以上</small></div>
+    <div className={styles.toolbar}><div><h3>魔力曲線</h3><small>按卡牌張數加權</small></div>
       <span className={styles.statePill}>平均 {curve.average === null ? "未提供" : `${curve.average.toFixed(1)} 費`}</span></div>
     {curve.known ? <div className={styles.manaCurve} role="img" aria-label={curve.buckets.map((n, i) => `${i === 8 ? "8費以上" : `${i}費`} ${n}張`).join("，")}>
       {curve.buckets.map((count, i) => <div key={i}><strong>{count}</strong><div className={styles.manaColumn}>
         <span style={{ height: `${count / max * 100}%` }} /></div><small>{i === 8 ? "8+" : i} 費</small></div>)}
     </div> : <p className={styles.empty}>沒有可用的卡牌費用資料。</p>}
-    <small>已計入 {curve.known} 張{curve.unknown > 0 && `；另有 ${curve.unknown} 張未提供費用，未計入曲線與平均`}。</small>
+    <small>{curve.known} 張{curve.unknown > 0 && ` · ${curve.unknown} 張費用未知，未計入`}。</small>
   </section>;
 }
 

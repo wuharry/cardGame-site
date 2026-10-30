@@ -52,7 +52,7 @@ function TimePlot({ rows, series, kind, label, unit, gap }: {
     <div className={styles.seriesControls} aria-label={`${label}系列篩選`}>{series.map((s, i) => <button key={s.key} type="button"
       aria-pressed={!hidden.includes(s.key)} onClick={() => setHidden(old => old.includes(s.key) ? old.filter(k => k !== s.key) : [...old, s.key])}>
       <span style={{ color: colors[i] }} aria-hidden="true">● </span>{s.label}（{s.unit}）</button>)}</div>
-    <small>滑鼠移動、觸控點選圖表；聚焦圖表後用 ← → 選資料，Home／End 到首尾。可橫向捲動。</small>
+    <details className={styles.helpDetails}><summary>圖表操作</summary><p>滑鼠移動或觸控點選可查看數值。鍵盤聚焦後，用 ← → 選擇資料、Home／End 跳到首尾。</p></details>
     {!visible.length && <p role="status" className={styles.note}>請選擇至少一個系列。</p>}
     <div className={styles.chartScroll}><svg viewBox="0 0 720 270" role="img" tabIndex={0} aria-label={label} aria-describedby={infoId}
       onPointerMove={event => { if (event.pointerType === "mouse") pointer(event); }} onPointerDown={pointer}
@@ -99,9 +99,9 @@ export function DailyPlot({ data, kind }: { data: PlayDashboard; kind: "bar" | "
 export function DailyChart({ data }: { data: PlayDashboard }) {
   const [kind, setKind] = useState<"bar" | "line">("bar");
   return <><div className={styles.chartControls}><label>趨勢呈現<select aria-label="每日趨勢圖類型" value={kind} onChange={e => setKind(e.target.value as "bar" | "line")}>
-    <option value="bar">柱狀圖</option><option value="line">折線圖</option></select></label><small>圖表由舊到新 · 表格由新到舊 · 無資料不補 0</small></div>
+    <option value="bar">柱狀圖</option><option value="line">折線圖</option></select></label></div>
     <DailyPlot key={kind} data={data} kind={kind} />
-    <details><summary>每日數據表 · 新到舊</summary><div className={styles.tableScroll}><table><thead><tr><th scope="col" aria-sort="descending">台北日期 ↓</th><th>新增註冊（人）</th><th>遊客首次回報（台）</th><th>活躍遊客裝置（台）</th><th>正式完賽（場）</th></tr></thead>
+    <details><summary>每日數據</summary><div className={styles.tableScroll}><table><thead><tr><th scope="col" aria-sort="descending">台北日期 ↓</th><th>新增註冊（人）</th><th>遊客首次回報（台）</th><th>活躍遊客裝置（台）</th><th>正式完賽（場）</th></tr></thead>
       <tbody>{dailyRows(data.daily, true).map(d => <tr key={d.day}><td>{d.day}</td><td>{measured(d.registered)}</td><td>{measured(d.guest_installs)}</td><td>{measured(d.guest_active)}</td><td>{measured(d.matches)}</td></tr>)}</tbody></table></div></details></>;
 }
 
@@ -131,8 +131,7 @@ export function OnlineChart({ data }: { data: PlayDashboard }) {
     .map(row => ({ time: row.minute, values: onlineSeries.map(s => row[s.key]) }));
   if (!rows.length) return <p className={styles.empty}>尚無伺服器心跳資料。更新主機後才會開始記錄。</p>;
   return <><TimePlot rows={rows} series={onlineSeries} kind="line" label="最近二十四小時的伺服器連線數，缺少回報時斷線" unit="連線數（條）" gap={90000} />
-    <p className={styles.note}>每分鐘最後一筆回報；圖線中斷代表缺資料。連線數含大廳與已入場玩家，不等於不同自然人。</p>
-    <details><summary>在線精確數據表 · 新到舊</summary><div className={styles.tableScroll}><table><thead><tr><th>台北時間</th>{onlineSeries.map(s => <th key={s.key}>{s.label}（條）</th>)}</tr></thead><tbody>
+    <details><summary>連線數據</summary><div className={styles.tableScroll}><table><thead><tr><th>台北時間 ↓</th>{onlineSeries.map(s => <th key={s.key}>{s.label}（條）</th>)}</tr></thead><tbody>
       {[...rows].reverse().map(row => <tr key={row.time}><td>{date(row.time)}</td>{row.values.map((v, i) => <td key={i}>{measured(v)}</td>)}</tr>)}
     </tbody></table></div></details></>;
 }
@@ -192,35 +191,42 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
   const live = data ? livePresence(data, clock) : null;
   const guestFresh = data && clock - Date.parse(data.generated_at) < 90000;
   return <section aria-label={view === "analytics" ? "遊玩統計" : view === "guests" ? "遊客統計" : "玩家戰績統計"}>
-    <div className={styles.toolbar}><div><h2>{view === "analytics" ? "遊玩概況" : view === "guests" ? "遊客活動" : "正式玩家戰績"}</h2><small>台北日期 · 累計指標與近 28 日趨勢 · 排除管理者註冊／收藏</small></div>
-      <div><small>{data ? `資料更新：${date(data.generated_at)}` : "登入後載入統計"}</small>
-        <button disabled={busy || disabled} onClick={() => setRevision(v => v + 1)}>{busy ? "更新中…" : "更新統計"}</button></div></div>
+    <div className={styles.toolbar}><small>{data ? `更新於 ${date(data.generated_at)}` : "載入統計中…"}</small>
+      <button disabled={busy || disabled} onClick={() => setRevision(v => v + 1)}>{busy ? "更新中…" : "更新"}</button></div>
     {error && <p className={styles.message} role="status">{error} {data && "下方保留上次數據。"}</p>}
+    <details className={styles.helpDetails}><summary>指標說明</summary>
+      {view === "analytics" ? <>
+        <p>註冊與收藏數排除管理者。趨勢圖依日期由舊到新，缺資料不補 0；小圖呈現近七日每日數據，增幅比較含今日的近七日與前七日。</p>
+        <p>主機連線含大廳與對戰，不等於不重複玩家；心跳超過 45 秒即視為過期。連線圖取每分鐘最後一筆回報，斷線處表示缺資料。</p>
+        <p>活動遊客裝置指最近 90 秒收到回報，包含單人遊玩。重裝或清除存檔可能更換裝置 ID；離線活動須連網後才可見。裝置數與主機連線可能重疊，不能相加。</p>
+      </> : view === "guests" ? <>
+        <p>以下為匿名裝置自行回報的累計資料，不代表不重複玩家人數；清除存檔或重裝可能更換裝置 ID。</p>
+        <p>模式占比依對局開始次數計算，同一裝置可玩多種模式。勝敗不作排名或收藏證明；本機雙人以 player 座位計算，正式戰績以專服紀錄為準。</p>
+      </> : <p>正式伺服器累計戰績。勝率＝勝／（勝＋敗），平手另列；少量樣本僅供觀察，未完賽顯示無樣本。</p>}
+    </details>
     {view === "analytics" && <><DashboardOverview data={data} now={clock} live={live} guestFresh={!!guestFresh} />
-    <p className={styles.note}>遊客裝置 ID 清除存檔／重裝後可能改變，不能視為不同人數；離線活動要等連網才看得到。遊客活動數與主機連線可能重疊，不能相加。</p>
     {data && <div className={styles.chartGrid}>
       <article className={styles.panel}><h3>每日玩家活動 · 近 28 日</h3><DailyChart data={data} /></article>
       <article className={styles.panel}><h3>主機連線 · 最近 24 小時</h3><OnlineChart data={data} />
-        {data.servers.map(s => <small key={s.server_id}>{s.server_id} · 回報 {date(s.received_at)} · {s.fresh && clock - Date.parse(s.received_at) < 45000 ? "有效" : "已過期"}</small>)}</article>
+        {!!data.servers.length && <details className={styles.helpDetails}><summary>主機回報狀態</summary>
+          {data.servers.map(s => <p key={s.server_id}>{s.server_id} · {date(s.received_at)} · {s.fresh && clock - Date.parse(s.received_at) < 45000 ? "有效" : "已過期"}</p>)}</details>}</article>
     </div>}
     {data && <section className={styles.panel}><h3>正式完賽原因 · 近 28 日</h3><div className={styles.legend}><span>擊敗 {data.formal_outcomes.defeat}</span><span>離開／斷線 {data.formal_outcomes.disconnect}</span><span>其中平手 {data.formal_outcomes.draws}</span></div></section>}</>}
-    {view === "guests" && data && <><section className={styles.panel}><h3>遊客遊玩模式占比 · 累計自行回報</h3>
-      <p className={styles.note}>以各模式的對局開始次數計算；同一裝置可遊玩多種模式，不代表玩家人數占比。</p><ModeChart data={data} />
-    </section><section className={styles.panel}><h3>遊客遊玩結果 · 累計自行回報</h3>
-      <p className={styles.note}>不作排名或收藏證明。本機雙人的勝敗以本機 player 座位計算；外網正式戰績以伺服器紀錄為準。</p>
+    {view === "guests" && data && <><section className={styles.panel}><h3>模式占比 · 自行回報</h3><ModeChart data={data} />
+    </section><section className={styles.panel}><h3>遊玩結果 · 自行回報</h3>
       {data.guest_modes.length ? data.guest_modes.map(m => { const total = Math.max(1, m.started); return <div className={styles.modeRow} key={m.mode}>
         <span>{modes[m.mode] ?? m.mode} · {m.started} 次開始</span><div className={styles.stacked} role="img" aria-label={`${m.wins} 勝、${m.losses} 敗、${m.draws} 平、${m.abandoned} 中途離開`}>
           {[m.wins, m.losses, m.draws, m.abandoned].map((n, i) => <span key={i} style={{ width: `${n / total * 100}%`, background: ["#7cc9bf", "#de9d98", "#dcc58c", "#6f8090"][i] }} />)}</div>
         <small>{m.wins} 勝 · {m.losses} 敗 · {m.draws} 平 · {m.abandoned} 中途離開 · {m.started - m.wins - m.losses - m.draws - m.abandoned} 尚未結束</small></div>; }) : <p className={styles.empty}>尚無遊客回報。更新遊戲客戶端後才開始收集。</p>}
       </section></>}
-    {view === "player-rates" && <section className={styles.panel}><h3>每位玩家勝敗率 · 正式伺服器紀錄（累計）</h3><p className={styles.note}>勝率＝勝／（勝＋敗），平手另列。樣本少時只供觀察；未完賽顯示無樣本。</p>
+    {view === "player-rates" && <section className={styles.panel}><p className={styles.note}>正式伺服器 · 累計戰績</p>
       <div className={styles.tableScroll}><table><thead><tr><th>玩家</th><th>場次／勝敗平</th><th>勝率</th><th>敗率</th><th>目前狀態</th></tr></thead><tbody>{rates?.players.map(p => <tr key={p.id}>
         <td>{p.email}<small>{p.id}</small></td><td>{p.total} 場 · {p.wins}／{p.losses}／{p.draws}</td><td><WinLossBar wins={p.wins} losses={p.losses} draws={p.draws} /></td><td>{percent(p.loss_rate)}</td>
         <td>{live && p.verified_match_online ? "正式對戰中" : "未確認對戰在線"}</td></tr>)}</tbody></table></div>
       <footer className={styles.pagination}><button disabled={busy || disabled || ratePage === 0} onClick={() => setRatePage(p => p - 1)}>上一頁戰績</button><span>第 {ratePage + 1} 頁</span>
         <button disabled={busy || disabled || (rates?.players.length ?? 0) < 25} onClick={() => setRatePage(p => p + 1)}>下一頁戰績</button></footer>
     </section>}
-    {view === "guests" && <section className={styles.panel}><h3>遊客裝置資料 · 匿名自行回報</h3><div className={styles.tableScroll}><table><thead><tr><th>匿名裝置 ID</th><th>最近活動／首次回報</th><th>版本／平台</th><th>啟動／對戰時間</th><th>模式與結果</th></tr></thead>
+    {view === "guests" && <section className={styles.panel}><h3>匿名裝置</h3><div className={styles.tableScroll}><table><thead><tr><th>匿名裝置 ID</th><th>最近活動／首次回報</th><th>版本／平台</th><th>啟動／對戰時間</th><th>模式與結果</th></tr></thead>
       <tbody>{guests?.players.map(g => <tr key={g.install_id}><td>{g.install_id}<small>{guestFresh && g.online ? "近期收到活動" : "未確認活動"}</small></td>
         <td>{date(g.last_seen)}<small>{date(g.first_seen)}</small></td><td>{g.stats.version}<small>{g.stats.platform}</small></td>
         <td>{g.stats.launches} 次 · {Math.floor(g.stats.play_seconds / 60)} 分</td><td>{Object.entries(g.stats.modes).filter(([, c]) => c.started > 0).map(([m, c]) => <small key={m}>{modes[m] ?? m}：{c.started} 開始 · {c.wins} 勝 {c.losses} 敗 {c.draws} 平 {c.abandoned} 離開</small>)}</td></tr>)}</tbody></table></div>

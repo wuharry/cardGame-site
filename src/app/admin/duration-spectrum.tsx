@@ -13,16 +13,16 @@ export default function DurationSpectrum({ data }: { data: MatchAnalytics }) {
       const stats = durationBuckets(data.matches, source);
       const warning = stats.total >= 20 && stats.longShare !== null && stats.longShare > .05;
       return <section key={source} className={styles.spectrumCard} data-warning={warning} aria-label={source === "server" ? "正式伺服器近期時長分布" : "自行回報近期時長分布"}>
-        <div className={styles.toolbar}><h4>{source === "server" ? "正式伺服器" : "自行回報 · 非正式戰績"}</h4><span className={styles.statePill}>{stats.total} 場有效樣本</span></div>
-        <p className={styles.note}>僅近期回傳紀錄，非全歷史分布；含中途結束。未記錄 {stats.unknown} 場，不補成短局。</p>
+        <div className={styles.toolbar}><h4>{source === "server" ? "正式伺服器" : "自行回報"} · 近期分布</h4><span className={styles.statePill}>{stats.total} 場樣本</span></div>
+        {stats.unknown > 0 && <p className={styles.note}>{stats.unknown} 場未記錄耗時</p>}
         {stats.total ? <>
           <div className={styles.spectrumBar} role="img" aria-label={bands.map((b, i) => `${b.label} ${stats.buckets[i]}場`).join("，")}>
             {bands.map((b, i) => <span key={b.label} style={{ flexGrow: stats.buckets[i], background: b.color }}><span className={styles.srOnly}>{b.label} {stats.buckets[i]} 場</span></span>)}
           </div>
           <div className={styles.spectrumLegend}>{bands.map((b, i) => <div key={b.label}><span style={{ color: b.color }}>{b.label}</span>
             <strong>{(stats.buckets[i] / stats.total * 100).toFixed(1)}%</strong><small>{b.range} · {stats.buckets[i]} 場</small></div>)}</div>
-          {warning && <p className={styles.observation}>長局超過 5% · 觀察提示，不代表死鎖或惡意拖延。</p>}
-          {stats.total < 20 && <small>少於 20 場，暫不觸發長局占比提示。</small>}
+          {warning && <p className={styles.observation}>長局超過 5% · 建議觀察</p>}
+          {stats.total < 20 && <small>少量樣本</small>}
         </> : <p className={styles.empty}>目前沒有已記錄耗時的近期對局。</p>}
       </section>;
     })}

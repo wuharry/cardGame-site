@@ -28,7 +28,7 @@ check(online.includes('role="img"') && (online.match(/<circle/g) ?? []).length =
 data.daily = [{ day: "2026-10-12", registered: 1, guest_installs: 2, guest_active: 3, matches: 4 },
   { day: "2026-10-13", registered: 0, guest_installs: 0, guest_active: 0, matches: 0 }];
 const daily = renderToStaticMarkup(createElement(charts.DailyChart, { data }));
-check(daily.includes("每日數據表") && daily.includes("2026-10-12") && !daily.includes("NaN"), "Daily chart includes exact values in an accessible table");
+check(daily.includes("每日數據") && daily.includes("2026-10-12") && !daily.includes("NaN"), "Daily chart includes exact values in an accessible table");
 const body = daily.match(/<tbody>([\s\S]*?)<\/tbody>/)[1];
 check(body.indexOf("2026-10-13") < body.indexOf("2026-10-12") && daily.includes('aria-sort="descending"'), "Daily table defaults to newest first with sort semantics");
 const original = JSON.stringify(data.daily);

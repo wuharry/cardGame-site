@@ -19,16 +19,16 @@ export default function AdminNavigation({ page, disabled, pending, onSelect }: {
   page: AdminPage; disabled: boolean; pending: boolean; onSelect: (page: AdminPage) => void;
 }) {
   return <aside className={styles.sidebar}>
-    <div className={styles.sidebarBrand}><span className={styles.eyebrow}>DECKMARCH</span><strong>營運控制台</strong><small>管理工作區</small></div>
+    <div className={styles.sidebarBrand}><strong>管理後台</strong></div>
     <nav className={styles.pageNav} aria-label="後台功能">
       {adminPages.map(item => <a key={item.id} href={`#${item.id}`} aria-current={page === item.id ? "page" : undefined}
         aria-disabled={disabled || undefined} onClick={event => { event.preventDefault(); if (!disabled) onSelect(item.id); }}>
-        <span className={styles.navNumber} aria-hidden="true">{item.number}</span><span><strong>{item.label}</strong><small>{item.description}</small></span>
+        <strong>{item.label}</strong>
       </a>)}
     </nav>
     <label className={styles.mobilePageSelect}>後台功能<select value={page} disabled={disabled} onChange={event => onSelect(pageFromHash(`#${event.target.value}`))}>
       {adminPages.map(item => <option key={item.id} value={item.id}>{item.label}</option>)}
     </select></label>
-    <p className={styles.navHelp}>{pending ? "請先完成或取消待確認的操作，再切換頁面。" : "選擇功能即可切換頁面"}</p>
+    {pending && <p className={styles.navHelp}>請先完成或取消待確認操作。</p>}
   </aside>;
 }

@@ -6,7 +6,7 @@ const types = await loadTsModule(new URL('../src/app/admin/play-analytics-types.
 const metrics = await loadTsModule(new URL('../src/app/admin/dashboard-metrics.ts', import.meta.url), { './play-analytics-types': types });
 const { default: Commerce } = await loadTsModule(new URL('../src/app/admin/player-commerce.tsx', import.meta.url), { './admin.module.css': {}, './dashboard-metrics': metrics }, { allowNodeModules: true });
 const render = (value) => renderToStaticMarkup(createElement(Commerce, { value }));
-assert.match(render(undefined), /餘額未知/);
+assert.match(render(undefined), /無法確認餘額/);
 assert.match(render(null), /尚未建立商店資產/);
 const html = render({ initialized: true, gold: 100, diamonds: 0, equipped_emotes: ['taunt_tea'],
   owned_emotes: [{ id: 'taunt_tea', text: '<script>test</script>', request_id: 'unlock-uuid', acquired_at: '2026-10-19T00:00:00Z' }],

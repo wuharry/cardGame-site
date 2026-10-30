@@ -186,9 +186,11 @@ export default function Fixture() {
     assert((await online.locator('[aria-live="polite"]').innerText()).includes("全部連線：0 條"));
     await online.screenshot({ path: join(output, `${prefix}-online.png`) });
     assert((await section.innerText()).includes("0 秒") && (await section.innerText()).includes("未記錄"));
-    for (const text of ["歷史累計，不限近 28 日", "含管理者參與的對局", "自行回報包含登入者及匿名者", "僅帳號名單排除管理者"]) {
+    await section.getByText("指標說明", { exact: true }).click();
+    for (const text of ["歷史累計", "包含管理者對局", "自行回報含登入與匿名玩家", "帳號累計排除管理者"]) {
       assert((await section.innerText()).includes(text), text);
     }
+    await section.getByText("指標說明", { exact: true }).click();
     const accounts = section.getByRole("region", { name: "帳號累積時間表", exact: true });
     const accountRow = accounts.getByRole("row").filter({ hasText: "fixture-account-001" });
     for (const text of ["2,137.25 秒", "1,500 秒", "637.25 秒"]) assert((await accountRow.innerText()).includes(text), text);
@@ -210,19 +212,22 @@ export default function Fixture() {
     }
     const cards = page.getByRole("region", { name: "卡牌統計", exact: true });
     const cardTable = cards.getByRole("region", { name: "逐卡統計表", exact: true });
+    await cards.getByRole("checkbox", { name: "詳細數據", exact: true }).check();
     await cardTable.getByText("tf_tide_healer", { exact: true }).waitFor();
     assert.deepEqual(requests.find(r => r.name === "tcg_admin_card_stats").params, { p_days: 28, p_source: "official",
       p_controller: "human", p_include_tokens: false, p_mode: null, p_version: null });
     const soldierRow = await cardTable.getByRole("row").filter({ hasText: "soldier" }).innerText();
-    for (const text of ["士兵", "41.7%", "保留 5／12 次", "改牌時常被拿掉", "常被回收"]) assert(soldierRow.includes(text), text);
+    for (const text of ["士兵", "41.7%", "保留 5／12", "改牌時常被拿掉", "常被回收"]) assert(soldierRow.includes(text), text);
     assert((await cardTable.getByRole("row").filter({ hasText: "knight" }).innerText()).includes("無樣本"));
-    assert((await cards.innerText()).includes("9 次改牌") && (await cards.innerText()).includes("全部模式 · 全部版本"));
+    const cardSummary = (await cards.innerText()).replace(/\s+/g, " ");
+    assert(cardSummary.includes("9 次改牌") && cardSummary.includes("已套用：近 28 日 · 正式對戰 · 真人"));
     await cards.getByRole("combobox", { name: "卡牌統計排序" }).selectOption("edit_keep_rate");
     await cards.getByRole("checkbox", { name: "由低到高" }).check();
     assert.deepEqual(await cardTable.locator("tbody tr td:first-child small").allInnerTexts(), ["soldier", "tf_tide_healer", "knight"],
       "Lowest retention first, no-sample rows last");
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "Card table scrolls inside its region");
     await cards.screenshot({ path: join(output, `${prefix}-card-stats.png`) });
+    await cards.getByText("進階篩選", { exact: true }).click();
     assert((await cards.getByRole("combobox", { name: "統計模式" }).innerText()).includes("天梯（10 局）"));
     await cards.getByRole("combobox", { name: "統計模式" }).selectOption("ranked");
     await cards.getByRole("combobox", { name: "統計版本" }).selectOption("2026.10.29-R22");
@@ -230,35 +235,35 @@ export default function Fixture() {
     await cards.getByText("天梯 · 2026.10.29-R22", { exact: false }).waitFor();
     assert.deepEqual(requests.filter(r => r.name === "tcg_admin_card_stats").at(-1).params, { p_days: 28, p_source: "official",
       p_controller: "human", p_include_tokens: false, p_mode: "ranked", p_version: "2026.10.29-R22" });
-    assert(!(await cardTable.innerText()).includes("soldier"), "Filtered card response replaces the previous rows");
+    assert(!(await cardTable.innerText()).includes("士兵"), "Filtered card response replaces the previous rows");
     await page.getByRole("combobox", { name: "耗時模式" }).selectOption("ranked");
     await page.getByRole("textbox", { name: "耗時版本" }).fill("v1.2.3");
     await page.getByRole("combobox", { name: "耗時原因" }).selectOption("concede");
-    await section.getByRole("button", { name: "套用／更新耗時" }).click();
+    await section.getByRole("button", { name: "查詢", exact: true }).click();
     await page.waitForFunction(() => !document.body.innerText.includes("耗時資料載入中"));
     assert.deepEqual(requests.filter(r => r.name === "tcg_admin_match_analytics").at(-1).params, { p_mode: "ranked", p_version: "v1.2.3", p_reason: "concede" });
     assert(!(await section.innerText()).includes("fixture-formal-new"));
     await page.getByRole("textbox", { name: "耗時版本" }).fill("delayed");
     const delayed = page.waitForRequest(request => request.url().includes("tcg_admin_match_analytics") && request.postDataJSON().p_version === "delayed");
-    await section.getByRole("button", { name: "套用／更新耗時" }).click(); await delayed;
+    await section.getByRole("button", { name: "查詢", exact: true }).click(); await delayed;
     await page.getByRole("textbox", { name: "耗時版本" }).fill("no-such-version");
-    await section.getByRole("button", { name: "套用／更新耗時" }).click();
+    await section.getByRole("button", { name: "查詢", exact: true }).click();
     await page.waitForTimeout(850);
     assert(!(await section.innerText()).includes("STALE-PRIVATE-RESULT"), "Stale filter response is discarded");
     assert((await section.innerText()).includes("尚無近期對局"));
     scenario = "missing";
-    await section.getByRole("button", { name: "套用／更新耗時" }).click();
+    await section.getByRole("button", { name: "查詢", exact: true }).click();
     await section.getByText(/對局耗時分析尚未啟用/).waitFor();
     assert((await page.locator("body").innerText()).includes("fixture@example.invalid") && await dailyPanel.isVisible(), "Missing duration RPC does not erase overview");
     await cards.getByRole("button", { name: "套用／更新卡牌統計" }).click();
     await cards.getByText(/卡牌統計尚未啟用/).waitFor();
-    assert((await cards.innerText()).includes("20261029_card_stats_admin_v2.sql") && await dailyPanel.isVisible(),
-      "Missing card stats RPC names both migrations and leaves the overview");
+    assert((await cards.innerText()).includes("請聯絡維護人員") && await dailyPanel.isVisible(),
+      "Missing card stats RPC provides a concise next step and leaves the overview");
     delayDashboard = true;
     const delayedOverview = page.waitForRequest(request => request.url().includes("tcg_admin_play_dashboard"));
-    await page.getByRole("button", { name: "更新統計", exact: true }).first().click(); await delayedOverview;
+    await page.getByRole("region", { name: "遊玩統計", exact: true }).getByRole("button", { name: "更新", exact: true }).click(); await delayedOverview;
     scenario = "expired";
-    await section.getByRole("button", { name: "套用／更新耗時" }).click();
+    await section.getByRole("button", { name: "查詢", exact: true }).click();
     await page.getByText("PRIVATE DATA CLEARED").waitFor();
     await page.waitForTimeout(850); delayDashboard = false;
     assert(!(await page.locator("body").innerText()).includes("fixture@example.invalid"));
@@ -364,10 +369,10 @@ export default function Fixture() {
     await page.getByText("操作完成並已留下紀錄。", { exact: true }).waitFor();
     assert.deepEqual(calls.filter(c => c.name === "tcg_admin_change").map(c => c.body.p_request), [mutationId, mutationId], "Retry preserves mutation UUID");
     await select("guests", "遊客分析");
-    await page.getByText("遊客裝置資料 · 匿名自行回報", { exact: true }).waitFor();
+    await page.getByRole("heading", { name: "匿名裝置", exact: true }).waitFor();
     await select("player-rates", "玩家戰績");
-    await page.getByText("每位玩家勝敗率 · 正式伺服器紀錄（累計）", { exact: true }).waitFor();
-    assert.equal(await page.getByText("遊客裝置資料 · 匿名自行回報", { exact: true }).count(), 0);
+    await page.getByText("正式伺服器 · 累計戰績", { exact: true }).waitFor();
+    assert.equal(await page.getByRole("heading", { name: "匿名裝置", exact: true }).count(), 0);
     slowCards = true;
     await select("card-stats", "卡牌統計");
     await select("match-duration", "對局耗時");

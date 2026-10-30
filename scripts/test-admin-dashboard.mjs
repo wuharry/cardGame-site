@@ -33,9 +33,9 @@ const buckets = metrics.durationBuckets([...matches, matches[0], { match_id: "re
 assert.deepEqual(buckets.buckets, [2, 2, 2, 1]);
 check(buckets.total === 7 && buckets.unknown === 2, "Duration bands have exact boundaries, source separation, deduplication and missing values");
 const html = render(spectrum.default, { data: { matches } });
-check(html.includes("非全歷史分布") && html.includes("未記錄 2 場") && html.includes("少於 20 場"), "Spectrum states its recent-sample scope and suppresses small-sample alerts");
+check(html.includes("近期分布") && html.includes("2 場未記錄耗時") && html.includes("少量樣本") && !html.includes("長局超過 5%"), "Spectrum states its recent-sample scope and suppresses small-sample alerts");
 const warning = render(spectrum.default, { data: { matches: Array.from({ length: 20 }, (_, i) => ({ source: "server", match_id: String(i), duration_seconds: i < 2 ? 1000 : 200 })) } });
-check(warning.includes("長局超過 5%") && warning.includes("不代表死鎖"), "Long matches are observations, never a diagnosis");
+check(warning.includes("長局超過 5%") && warning.includes("建議觀察"), "Long matches are observations, never a diagnosis");
 check(!render(spectrum.default, { data: { matches: [] } }).includes("NaN"), "Empty spectra have no fabricated percentage");
 
 check(metrics.winSplit(2, 3, 10).rate === 40, "Draws do not dilute the win/loss denominator");

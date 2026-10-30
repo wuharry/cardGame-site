@@ -222,8 +222,7 @@ export default function AdminConsole() {
     {session && <AdminNavigation page={page} disabled={busy || !!pending} pending={!!pending} onSelect={selectPage} />}
     <div className={styles.workspaceContent}>
     <header className={styles.header}>
-      <div><p className={styles.eyebrow}>DECKMARCH / OPERATIONS</p><h1>{session ? currentPage.label : "管理後台"}</h1>
-        <p>{session ? currentPage.description : "掌握遊玩活動、對局與玩家資產"}</p></div>
+      <h1>{session ? currentPage.label : "管理後台"}</h1>
       <div className={styles.headerRight}><Link href="/">回官網</Link>{session && <>
         <span>{session.email}</span><button disabled={busy || !!pending} onClick={() => void work(async () => {
           await api.signOut(); clearPrivateState();
@@ -231,13 +230,10 @@ export default function AdminConsole() {
     </header>
     {message && <p role="status" className={styles.message}>{message}</p>}
     {!session ? <section className={styles.login}>
-      <span className={styles.badge}>{setup ? "管理者密碼設定" : "管理者登入"}</span>
-      <h2>{setup ? "首次設定／忘記密碼" : "帳號密碼登入"}</h2>
-      <p>{setup ? "先驗證已授權的管理者信箱，再設定新密碼。此流程不會建立新帳號。"
-        : "使用已授權的 Email 與管理後台密碼登入。一般玩家帳號無法查閱其他人的資料。"}</p>
+      <h2>{setup ? "設定管理者密碼" : "管理者登入"}</h2>
       <p id="admin-login-help" className={styles.note}>{setup
-        ? "新密碼至少 12 個字元。請設定管理後台專用密碼。"
-        : "請輸入管理後台專用密碼，並非 Google／Gmail 的密碼。"}</p>
+        ? "驗證已授權信箱後設定密碼，至少 12 個字元。"
+        : "請用後台專用密碼，不是 Google／Gmail 密碼。"}</p>
       <form onSubmit={(event) => { event.preventDefault(); void work(setup ? setupPassword : login); }}>
         <label>管理者 Email<input type="email" name="email" autoComplete="username" autoCapitalize="none" required value={email}
           disabled={busy || (setup && sent)} maxLength={254}
@@ -262,7 +258,6 @@ export default function AdminConsole() {
           setSetup(true); setPassword(""); setConfirmPassword(""); setCode(""); setMessage("");
         }}>首次設定／忘記密碼</button>}
       </form>
-      <p className={styles.note}>此頁查詢正式雲端資料。未註冊的本機訪客不列入註冊玩家。</p>
     </section> : <>
       {(page === "analytics" || page === "guests" || page === "player-rates") &&
         <PlayAnalytics key={page} view={page} api={api} disabled={busy || !!pending} onExpired={expired} />}
@@ -270,15 +265,15 @@ export default function AdminConsole() {
       {page === "match-duration" && <MatchDuration api={api} disabled={busy || !!pending} onExpired={expired} />}
       {page === "players" && <>
       <section className={styles.summary}>
-        <div><span>Auth 帳號（含管理者）</span><strong>{list?.registered ?? "—"}</strong></div>
-        <div><span>本次搜尋結果</span><strong>{list?.total ?? "—"}</strong></div>
+        <div><span>帳號總數（含管理者）</span><strong>{list?.registered ?? "—"}</strong></div>
+        <div><span>搜尋結果</span><strong>{list?.total ?? "—"}</strong></div>
         <div><span>管理權限</span><strong>{session.access_level === "operator" ? "查詢與管理" : "唯讀查詢"}</strong></div>
       </section>
       <section id="players" className={styles.panel}>
         <div className={styles.toolbar}><h2>註冊玩家</h2><form onSubmit={(e) => { e.preventDefault(); void work(() => loadList()); }}>
           <input aria-label="搜尋 Email 或玩家 ID" placeholder="搜尋 Email 或玩家 ID" value={search} maxLength={100}
             onChange={(e) => setSearch(e.target.value)} disabled={busy || !!pending} />
-          <button disabled={busy || !!pending}>搜尋／更新</button></form></div>
+          <button disabled={busy || !!pending}>搜尋</button></form></div>
         <div className={styles.tableScroll}><table><thead><tr><th>Email／玩家 ID</th><th>註冊／最近登入</th><th>驗證</th><th>收藏</th><th>包券／剩餘新手抽數</th><th>對戰</th><th /></tr></thead>
           <tbody>{list?.players.map((player) => <tr key={player.id} className={detail?.user.id === player.id ? styles.selected : ""}>
             <td>{player.email}<small>{player.id}</small></td><td>{date(player.created_at)}<small>{date(player.last_sign_in_at)}</small></td>
@@ -295,7 +290,7 @@ export default function AdminConsole() {
             onClick={() => void work(() => loadList((list?.page ?? 0) + 1))}>下一頁</button></footer>
       </section>
       {detail && <section className={styles.panel}>
-        <div className={styles.toolbar}><div><p className={styles.eyebrow}>PLAYER RECORD</p><h2>{detail.user.email}</h2><small>{detail.user.id}</small></div>
+        <div className={styles.toolbar}><div><h2>{detail.user.email}</h2><small>{detail.user.id}</small></div>
           <span className={styles.badge}>{detail.restriction.suspended ? "對戰已停權" : "對戰正常"}</span></div>
         <div className={styles.detailStats}>
           <span>註冊 {date(detail.user.created_at)}</span><span>最近登入 {date(detail.user.last_sign_in_at)}</span>
@@ -312,7 +307,7 @@ export default function AdminConsole() {
           setTab(key); if (key === "mail") void work(() => loadMail(detail.user.id));
         }} key={key}>{label}</button>)}</nav>
         {tab === "mail" && <div>
-          <p className={styles.note}>寄信不立即補發；玩家領取時才入帳。同一封信只能領一次，遊客不接收雲端禮物。</p>
+          <p className={styles.note}>附件於玩家領取後入帳，每封信限領一次。</p>
           <div className={styles.tableScroll}><table><thead><tr><th>時間／標題</th><th>內容／附件</th><th>領取狀態</th><th>原因／發送者</th></tr></thead><tbody>
             {mail?.items.map((m) => <tr key={m.id}><td>{date(m.created_at)}<small>{m.title}</small><small>{m.id}</small></td>
               <td>{m.body}<small>卡包券 × {m.pack_tickets}</small></td>
@@ -326,7 +321,7 @@ export default function AdminConsole() {
           </footer>
         </div>}
         {tab === "commerce" && <PlayerCommerce key={detail.user.id} value={detail.commerce} />}
-        {tab === "collection" && <><p className={styles.note}>雲端持有量，不是玩家端自行回報。費用與稀有度取自公開 R18 卡池；未收錄卡片保留識別碼，不猜數值。</p><PlayerCards cards={detail.collection} />
+        {tab === "collection" && <><details className={styles.helpDetails}><summary>資料來源</summary><p>持有量取自雲端；費用與稀有度依公開 R18 卡池，未收錄的卡片保留識別碼。</p></details><PlayerCards cards={detail.collection} />
           {!Object.keys(detail.collection).length && <p className={styles.empty}>玩家目前沒有持有卡牌。</p>}</>}
         {tab === "receipts" && <div className={styles.tableScroll}><table><thead><tr><th>時間</th><th>來源／數量</th><th>結果</th></tr></thead><tbody>
           {detail.receipts.map((r) => <tr key={r.source + r.request_id}><td>{date(r.created_at)}</td><td>{r.source === "starter" ? "新手抽卡" : r.pack_id} · {r.draw_count} 張</td>
@@ -334,7 +329,7 @@ export default function AdminConsole() {
         {tab === "matches" && <div className={styles.tableScroll}><table><thead><tr><th>時間</th><th>結果</th><th>對手 ID</th><th>結束原因</th></tr></thead><tbody>
           {detail.matches.map((m) => <tr key={m.match_id}><td>{date(m.completed_at)}</td><td>{outcome[m.outcome as keyof typeof outcome] ?? m.outcome}</td><td>{m.opponent_id}</td><td>{m.reason === "disconnect" ? "離開／斷線" : "擊敗"}</td></tr>)}</tbody></table>
           {!detail.matches.length && <p className={styles.empty}>尚無正式對局紀錄。</p>}</div>}
-        {tab === "deck" && <><p className={styles.note}>牌組草稿仍保存在玩家本機。這裡是最近一次通過伺服器入場驗證的牌表，可能與目前草稿不同。</p>
+        {tab === "deck" && <><p className={styles.note}>最近通過入場驗證的牌組，可能與玩家目前草稿不同。</p>
           {detail.last_submitted_deck ? <><p>{detail.last_submitted_deck.deck_id} · {date(detail.last_submitted_deck.submitted_at)}</p>
             <ManaCurve cards={detail.last_submitted_deck.cards} /><PlayerCards cards={detail.last_submitted_deck.cards} /></>
             : <p className={styles.empty}>尚無通過驗證的對局牌組。</p>}</>}
@@ -343,7 +338,8 @@ export default function AdminConsole() {
             <td>{a.reason}<small>{a.actor_id}</small></td><td><code>{JSON.stringify(a.before_value)} → {JSON.stringify(a.after_value)}</code></td></tr>)}</tbody></table>
           {!detail.audit.length && <p className={styles.empty}>尚無管理操作。</p>}</div>}
         {session.access_level === "operator" && <section className={styles.management}>
-          <h3>管理操作</h3><p className={styles.note}>補發需填原因，每笔保留前後數量與操作者。停權阻止新的正式對戰入場，不刪除帳號或收藏，也不強制中斷已開始的對局。</p>
+          <h3>管理操作</h3>
+          {(pending?.p_action ?? action) === "suspend" && <p className={styles.note}>停權會阻止新的正式對戰；既有對局、帳號與收藏不受影響。</p>}
           {pending ? <div className={styles.confirmation}>
             <strong>確認對 {detail.user.email} 執行「{actions[pending.p_action]}」</strong>
             <p>{pending.p_payload.card_id && `${name(pending.p_payload.card_id)} · `}{pending.p_payload.amount && `${pending.p_payload.amount} 份`} · {pending.p_reason}</p>
@@ -351,7 +347,7 @@ export default function AdminConsole() {
             <small>操作編號：{pending.p_request}</small>
             <button className={styles.primary} disabled={busy} onClick={() => void work(commitChange)}>{busy ? "處理中…" : "確認／重試同一筆操作"}</button>
             {!attempted && <button disabled={busy} onClick={() => setPending(null)}>取消</button>}
-            <p className={styles.note}>如果出現連線未完成，請按同一個按鈕重試。確認結果前保留此筆，避免重複補發。</p>
+            <p className={styles.note}>連線未完成時，請重試同一筆操作，避免重複補發。</p>
           </div> : <form onSubmit={(e) => { e.preventDefault(); prepareChange(); }} className={styles.manageForm}>
             <label>操作<select value={action} disabled={busy} onChange={(e) => { setAction(e.target.value as Change["p_action"]); setAmount(1); }}>
               {Object.entries(actions).map(([key, label]) => <option value={key} key={key}>{label}</option>)}</select></label>
@@ -370,7 +366,7 @@ export default function AdminConsole() {
       </section>}
       </>}
     </>}
-    <footer className={styles.footnote}>資料時間以台北顯示 · 登入後才查詢私人資料 · 最近抽卡／對局／操作各顯示 30 筆</footer>
+    {session && <footer className={styles.footnote}>台北時間{page === "players" && " · 抽卡／對局／操作各顯示最近 30 筆"}</footer>}
     </div>
   </main>;
 }
