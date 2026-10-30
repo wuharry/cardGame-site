@@ -43,7 +43,7 @@ export function DownloadPanel() {
           {available.length > 0 && (
             <nav aria-label="可下載的平台" className="mt-5 flex flex-wrap gap-2">
               {available.map((build) => (
-                <a key={build.id} href={`#download-${build.id}`} className="border border-brass-dim px-3 py-2 text-sm text-brass-hi hover:border-brass">
+                <a key={build.id} href={`#download-${build.id}`} className="press-button border border-brass-dim px-3 py-2 text-sm text-brass-hi hover:border-brass">
                   選擇 {build.platform}
                 </a>
               ))}
@@ -120,7 +120,7 @@ function FeaturedBuild({ build }: { build: Build }) {
           <a
             href={href}
             download={build.file ?? undefined}
-            className="notch border border-brass bg-brass px-6 py-4 text-center text-ink transition-colors hover:bg-brass-hi"
+            className="press-button press-button-primary notch border border-brass bg-brass px-6 py-4 text-center text-ink transition-colors hover:bg-brass-hi"
           >
             <span
               className="block text-lg tracking-[0.2em] uppercase font-hud font-bold"
@@ -177,7 +177,7 @@ function FeaturedBuild({ build }: { build: Build }) {
             >GitHub 備用下載（同一份 APK）</a>}
             <Link
               href="/install/android"
-              className="block border border-brass-dim px-5 py-3 text-center text-base text-brass-hi transition-colors hover:border-brass hover:text-parchment"
+              className="press-button block border border-brass-dim px-5 py-3 text-center text-base text-brass-hi transition-colors hover:border-brass hover:text-parchment"
             >
               已下載？查看安裝教學
             </Link>
@@ -272,7 +272,7 @@ function BuildRow({ build }: { build: Build }) {
       {href ? (
         <a
           href={href}
-          className="border border-brass-dim px-3 py-1 text-[0.7rem] tracking-[0.16em] text-brass-hi uppercase transition-colors hover:border-brass font-hud"
+          className="press-button border border-brass-dim px-3 py-1 text-[0.7rem] tracking-[0.16em] text-brass-hi uppercase transition-colors hover:border-brass font-hud"
         >
           下載 {build.platform} 版
         </a>

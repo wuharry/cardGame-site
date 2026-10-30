@@ -194,7 +194,7 @@ function Exploded3DCardStage({
           <button
             type="button"
             onClick={() => setIsExploded(false)}
-            className={`border px-2.5 py-1 text-xs cursor-pointer transition-colors ${
+            className={`press-button border px-2.5 py-1 text-xs cursor-pointer transition-colors ${
               !isExploded
                 ? "border-brass bg-brass text-ink font-bold"
                 : "border-rule text-quill hover:border-brass-dim"
@@ -205,7 +205,7 @@ function Exploded3DCardStage({
           <button
             type="button"
             onClick={() => setIsExploded(true)}
-            className={`border px-2.5 py-1 text-xs cursor-pointer transition-colors ${
+            className={`press-button border px-2.5 py-1 text-xs cursor-pointer transition-colors ${
               isExploded
                 ? "border-brass bg-brass text-ink font-bold shadow-[0_0_12px_rgba(200,162,60,0.4)]"
                 : "border-rule text-quill hover:border-brass-dim"
@@ -218,7 +218,7 @@ function Exploded3DCardStage({
         <button
           type="button"
           onClick={onToggleWard}
-          className="border border-crimson-dim bg-ink px-2.5 py-1 text-[0.7rem] text-crimson-hi hover:border-crimson hover:bg-crimson/10 cursor-pointer transition-colors font-hud"
+          className="press-button border border-crimson-dim bg-ink px-2.5 py-1 text-[0.7rem] text-crimson-hi hover:border-crimson hover:bg-crimson/10 cursor-pointer transition-colors font-hud"
         >
           {wardRevealed ? "⟲ 蓋回伏印" : "👁 翻開伏印"}
         </button>

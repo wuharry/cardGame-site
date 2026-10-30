@@ -75,7 +75,7 @@ export function LaneDoctrine() {
                   <button
                     type="button"
                     onClick={() => setIs3DView((v) => !v)}
-                    className={`border px-2 py-0.5 text-[0.62rem] transition-colors cursor-pointer ${
+                    className={`press-button border px-2 py-0.5 text-[0.62rem] transition-colors cursor-pointer ${
                       is3DView
                         ? "border-brass bg-brass text-ink font-bold shadow-[0_0_8px_rgba(200,162,60,0.4)]"
                         : "border-rule text-quill hover:border-brass-dim hover:text-parchment"
@@ -94,7 +94,7 @@ export function LaneDoctrine() {
                       aria-label={`查看第 ${index + 1} 步：${step.heading}`}
                       aria-pressed={active === index}
                       onClick={() => selectStep(index)}
-                      className={`h-7 w-7 border text-xs transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass ${
+                      className={`press-button h-7 w-7 border text-xs transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brass ${
                         active === index
                           ? "border-brass bg-brass font-bold text-ink"
                           : "border-rule text-quill hover:border-brass-dim hover:text-parchment"

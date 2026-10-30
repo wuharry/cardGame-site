@@ -115,14 +115,14 @@ export function Board({
           <button
             type="button"
             onClick={onPrev}
-            className="border border-rule px-2 py-1 text-[0.68rem] text-quill hover:border-brass hover:text-parchment cursor-pointer font-hud"
+            className="press-button border border-rule px-2 py-1 text-[0.68rem] text-quill hover:border-brass hover:text-parchment cursor-pointer font-hud"
           >
             ◀ 上一步
           </button>
           <button
             type="button"
             onClick={onNext}
-            className="border border-brass bg-brass/10 px-2 py-1 text-[0.68rem] text-brass-hi hover:bg-brass/20 cursor-pointer font-hud"
+            className="press-button border border-brass bg-brass/10 px-2 py-1 text-[0.68rem] text-brass-hi hover:bg-brass/20 cursor-pointer font-hud"
           >
             下一步 ▶
           </button>
