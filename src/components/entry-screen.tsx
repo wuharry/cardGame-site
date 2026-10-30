@@ -5,6 +5,7 @@ import { GAME_FACTS } from "@/data/game";
 import { mediaCaptureCaption, mediaUrl } from "@/data/media";
 import { DownloadLink } from "@/components/download-link";
 import { DownloadShine } from "@/components/download-shine";
+import { ArrowRelay } from "@/components/arrow-relay";
 
 export function EntryScreen() {
   const available = BUILDS.filter((build) => downloadUrl(build));
@@ -24,7 +25,7 @@ export function EntryScreen() {
           <div className="hero-actions">
             {available.length ? <DownloadLink className="codex-button download-shine-button">下載試玩 <span aria-hidden="true">↓</span><DownloadShine /></DownloadLink>
               : <button type="button" disabled className="codex-button">{paused ? buildStatusText(paused) : "版本準備中"}</button>}
-            <Link href="#about" className="codex-button ghost">探索遊戲 <span aria-hidden="true">↘</span></Link>
+            <Link href="#about" className="codex-button ghost arrow-relay-link">探索遊戲 <ArrowRelay arrow="↘" /></Link>
           </div>
           {!available.length && paused && <p lang="en" className="hero-platforms">{buildStatusText(paused, "en")}</p>}
           <p className="hero-platforms">{available.map((build) => build.platform).join(" / ") || "各平台暫停下載"}<span>免費試玩 · 回合制卡牌對戰</span></p>

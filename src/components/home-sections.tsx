@@ -5,6 +5,7 @@ import { mediaCaptureCaption, mediaUrl } from "@/data/media";
 import { BUILDS, RELEASE_NOTES, buildStatusText } from "@/data/releases";
 import { FEEDBACK_URL } from "@/data/site";
 import { ScreenshotViewer } from "@/components/screenshot-viewer";
+import { ArrowRelay } from "@/components/arrow-relay";
 
 export function LatestNews() {
   const latest = RELEASE_NOTES[0];
@@ -19,7 +20,7 @@ export function LatestNews() {
   return (
     <section id="news" className="news-section section-space">
       <div className="content-width">
-        <header id="changelog" className="section-heading"><div><p className="overline">NEWS & UPDATES</p><h2>戰線新訊</h2></div><Link className="text-link" href="/news" prefetch={false}>所有更新 <span aria-hidden="true">↗</span></Link></header>
+        <header id="changelog" className="section-heading"><div><p className="overline">NEWS & UPDATES</p><h2>戰線新訊</h2></div><Link className="text-link arrow-relay-link" href="/news" prefetch={false}>所有更新 <ArrowRelay arrow="↗" /></Link></header>
         <div className="news-grid">{items.map((item) => <Link href={item.href} prefetch={false} className="news-item" key={item.title}>
           <div className="news-image"><Image src={mediaUrl(item.image)} alt="" fill sizes="(max-width: 700px) 100vw, 33vw" /><span className="news-arrow" aria-hidden="true">↗</span></div>
           <div className="news-meta"><span>{item.tag}</span>{item.date && <time dateTime={item.date}>{item.date.replaceAll("-", ".")}</time>}</div>
@@ -39,11 +40,11 @@ export function GameIntroduction() {
           <figure className="battle-image"><div className="battle-screenshot"><ScreenshotViewer source="/media/screens/hero-battlefield.webp" alt="四路前後排、HD-2D 從者與手牌"
             caption={mediaCaptureCaption("/media/screens/hero-battlefield.webp")} sizes="(max-width: 1000px) calc(100vw - 40px), 650px" /></div>
             <figcaption><span className="status-dot" /> IN-GAME CAPTURE <span>{mediaCaptureCaption("/media/screens/hero-battlefield.webp")}</span></figcaption></figure>
-          <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>站在哪裡，<br />和出哪張牌一樣重要。</h3><p>把夥伴放到前排保護後排，再找機會突破對手的防線。不必只盯著正前方，也能攻擊其他路線。</p><Link className="text-link" href="/guide#lanes" prefetch={false}>看看怎麼進攻 <span aria-hidden="true">→</span></Link></div>
+          <div className="battle-copy"><span className="chapter-number" aria-hidden="true">01</span><p className="overline">THE BATTLEFIELD</p><h3>站在哪裡，<br />和出哪張牌一樣重要。</h3><p>把夥伴放到前排保護後排，再找機會突破對手的防線。不必只盯著正前方，也能攻擊其他路線。</p><Link className="text-link arrow-relay-link" href="/guide#lanes" prefetch={false}>看看怎麼進攻 <ArrowRelay /></Link></div>
         </div>
         <div className="tactics-grid">
-          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>對手出手時，<br />你也有機會反擊。</h3><p>別急著用光魔力。對手施放秘術時，你可以選擇用瞬咒反制；對攻擊、召喚等事件的瞬咒，則在第一次符合卡牌條件且魔力足夠時自動發動。</p><Link className="text-link" href="/guide#cards" prefetch={false}>認識反制與伏印 <span aria-hidden="true">→</span></Link></article>
-          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>收集喜歡的卡，<br />試出自己的組合。</h3><p>完成新手教學，先拿一副 60 張起始牌組。一般對戰不會失去卡牌；新的奪牌對局暫停，既有戰利品仍可領取。</p><Link className="text-link" href="/guide#collection" prefetch={false}>了解組牌與對戰模式 <span aria-hidden="true">→</span></Link></article>
+          <article id="systems"><span className="tactic-index">02 / COUNTERPLAY</span><h3>對手出手時，<br />你也有機會反擊。</h3><p>別急著用光魔力。對手施放秘術時，你可以選擇用瞬咒反制；對攻擊、召喚等事件的瞬咒，則在第一次符合卡牌條件且魔力足夠時自動發動。</p><Link className="text-link arrow-relay-link" href="/guide#cards" prefetch={false}>認識反制與伏印 <ArrowRelay /></Link></article>
+          <article id="collection"><span className="tactic-index">03 / YOUR COLLECTION</span><h3>收集喜歡的卡，<br />試出自己的組合。</h3><p>完成新手教學，先拿一副 60 張起始牌組。一般對戰不會失去卡牌；新的奪牌對局暫停，既有戰利品仍可領取。</p><Link className="text-link arrow-relay-link" href="/guide#collection" prefetch={false}>了解組牌與對戰模式 <ArrowRelay /></Link></article>
         </div>
       </div>
     </section>
@@ -54,7 +55,7 @@ export function ModesOverview() {
   return (
     <section id="modes" className="modes-section section-space">
       <div className="content-width">
-        <header className="section-heading"><div><p className="overline">FIND YOUR NEXT OPPONENT</p><h2>先練一局，再邀朋友入席。</h2></div><Link className="text-link" href="/guide#modes" prefetch={false}>對戰指南 <span aria-hidden="true">↗</span></Link></header>
+        <header className="section-heading"><div><p className="overline">FIND YOUR NEXT OPPONENT</p><h2>先練一局，再邀朋友入席。</h2></div><Link className="text-link arrow-relay-link" href="/guide#modes" prefetch={false}>對戰指南 <ArrowRelay arrow="↗" /></Link></header>
         <div className="modes-grid">{GAME_MODES.map((mode, index) => <article key={mode.en}>
           <span className="mode-number" aria-hidden="true">0{index + 1}</span><p className="overline">{mode.en}</p><h3>{mode.zh}</h3><p>{mode.body}</p><small>{mode.meta}</small>
         </article>)}</div>

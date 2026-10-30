@@ -99,6 +99,16 @@ html:has(.marketing-home) { scroll-behavior: auto; }
 .section-heading.centered > p:last-child { margin-top: 18px; }
 .text-link { display: inline-flex; gap: 20px; align-items: center; color: var(--gold); font-size: 13px; line-height: 1.6; padding-block: 9px; border-bottom: 1px solid rgb(211 181 122 / 40%); transition: color .2s; }
 .text-link:hover { color: var(--gold-light); }
+/* Fixed icon space keeps labels still. Touch layouts retain the original glyph. */
+.arrow-relay { display: inline-grid; place-items: center; flex-shrink: 0; width: 1.25em; height: 1.4em; line-height: 1.4; overflow: hidden; }
+.arrow-relay > span { grid-area: 1 / 1; }
+.arrow-relay > span + span { transform: translateX(-150%); }
+@media (min-width: 1001px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .arrow-relay-link:is(:hover, :focus-visible) .arrow-relay > span:first-child { animation: arrow-relay-out .28s ease-out both; }
+  .arrow-relay-link:is(:hover, :focus-visible) .arrow-relay > span + span { animation: arrow-relay-in .28s ease-out both; }
+}
+@keyframes arrow-relay-out { to { transform: translateX(150%); } }
+@keyframes arrow-relay-in { to { transform: translateX(0); } }
 .news-section { background: var(--paper); color: #222e31; }
 .news-section .overline { color: #7d6035; }
 .news-section .text-link { color: #69512b; border-color: #bcac8c; }
