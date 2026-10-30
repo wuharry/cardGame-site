@@ -159,7 +159,7 @@ export default function AdminConsole() {
     <header className={styles.header}>
       <div><p className={styles.eyebrow}>DECKMARCH / OPERATIONS</p><h1>玩家管理<span className={styles.headerCaption}>營運控制台</span></h1>
         <p>掌握遊玩活動、對局與玩家資產</p>
-        {session && <nav className={styles.quickNav} aria-label="後台區段"><a href="#analytics">營運總覽</a><a href="#players">玩家查詢</a></nav>}</div>
+        {session && <nav className={styles.quickNav} aria-label="後台區段"><a href="#analytics">營運總覽</a><a href="#card-stats">卡牌統計</a><a href="#players">玩家查詢</a></nav>}</div>
       <div className={styles.headerRight}><Link href="/">回官網</Link>{session && <>
         <span>{session.email}</span><button disabled={busy || !!pending} onClick={() => void work(async () => {
           await api.signOut(); setSession(null); setList(null); setDetail(null); setSent(false);

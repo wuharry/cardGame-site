@@ -87,7 +87,7 @@
 .durationSource td { white-space: nowrap; }
 .header { border-bottom: 1px solid #35484a; padding-bottom: 26px; }
 .headerCaption { font-size: 14px; color: #9db0ad; font-weight: 450; margin-left: 16px; }
-.quickNav { display: flex; gap: 8px; margin-top: 18px; }
+.quickNav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .quickNav a { padding: 7px 13px; border: 1px solid #415354; border-radius: 6px; text-decoration: none; font-size: 12px; }
 .root section[id] { scroll-margin-top: 20px; }
 .overviewGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 20px 0 16px; }
