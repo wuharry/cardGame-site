@@ -117,6 +117,13 @@ function FeaturedBuild({ build }: { build: Build }) {
           </p>
         </div>
 
+        {build.downloadNotice && (
+          <div className="body-cjk border-l-2 border-brass pl-3 text-sm leading-7">
+            <p lang="zh-Hant" className="text-parchment">{build.downloadNotice.zh}</p>
+            <p lang="en" className="text-xs text-quill">{build.downloadNotice.en}</p>
+          </div>
+        )}
+
         {href ? (
           <a
             href={href}

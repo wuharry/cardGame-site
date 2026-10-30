@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { loadTsModule } from "./lib/load-ts-module.mjs";
 
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports);
+const shine = await loadTsModule(new URL("../src/components/download-shine.tsx", import.meta.url), {}, { allowNodeModules: true });
 
 // TypeScript 6 一律產生 esModuleInterop helper，mock 要標明自己是 ES 模組。
 const link = { __esModule: true, default: (props) => createElement("a", props) };
@@ -15,6 +16,7 @@ function check(condition, message) { assert.ok(condition, message); checks += 1;
 
 async function renderPanel(builds) {
   const component = await load("../src/components/download-panel.tsx", {
+    "@/components/download-shine": shine,
     "@/data/releases": { ...releases, BUILDS: builds }, "next/link": link, "@/data/game": game,
     "@/data/install-help": installHelp,
   });
@@ -22,6 +24,7 @@ async function renderPanel(builds) {
 }
 async function renderGuide(builds) {
   const component = await load("../src/app/install/android/page.tsx", {
+    "@/components/download-shine": shine,
     "@/data/releases": { ...releases, BUILDS: builds }, "next/link": link,
     "@/data/seo": { pageMetadata: () => ({}) },
   });
@@ -50,6 +53,10 @@ check(panel.includes(`href="${releases.downloadUrl(actual)}"`), "Android card pr
 check(panel.includes("版本說明與驗收範圍") && panel.includes(actual.note), "Dense version notes remain available under an explicit disclosure");
 
 const guide = await renderGuide(publishedBuilds);
+for (const notice of Object.values(actual.downloadNotice ?? {})) {
+  check(guide.indexOf(notice) >= 0 && guide.indexOf(notice) < guide.indexOf(`href="${releases.websiteDownloadUrl(actual)}"`),
+    "Android offline limitation is visible before downloading from the installation guide");
+}
 check(guide.includes(`找到「${actual.displayName}」`), "Install guide identifies the actual package name after a site rebrand");
 const oldBrandPanel = await renderPanel([{ ...actual, displayName: "王牌戰線", version: "fixture-legacy" }]);
 check(oldBrandPanel.includes("紙鴉牌 Deckmarch") && oldBrandPanel.includes("fixture-legacy（王牌戰線）"), "Download notice distinguishes current site branding from unchanged package branding");

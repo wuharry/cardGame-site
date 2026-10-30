@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -25,6 +25,8 @@ export interface Build {
   updated: string | null;
   requirement: string;
   note?: string;
+  /** Brief platform limitation shown before download, outside the detailed release notes. */
+  downloadNotice?: { zh: string; en: string };
   /** 版本化 ZIP 的實際 SHA-256；未產生成品時不填假值。 */
   sha256?: string;
   /** Monotonic client build and minimum build permitted for official online play. */
@@ -77,26 +79,26 @@ export const BUILDS: Build[] = [
     "platform": "Windows",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Windows-20261029-R22.zip",
-    "version": "2026.10.29-R22",
-    "size": "61.9 MiB",
-    "bytes": 64909341,
-    "updated": "2026-10-30",
-    "sha256": "feaee7897a075d1ca6c75f48309b376be6ae8328323e65311710ce9698d21c58",
-    "build": 2026102902,
-    "minimumBuild": 2026102902,
-    "protocol": 29,
+    "file": "TwilightCodex-Windows-20261030-R23.zip",
+    "version": "2026.10.30-R23",
+    "size": "62.0 MiB",
+    "bytes": 65011198,
+    "updated": "2026-10-31",
+    "sha256": "bf0fa339adc0995b558f47a51fbabf609ccf0187f1181bbb3059d910f12b370f",
+    "build": 2026103001,
+    "minimumBuild": 2026103001,
+    "protocol": 30,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Windows-20261029-R22.pck",
-      "bytes": 451829764,
-      "sha256": "7bb29cfc34e8c9db767bbaf093085f09638e0a4dcd2c6e5279e6cce9e24264f8",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22/TwilightCodex-Content-Windows-20261029-R22.pck"
+      "filename": "TwilightCodex-Content-Windows-20261030-R23.pck",
+      "bytes": 453979932,
+      "sha256": "6ab5bc21226316fae0c276053466af95b1b5a742047dae7a5ae958431ca5e608",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-Windows-20261030-R23.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
     "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    "note": "R22 加入技能冷卻與「每次召喚限一次」，調整多張卡牌數值，命中與登場音效依強度分級，並改善狀態圖示與手機出牌。連線對戰需要 R22。首次按「開始」下載素材，同版本保留快取。 包內資源檢查通過；本版 Windows 原生啟動尚未實測，真人對局與持續效能待驗。",
-    "noteEn": "R22 adds skill cooldowns and once-per-summon limits, rebalances several cards, tiers hit and summon sounds by strength, and improves status icons and mobile card play. Online matches require R22. Press Start to download content; the same version stays cached. Packed resources passed checks. Native Windows startup has not been tested for R22. Human matches and sustained performance remain untested."
+    "note": "R23 更新試煉之塔六區場景、行走與從者指令選單，並修正教學提示遮住攻擊及勝利後無法離開。連線對戰需要 R23。首次按「開始」下載素材，同版本保留快取。Windows 已實測教學對局、第一層行走與正常退出；完整真人連線及持續效能待驗。",
+    "noteEn": "R23 adds six tower environments, improves movement and servant commands, and fixes tutorial overlays blocking Attack and the exit after victory. Online matches require R23. Press Start to download content; the same version stays cached. Windows tutorial play, floor-one movement and normal exit were tested. Full human online matches and sustained performance remain untested."
   },
   {
     "id": "macos",
@@ -104,26 +106,30 @@ export const BUILDS: Build[] = [
     "platform": "macOS",
     "en": "ZIP · Universal",
     "status": "available",
-    "file": "TwilightCodex-macOS-20261029-R22.zip",
-    "version": "2026.10.29-R22",
-    "size": "82.8 MiB",
-    "bytes": 86810404,
-    "updated": "2026-10-30",
-    "sha256": "60b51c37164d97ede102b6b64025b60bebbd921d96356da80139dc062fc4a2ed",
-    "build": 2026102902,
-    "minimumBuild": 2026102902,
-    "protocol": 29,
+    "file": "TwilightCodex-macOS-20261030-R23.zip",
+    "version": "2026.10.30-R23",
+    "size": "82.9 MiB",
+    "bytes": 86911308,
+    "updated": "2026-10-31",
+    "sha256": "4fc653f8c63e2262fe60afb1aa22374594fd69b48f38b67efe1c72d7bee5a562",
+    "build": 2026103001,
+    "minimumBuild": 2026103001,
+    "protocol": 30,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-macOS-20261029-R22.pck",
-      "bytes": 451829764,
-      "sha256": "7d245c63f8d8fa53c50a4b9455a035f80a4cf62323d21d7c27c24fe455a30e5d",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22/TwilightCodex-Content-macOS-20261029-R22.pck"
+      "filename": "TwilightCodex-Content-macOS-20261030-R23.pck",
+      "bytes": 453979932,
+      "sha256": "81defe03c480d9b015e3c07aff5d5b2e47d8bd4f1ae0fba9cfe1e6a30f26819b",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-macOS-20261030-R23.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
     "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    "note": "R22 加入技能冷卻與「每次召喚限一次」，調整多張卡牌數值，命中與登場音效依強度分級，並改善狀態圖示與手機出牌。連線對戰需要 R22。首次按「開始」下載素材，同版本保留快取。 實際成品已在預先驗證的素材快取下完成 Metal 視窗啟動、主選單與正常退出。ad-hoc 簽章，未 Apple 公證；真人對局與持續效能待驗。",
-    "noteEn": "R22 adds skill cooldowns and once-per-summon limits, rebalances several cards, tiers hit and summon sounds by strength, and improves status icons and mobile card play. Online matches require R22. Press Start to download content; the same version stays cached. The shipped build reached the main menu in a Metal window and exited normally with verified preseeded content. Ad-hoc signed, not Apple-notarized. Human matches and sustained performance remain untested."
+    "downloadNotice": {
+      "zh": "本版尚未完成 macOS 實機驗證。",
+      "en": "Native macOS testing has not been run for this release."
+    },
+    "note": "R23 更新試煉之塔六區場景、行走與從者指令選單，並修正教學提示與勝利後離開。連線對戰需要 R23。首次按「開始」下載素材，同版本保留快取。本版尚未完成 macOS 實機驗證；包內資源檢查通過。ad-hoc 簽章，未 Apple 公證；真人對局與持續效能待驗。",
+    "noteEn": "R23 adds six tower environments, improves movement and servant commands, and fixes tutorial overlays and the exit after victory. Online matches require R23. Press Start to download content; the same version stays cached. Native macOS testing has not been run for this release; packaged resource checks passed. Ad-hoc signed, not Apple-notarized. Human matches and sustained performance remain untested."
   },
   {
     "id": "linux",
@@ -149,8 +155,12 @@ export const BUILDS: Build[] = [
     },
     "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
     "requirement": "Linux x86_64 · glibc 2.39+（Ubuntu 24.04+）· Vulkan 或 OpenGL 3.3",
-    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 本次完成包內資源檢查，尚未重跑 Linux 原生測試。 正式連線已升級為 R22，R19 暫時只能離線遊玩。",
-    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Packed resources were checked; native Linux testing has not been repeated for this build. Online play now requires R22; R19 is offline-only for now."
+    "downloadNotice": {
+      "zh": "目前僅支援離線遊玩，無法參加 R23 連線對戰。",
+      "en": "Offline play only for now. This version cannot join R23 online matches."
+    },
+    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 本次完成包內資源檢查，尚未重跑 Linux 原生測試。 R19 目前僅支援離線遊玩，無法參加 R23 連線對戰。",
+    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Packed resources were checked; native Linux testing has not been repeated for this build. R19 is currently offline-only and cannot join R23 online matches."
   },
   {
     "id": "android",
@@ -176,8 +186,12 @@ export const BUILDS: Build[] = [
     },
     "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
     "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
-    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 沿用原更新簽章。上一版已由開發者實機測試，本次尚未重跑手機安裝、觸控與持續效能。 正式連線已升級為 R22，R19 暫時只能離線遊玩。",
-    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Uses the existing update signing identity. The previous version was device-tested by the developer; this APK has not repeated installation, touch or sustained-performance tests. Online play now requires R22; R19 is offline-only for now.",
+    "downloadNotice": {
+      "zh": "目前僅支援離線遊玩，無法參加 R23 連線對戰。",
+      "en": "Offline play only for now. This version cannot join R23 online matches."
+    },
+    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 沿用原更新簽章。上一版已由開發者實機測試，本次尚未重跑手機安裝、觸控與持續效能。 R19 目前僅支援離線遊玩，無法參加 R23 連線對戰。",
+    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Uses the existing update signing identity. The previous version was device-tested by the developer; this APK has not repeated installation, touch or sustained-performance tests. R19 is currently offline-only and cannot join R23 online matches.",
     "websiteDelivery": "static-apk"
   }
 ];
@@ -252,6 +266,20 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+{
+  "version": "2026.10.30-R23",
+  "date": "2026-10-31",
+  "title": "R23：六區試煉之塔與從者指令",
+  "changes": [
+    "Windows／macOS 更新 R23；Linux／Android 保留 R19，暫時僅支援離線遊玩。既有帳號、收藏、牌組與存檔保留。連線對戰請更新至 R23。",
+    "試煉之塔三十層分成六區，每五層換一組場景：舊城石廊、盤根花園、熔火鍛爐、霜封聖所、星象書庫與雲頂王廳，各區有不同造景與遠景。",
+    "塔內可點地面行走、走向守關者查看樓層詳情；改善障礙碰撞、角色遮擋與樓梯提示，減少動態設定會保留靜態場景。",
+    "從者操作改為直式指令清單，攻擊、技能與取消更容易分辨；同步統一常用按鈕的視覺與操作回饋。",
+    "修正新手教學提示與暗幕蓋住攻擊清單，取消後會恢復引導；改善小視窗魔力說明位置，教學勝利後可確認返回主選單。",
+    "Windows 實際成品已驗證教學出牌、攻擊、換回合、勝利退出，以及第一層爬塔行走與入口操作。macOS 本版尚未實機驗證；兩平台包內資源檢查通過。真人完整連線、其餘五區成品爬塔與持續效能仍待驗。",
+    "English: R23 introduces six tower environments, clearer servant commands and tutorial fixes. Windows tutorial play and floor-one controls were tested; native macOS testing remains pending. Online matches require R23. Linux and Android remain on R19 for offline play."
+  ]
+},
 {
   "version": "2026.10.29-R22",
   "date": "2026-10-30",

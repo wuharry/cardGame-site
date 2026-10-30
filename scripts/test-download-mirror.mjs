@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { loadTsModule } from "./lib/load-ts-module.mjs";
 
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports);
+const shine = await loadTsModule(new URL("../src/components/download-shine.tsx", import.meta.url), {}, { allowNodeModules: true });
 
 const releases = await load("../src/data/releases.ts");
 const versions = await load("../src/data/game-version.ts", { "./releases": releases });
@@ -41,6 +42,7 @@ check(releases.websiteDownloadUrl({ ...mirror, file: null }) === null, "Missing 
 
 async function renderPanel(builds) {
   const component = await load("../src/components/download-panel.tsx", {
+    "@/components/download-shine": shine,
     "@/data/releases": { ...releases, BUILDS: builds },
     "next/link": { __esModule: true, default: (props) => createElement("a", props) },
     "@/data/game": game,

@@ -52,6 +52,10 @@ export default function AndroidInstallPage() {
         <p className="mt-3 text-sm text-quill">{android.version} · {android.size} · Android 預覽版</p>
         <p className="body-cjk mt-2 text-sm">{android.requirement}</p>
         <p className="mt-3 break-all text-sm text-quill"><code>{android.file}</code></p>
+        {android.downloadNotice && <div className="body-cjk mt-4 border-l-2 border-brass pl-3 text-sm">
+          <p lang="zh-Hant" className="text-parchment">{android.downloadNotice.zh}</p>
+          <p lang="en" className="mt-1 text-xs text-quill">{android.downloadNotice.en}</p>
+        </div>}
         <a href={href} download={android.file} className="press-button press-button-primary download-shine-button mt-5 block border border-brass bg-brass px-5 py-3 text-center text-lg text-ink hover:bg-brass-hi">
           下載 Android APK
           <DownloadShine />

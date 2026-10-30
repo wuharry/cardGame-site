@@ -5,6 +5,8 @@ import { loadTsModule } from "./lib/load-ts-module.mjs";
 import { availableFixture } from "./lib/download-fixtures.mjs";
 
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports);
+const shine = await loadTsModule(new URL("../src/components/download-shine.tsx", import.meta.url), {}, { allowNodeModules: true });
+const arrow = await load("../src/components/arrow-relay.tsx");
 const releases = await load("../src/data/releases.ts");
 const game = await load("../src/data/game.ts");
 const help = await load("../src/data/install-help.ts");
@@ -18,7 +20,8 @@ function check(condition, message) { assert.ok(condition, message); checks += 1;
 
 async function views(builds) {
   const data = { ...releases, BUILDS: builds };
-  const shared = { "@/data/releases": data, "@/data/game": game, "next/link": link };
+  const shared = { "@/data/releases": data, "@/data/game": game, "next/link": link,
+    "@/components/download-shine": shine, "@/components/arrow-relay": arrow };
   const panel = await load("../src/components/download-panel.tsx", { ...shared, "@/data/install-help": help });
   const entry = await load("../src/components/entry-screen.tsx", {
     ...shared, "next/image": image, "@/data/media": { mediaUrl: (url) => url, mediaCaptureCaption: () => "Recorded capture" },

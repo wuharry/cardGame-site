@@ -19,6 +19,7 @@ for (let index = 2; index < process.argv.length; index += 1) {
   }
 }
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports);
+const shine = await loadTsModule(new URL("../src/components/download-shine.tsx", import.meta.url), {}, { allowNodeModules: true });
 const releases = await load("../src/data/releases.ts");
 const game = await load("../src/data/game.ts");
 const { GAME_FACTS } = game;
@@ -27,6 +28,7 @@ const help = helpPath
   ? await loadTsModule(pathToFileURL(resolve(helpPath)))
   : await load("../src/data/install-help.ts");
 const component = await load("../src/components/download-panel.tsx", {
+  "@/components/download-shine": shine,
   "@/data/releases": releases,
   "@/data/game": { GAME_FACTS },
   "@/data/install-help": help,
@@ -40,7 +42,9 @@ const latestBuild = latestDesktop[0].build;
 assert.ok(Number.isSafeInteger(latestBuild) && latestBuild >= 2026102801);
 assert.ok(latestDesktop.every((build) => build.version === GAME_FACTS.version && build.build === latestBuild),
   "Windows and macOS share the current release while retained platforms keep their accepted packages");
-assert.equal(GAME_FACTS.protocol, 29);
+assert.equal(GAME_FACTS.protocol, 30);
+assert.equal(GAME_FACTS.version, "2026.10.30-R23");
+assert.equal(latestBuild, 2026103001);
 assert.equal(releases.RELEASE_NOTES[0].version, GAME_FACTS.version);
 assert.ok(panel.includes('id="download"') && panel.includes('id="download-windows"'), "Existing download anchors remain available");
 assert.ok(!panel.includes("itch.io 備用頁") && !/href="https:\/\/wuharry\.itch\.io/.test(panel), "Unverified older itch packages are not offered");
@@ -55,6 +59,8 @@ for (const build of downloads) {
     assert.equal(build.build, 2026102501);
     assert.equal(build.minimumBuild, 2026102101, `${build.id} keeps the online gate its R19 package shipped with`);
     assert.equal(build.protocol, 28);
+    assert.ok(build.note.includes("僅支援離線遊玩") && build.noteEn.includes("offline-only"),
+      `${build.id} clearly explains that its retained R19 package cannot join current online matches`);
   } else {
     assert.equal(build.minimumBuild, latestBuild, `${build.id} requires the current desktop release for official online play`);
     assert.equal(build.protocol, GAME_FACTS.protocol);
@@ -66,9 +72,20 @@ for (const build of downloads) {
   const websiteUrl = build.id === "android" ? `/downloads/android/${build.sha256}/${build.file}` : releases.downloadUrl(build);
   assert.equal(releases.websiteDownloadUrl(build), websiteUrl);
   assert.ok(panel.includes(`href="${websiteUrl}" download="${build.file}"`), `${build.id} directly downloads its exact package`);
+  if (build.downloadNotice) {
+    const card = panel.slice(panel.indexOf(`id="download-${build.id}"`));
+    for (const notice of Object.values(build.downloadNotice)) {
+      assert.ok(card.indexOf(notice) >= 0 && card.indexOf(notice) < card.indexOf(`href="${websiteUrl}"`),
+        `${build.id} shows its platform limitation before the download action`);
+    }
+  }
   assert.ok(build.file.endsWith(build.id === "android" ? ".apk" : ".zip"));
   assert.equal(releases.downloadMirrorPageUrl(build), null);
 }
+const macos = downloads.find((build) => build.id === "macos");
+assert.ok(macos.note.includes("本版尚未完成 macOS 實機驗證")
+  && macos.noteEn.includes("Native macOS testing has not been run for this release"),
+"R23 macOS download preserves its native-testing limitation");
 assert.equal((panel.match(/首次另下載約 /g) ?? []).length, 4);
 assert.equal((panel.match(/First launch adds about /g) ?? []).length, 4);
 assert.equal((panel.match(/程式 ZIP · Game ZIP/g) ?? []).length, 3);
