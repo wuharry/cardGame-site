@@ -1,5 +1,6 @@
 import { pageMetadata } from "@/data/seo";
 import Link from "next/link";
+import { DownloadShine } from "@/components/download-shine";
 import { BUILDS, buildStatusText, downloadUrl, websiteDownloadUrl } from "@/data/releases";
 
 const androidAvailable = BUILDS.some((build) => build.id === "android" && downloadUrl(build));
@@ -51,8 +52,9 @@ export default function AndroidInstallPage() {
         <p className="mt-3 text-sm text-quill">{android.version} · {android.size} · Android 預覽版</p>
         <p className="body-cjk mt-2 text-sm">{android.requirement}</p>
         <p className="mt-3 break-all text-sm text-quill"><code>{android.file}</code></p>
-        <a href={href} download={android.file} className="press-button press-button-primary mt-5 block border border-brass bg-brass px-5 py-3 text-center text-lg text-ink hover:bg-brass-hi">
+        <a href={href} download={android.file} className="press-button press-button-primary download-shine-button mt-5 block border border-brass bg-brass px-5 py-3 text-center text-lg text-ink hover:bg-brass-hi">
           下載 Android APK
+          <DownloadShine />
         </a>
         {href !== downloadUrl(android) && <a href={downloadUrl(android) ?? undefined} download={android.file}
           className="mt-3 block text-center text-sm text-brass-hi underline underline-offset-4">GitHub 備用下載（同一份 APK）</a>}

@@ -4,6 +4,7 @@ import { BUILDS, buildStatusText, downloadUrl } from "@/data/releases";
 import { GAME_FACTS } from "@/data/game";
 import { mediaCaptureCaption, mediaUrl } from "@/data/media";
 import { DownloadLink } from "@/components/download-link";
+import { DownloadShine } from "@/components/download-shine";
 
 export function EntryScreen() {
   const available = BUILDS.filter((build) => downloadUrl(build));
@@ -21,7 +22,7 @@ export function EntryScreen() {
           <h2>落下的每張牌，<br />都是下一步伏筆。</h2>
           <p className="hero-description">召喚夥伴、搭配法術，組出自己的打法。<br className="desktop-break" />先和電腦練習，再約朋友玩一局。</p>
           <div className="hero-actions">
-            {available.length ? <DownloadLink className="codex-button">下載試玩 <span aria-hidden="true">↓</span></DownloadLink>
+            {available.length ? <DownloadLink className="codex-button download-shine-button">下載試玩 <span aria-hidden="true">↓</span><DownloadShine /></DownloadLink>
               : <button type="button" disabled className="codex-button">{paused ? buildStatusText(paused) : "版本準備中"}</button>}
             <Link href="#about" className="codex-button ghost">探索遊戲 <span aria-hidden="true">↘</span></Link>
           </div>

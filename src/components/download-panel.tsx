@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DownloadShine } from "@/components/download-shine";
 import { BUILDS, buildStatusText, downloadUrl, websiteDownloadUrl, downloadMirrorPageUrl, releasePageUrl, type Build } from "@/data/releases";
 import { GAME_FACTS } from "@/data/game";
 import { CONNECTION_HELP, FIRST_MATCH_HELP, installationHelp } from "@/data/install-help";
@@ -120,7 +121,7 @@ function FeaturedBuild({ build }: { build: Build }) {
           <a
             href={href}
             download={build.file ?? undefined}
-            className="press-button press-button-primary notch border border-brass bg-brass px-6 py-4 text-center text-ink transition-colors hover:bg-brass-hi"
+            className="press-button press-button-primary download-shine-button notch border border-brass bg-brass px-6 py-4 text-center text-ink transition-colors hover:bg-brass-hi"
           >
             <span
               className="block text-lg tracking-[0.2em] uppercase font-hud font-bold"
@@ -128,6 +129,7 @@ function FeaturedBuild({ build }: { build: Build }) {
               {build.id === "android" ? "下載 Android APK" : `下載 ${build.platform} ZIP`}
             </span>
             <span lang="en" className="mt-1 block text-xs">{build.size} · {href.startsWith("/") ? "Download from this site" : "Download from GitHub"}</span>
+            <DownloadShine />
           </a>
         ) : (
           <div aria-disabled="true" className="notch border border-brass-dim px-6 py-4 text-center">

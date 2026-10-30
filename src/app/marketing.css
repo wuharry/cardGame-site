@@ -380,6 +380,27 @@ html:has(.marketing-home) { scroll-behavior: auto; }
   .world-facts > div:nth-child(even) { padding-left: 12px; }
   .world-facts strong { min-width: 46px; font-size: 29px; }
 }
+/* Clip only the light layer, preserving the button's base and focus outline. */
+.download-shine-button { position: relative; }
+.download-shine { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.download-shine::after {
+  content: "";
+  position: absolute;
+  inset-block: -20%;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgb(255 239 190 / 22%), transparent);
+  opacity: 0;
+  transform: translateX(-150%) skewX(-18deg);
+}
+@keyframes download-shine-sweep {
+  0% { opacity: 0; transform: translateX(-150%) skewX(-18deg); }
+  18%, 82% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(350%) skewX(-18deg); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .download-shine[data-state="playing"]::after { animation: download-shine-sweep 1.2s ease-in-out .35s 1 both; }
+}
 /* A shallow base for public-site controls; pressing never changes layout or
    delays the native link/button action. Keep cards and segmented tabs separate. */
 :is(.codex-button, .header-download, .menu-toggle, .back-top, .press-button, .subpage-heading nav a, .screenshot-dialog-toolbar button):not(:disabled):not([aria-disabled="true"]) {
