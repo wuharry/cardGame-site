@@ -40,7 +40,7 @@ const latestBuild = latestDesktop[0].build;
 assert.ok(Number.isSafeInteger(latestBuild) && latestBuild >= 2026102801);
 assert.ok(latestDesktop.every((build) => build.version === GAME_FACTS.version && build.build === latestBuild),
   "Windows and macOS share the current release while retained platforms keep their accepted packages");
-assert.equal(GAME_FACTS.protocol, 28);
+assert.equal(GAME_FACTS.protocol, 29);
 assert.equal(releases.RELEASE_NOTES[0].version, GAME_FACTS.version);
 assert.ok(panel.includes('id="download"') && panel.includes('id="download-windows"'), "Existing download anchors remain available");
 assert.ok(!panel.includes("itch.io 備用頁") && !/href="https:\/\/wuharry\.itch\.io/.test(panel), "Unverified older itch packages are not offered");
@@ -53,9 +53,12 @@ for (const build of downloads) {
   if (["linux", "android"].includes(build.id)) {
     assert.equal(build.version, "2026.10.25-R19", `${build.id} remains on its accepted R19 package`);
     assert.equal(build.build, 2026102501);
+    assert.equal(build.minimumBuild, 2026102101, `${build.id} keeps the online gate its R19 package shipped with`);
+    assert.equal(build.protocol, 28);
+  } else {
+    assert.equal(build.minimumBuild, latestBuild, `${build.id} requires the current desktop release for official online play`);
+    assert.equal(build.protocol, GAME_FACTS.protocol);
   }
-  assert.equal(build.minimumBuild, 2026102101);
-  assert.equal(build.protocol, GAME_FACTS.protocol);
   assert.equal(build.size, `${(build.bytes / 1024 ** 2).toFixed(1)} MiB`);
   assert.ok(Number.isSafeInteger(build.content.bytes) && build.content.bytes > 0);
   assert.match(build.content.sha256, /^[a-f0-9]{64}$/);

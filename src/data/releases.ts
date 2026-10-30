@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -77,26 +77,26 @@ export const BUILDS: Build[] = [
     "platform": "Windows",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Windows-20261029-R21.zip",
-    "version": "2026.10.29-R21",
+    "file": "TwilightCodex-Windows-20261029-R22.zip",
+    "version": "2026.10.29-R22",
     "size": "61.9 MiB",
-    "bytes": 64865901,
-    "updated": "2026-10-29",
-    "sha256": "d6fd47b99da35710b6a78418fc44daab0daa5d8bf17f45464af924a8e494ed0a",
-    "build": 2026102901,
-    "minimumBuild": 2026102101,
-    "protocol": 28,
+    "bytes": 64909341,
+    "updated": "2026-10-30",
+    "sha256": "feaee7897a075d1ca6c75f48309b376be6ae8328323e65311710ce9698d21c58",
+    "build": 2026102902,
+    "minimumBuild": 2026102902,
+    "protocol": 29,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Windows-20261029-R21.pck",
-      "bytes": 451823292,
-      "sha256": "c6d6fd42f59ad9910a6ebaf41ed2d1dbdee59045229c26e075e75d1fc5f8e15f",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21/TwilightCodex-Content-Windows-20261029-R21.pck"
+      "filename": "TwilightCodex-Content-Windows-20261029-R22.pck",
+      "bytes": 451829764,
+      "sha256": "7bb29cfc34e8c9db767bbaf093085f09638e0a4dcd2c6e5279e6cce9e24264f8",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22/TwilightCodex-Content-Windows-20261029-R22.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22",
     "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    "note": "R21 加入密林、地牢與迷宮探索地圖、四方向匿名斗篷角色，以及相遇後進入卡牌決鬥的流程。可先本機走動預覽；正式探索專服仍待部署，尚未開放公共探索房間。首次按「開始」下載素材，同版本保留快取。 Windows 公開成品已通過空快取素材下載、雜湊驗證、掛載、ANGLE 主選單與正常退出；真人對局與持續效能待驗。",
-    "noteEn": "R21 adds forest, dungeon and labyrinth exploration maps, anonymous cloaked travelers with four-direction animation, and encounters that lead into card duels. Local walking previews are available; the official exploration server is pending deployment and public exploration rooms are not yet open. Press Start to download content; the same version stays cached. The public Windows build passed fresh content download, hash verification, mounting, ANGLE main-menu startup and normal exit. Human matches and sustained performance remain untested."
+    "note": "R22 加入技能冷卻與「每次召喚限一次」，調整多張卡牌數值，命中與登場音效依強度分級，並改善狀態圖示與手機出牌。連線對戰需要 R22。首次按「開始」下載素材，同版本保留快取。 包內資源檢查通過；本版 Windows 原生啟動尚未實測，真人對局與持續效能待驗。",
+    "noteEn": "R22 adds skill cooldowns and once-per-summon limits, rebalances several cards, tiers hit and summon sounds by strength, and improves status icons and mobile card play. Online matches require R22. Press Start to download content; the same version stays cached. Packed resources passed checks. Native Windows startup has not been tested for R22. Human matches and sustained performance remain untested."
   },
   {
     "id": "macos",
@@ -104,26 +104,26 @@ export const BUILDS: Build[] = [
     "platform": "macOS",
     "en": "ZIP · Universal",
     "status": "available",
-    "file": "TwilightCodex-macOS-20261029-R21.zip",
-    "version": "2026.10.29-R21",
-    "size": "82.7 MiB",
-    "bytes": 86765769,
-    "updated": "2026-10-29",
-    "sha256": "a0f8d1d2c6693408f817c60038653d0bd83213ca7b2be32bb229cde52dfca11f",
-    "build": 2026102901,
-    "minimumBuild": 2026102101,
-    "protocol": 28,
+    "file": "TwilightCodex-macOS-20261029-R22.zip",
+    "version": "2026.10.29-R22",
+    "size": "82.8 MiB",
+    "bytes": 86810404,
+    "updated": "2026-10-30",
+    "sha256": "60b51c37164d97ede102b6b64025b60bebbd921d96356da80139dc062fc4a2ed",
+    "build": 2026102902,
+    "minimumBuild": 2026102902,
+    "protocol": 29,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-macOS-20261029-R21.pck",
-      "bytes": 451823292,
-      "sha256": "fb54b40dcbac149ea59b479eee8f7ab130f84aef900100230d39588cb6a7e2cc",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21/TwilightCodex-Content-macOS-20261029-R21.pck"
+      "filename": "TwilightCodex-Content-macOS-20261029-R22.pck",
+      "bytes": 451829764,
+      "sha256": "7d245c63f8d8fa53c50a4b9455a035f80a4cf62323d21d7c27c24fe455a30e5d",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22/TwilightCodex-Content-macOS-20261029-R22.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r21",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.29-r22",
     "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
-    "note": "R21 加入密林、地牢與迷宮探索地圖、四方向匿名斗篷角色，以及相遇後進入卡牌決鬥的流程。可先本機走動預覽；正式探索專服仍待部署，尚未開放公共探索房間。首次按「開始」下載素材，同版本保留快取。 包內資源檢查通過；本版 macOS 原生啟動尚未實測，不能沿用 R20 的驗收。ad-hoc 簽章，未 Apple 公證；真人對局與持續效能待驗。",
-    "noteEn": "R21 adds forest, dungeon and labyrinth exploration maps, anonymous cloaked travelers with four-direction animation, and encounters that lead into card duels. Local walking previews are available; the official exploration server is pending deployment and public exploration rooms are not yet open. Press Start to download content; the same version stays cached. Packed resources passed checks. Native macOS startup has not been tested for R21; R20 results do not certify this build. Ad-hoc signed, not Apple-notarized. Human matches and sustained performance remain untested."
+    "note": "R22 加入技能冷卻與「每次召喚限一次」，調整多張卡牌數值，命中與登場音效依強度分級，並改善狀態圖示與手機出牌。連線對戰需要 R22。首次按「開始」下載素材，同版本保留快取。 實際成品已在預先驗證的素材快取下完成 Metal 視窗啟動、主選單與正常退出。ad-hoc 簽章，未 Apple 公證；真人對局與持續效能待驗。",
+    "noteEn": "R22 adds skill cooldowns and once-per-summon limits, rebalances several cards, tiers hit and summon sounds by strength, and improves status icons and mobile card play. Online matches require R22. Press Start to download content; the same version stays cached. The shipped build reached the main menu in a Metal window and exited normally with verified preseeded content. Ad-hoc signed, not Apple-notarized. Human matches and sustained performance remain untested."
   },
   {
     "id": "linux",
@@ -149,8 +149,8 @@ export const BUILDS: Build[] = [
     },
     "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
     "requirement": "Linux x86_64 · glibc 2.39+（Ubuntu 24.04+）· Vulkan 或 OpenGL 3.3",
-    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 本次完成包內資源檢查，尚未重跑 Linux 原生測試。",
-    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Packed resources were checked; native Linux testing has not been repeated for this build."
+    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 本次完成包內資源檢查，尚未重跑 Linux 原生測試。 正式連線已升級為 R22，R19 暫時只能離線遊玩。",
+    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Packed resources were checked; native Linux testing has not been repeated for this build. Online play now requires R22; R19 is offline-only for now."
   },
   {
     "id": "android",
@@ -176,8 +176,8 @@ export const BUILDS: Build[] = [
     },
     "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
     "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
-    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 沿用原更新簽章。上一版已由開發者實機測試，本次尚未重跑手機安裝、觸控與持續效能。",
-    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Uses the existing update signing identity. The previous version was device-tested by the developer; this APK has not repeated installation, touch or sustained-performance tests.",
+    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 沿用原更新簽章。上一版已由開發者實機測試，本次尚未重跑手機安裝、觸控與持續效能。 正式連線已升級為 R22，R19 暫時只能離線遊玩。",
+    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Uses the existing update signing identity. The previous version was device-tested by the developer; this APK has not repeated installation, touch or sustained-performance tests. Online play now requires R22; R19 is offline-only for now.",
     "websiteDelivery": "static-apk"
   }
 ];
@@ -252,6 +252,21 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+{
+  "version": "2026.10.29-R22",
+  "date": "2026-10-30",
+  "title": "R22：技能冷卻與卡牌平衡",
+  "changes": [
+    "Windows／macOS 更新 R22；Linux／Android 保留原 R19 附件。既有帳號、收藏、牌組與存檔保留。",
+    "連線對戰需要 R22：正式專服更新後，R21 以前與 Linux／Android 的 R19 只能離線遊玩。",
+    "技能冷卻與「每次召喚限一次」：19 張低費／免費技能降費並改用冷卻或限一次；場上能力列顯示剩餘冷卻回合。",
+    "卡牌平衡：多張小技能降費、獸人生命 3→4、蝙蝠移除技能、熔岩史萊姆改為分裂成 1/1 小熔岩史萊姆。",
+    "命中音效依傷害分四級、從者登場音依費用分級；嘲諷巨盾與柔光狀態環重作，持續狀態與手機選單更易讀；手機預設拖曳出牌，教學後可選擇出牌方式。",
+    "設定新增「覺醒（測試，離線新局）」，預設關閉，只在新開的本機熱座與內建 AI 對局啟用；已開啟匿名統計的遊客會匿名回報逐卡使用次數，用於調整平衡。",
+    "兩平台完成嚴格核心／素材聯集與實際包資源檢查；macOS 實際成品完成 Metal 視窗啟動到主選單。Windows 原生啟動、完整真人對局與持續效能尚未驗收；macOS 為 ad-hoc 簽章，未 Apple 公證。",
+    "English: R22 adds skill cooldowns and once-per-summon limits, rebalances several cards, tiers hit and summon sounds, refreshes status icons and improves mobile card play. Online matches require R22; Linux/Android stay on R19 for offline play."
+  ]
+},
 {
   "version": "2026.10.29-R21",
   "date": "2026-10-29",
