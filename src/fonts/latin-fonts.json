@@ -1,0 +1,74 @@
+[
+  {
+    "file": "cinzel-600-latin.woff2",
+    "family": "Cinzel",
+    "weight": 600,
+    "source": "https://fonts.gstatic.com/s/cinzel/v26/8vIJ7ww63mVu7gt79mT7PkRXMw.woff2",
+    "sha256": "ef95296c778719c3d658a8284d65078100450948851b9114485ada01d9d3d3f8",
+    "bytes": 25888,
+    "license": "/licenses/cinzel-OFL.txt"
+  },
+  {
+    "file": "cinzel-700-latin.woff2",
+    "family": "Cinzel",
+    "weight": 700,
+    "source": "https://fonts.gstatic.com/s/cinzel/v26/8vIJ7ww63mVu7gt79mT7PkRXMw.woff2",
+    "sha256": "ef95296c778719c3d658a8284d65078100450948851b9114485ada01d9d3d3f8",
+    "bytes": 25888,
+    "license": "/licenses/cinzel-OFL.txt"
+  },
+  {
+    "file": "barlow-400-latin.woff2",
+    "family": "Barlow",
+    "weight": 400,
+    "source": "https://fonts.gstatic.com/s/barlow/v13/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2",
+    "sha256": "7a686e76312866b7d506c103e51a829d4c96a0b4576835128d3b7b53801c095a",
+    "bytes": 15656,
+    "license": "/licenses/barlow-OFL.txt"
+  },
+  {
+    "file": "barlow-500-latin.woff2",
+    "family": "Barlow",
+    "weight": 500,
+    "source": "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3_-gs51ostz0rdg.woff2",
+    "sha256": "80e7dc5605dd451bb9b092d7f46704f08bf39d2866cb981aa8caddc016716aed",
+    "bytes": 15640,
+    "license": "/licenses/barlow-OFL.txt"
+  },
+  {
+    "file": "barlow-600-latin.woff2",
+    "family": "Barlow",
+    "weight": 600,
+    "source": "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E30-8s51ostz0rdg.woff2",
+    "sha256": "488b58098126c00b8fa77f4d58b0a4bc982e81e4c83323c1a73d9f1a67c15971",
+    "bytes": 15832,
+    "license": "/licenses/barlow-OFL.txt"
+  },
+  {
+    "file": "barlow-condensed-500-latin.woff2",
+    "family": "Barlow Condensed",
+    "weight": 500,
+    "source": "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B4-Lwz3bWuYMBYro.woff2",
+    "sha256": "31ff5e6e96a096fde4d78bc838719e69b093db2d0b062b96e423c065a6d1b2b1",
+    "bytes": 14680,
+    "license": "/licenses/barlowcondensed-OFL.txt"
+  },
+  {
+    "file": "barlow-condensed-600-latin.woff2",
+    "family": "Barlow Condensed",
+    "weight": 600,
+    "source": "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3bWuYMBYro.woff2",
+    "sha256": "5bc49d41f32810a114765314392332ce2acae2276635eee265a50319a12c1b49",
+    "bytes": 14844,
+    "license": "/licenses/barlowcondensed-OFL.txt"
+  },
+  {
+    "file": "barlow-condensed-700-latin.woff2",
+    "family": "Barlow Condensed",
+    "weight": 700,
+    "source": "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
+    "sha256": "e3e520cb7468f2efd60bc2ce96694567c3312f4ef414fffbe605e3ad146b24e6",
+    "bytes": 14888,
+    "license": "/licenses/barlowcondensed-OFL.txt"
+  }
+]
