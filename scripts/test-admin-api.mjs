@@ -222,6 +222,47 @@ try {
   check(calls.at(-2).method === "PUT" && calls.at(-2).body.password === "fixture-current-password"
     && calls.at(-2).headers.Authorization === "Bearer replacement-setup-access",
     "The newly verified setup keeps its own permission and only writes its current password");
+  const expiryApi = new AdminAPI();
+  const loginReply = token => [{ body: { access_token: token, refresh_token: "fixture-refresh", expires_in: 3600 } },
+    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "operator" } }];
+  replies.push(...loginReply("old-page-access"));
+  await expiryApi.signIn("owner@example.test", "fixture-password");
+  let expirations = 0;
+  const unsubscribe = expiryApi.onSessionExpired(() => { expirations++; });
+  let resolveOldPage;
+  replies.push(new Promise(resolve => { resolveOldPage = resolve; }));
+  const oldPage = expiryApi.rpc("tcg_admin_card_stats", {});
+  replies.push({ body: {} }); await expiryApi.signOut();
+  replies.push(...loginReply("current-page-access"));
+  await expiryApi.signIn("owner@example.test", "fixture-password");
+  resolveOldPage({ status: 403, body: { code: "42501", message: "Old page was denied" } });
+  await assert.rejects(() => oldPage, error => error.status === 403);
+  check(expirations === 0, "An old login's delayed denial cannot expire the replacement session");
+  replies.push({ status: 403, body: { code: "42501", message: "Current page was denied" } });
+  await assert.rejects(() => expiryApi.rpc("tcg_admin_card_stats", {}), error => error.status === 403);
+  check(expirations === 1, "A current session denial notifies the console even when its requesting page is unmounted");
+  unsubscribe();
+  replies.push({ status: 401, body: { message: "Expired" } });
+  await assert.rejects(() => expiryApi.rpc("tcg_admin_players", {}), error => error.status === 401);
+  check(expirations === 1, "Unmounted consoles unsubscribe from session expiration notifications");
+  let resolveMutation;
+  replies.push(new Promise(resolve => { resolveMutation = resolve; }));
+  const interruptedMutation = expiryApi.change(gift);
+  replies.push({ body: {} }); await expiryApi.signOut();
+  resolveMutation({ body: {} });
+  await assert.rejects(() => interruptedMutation, error => error.uncertain && error.message.includes("取消舊請求"));
+  check(true, "An operation completed after session invalidation keeps an uncertain outcome so its journal UUID survives");
+  replies.push(...loginReply("retry-access"));
+  await expiryApi.signIn("owner@example.test", "fixture-password");
+  const beforeRefresh = Date.now(); Date.now = () => beforeRefresh + 3600000;
+  let resolveRetryRefresh;
+  replies.push(new Promise(resolve => { resolveRetryRefresh = resolve; }));
+  const interruptedRetry = expiryApi.change(gift);
+  replies.push({ body: {} }); await expiryApi.signOut();
+  resolveRetryRefresh({ body: { access_token: "cancelled-refresh", refresh_token: "cancelled-refresh-token", expires_in: 3600 } });
+  await assert.rejects(() => interruptedRetry, error => error.uncertain && error.message.includes("取消舊請求"));
+  Date.now = originalNow;
+  check(true, "Cancellation during a retry's token refresh also preserves the prior uncertain mutation journal");
   check(calls.every((c) => c.body.create_user !== true), "No admin flow creates or registers an Auth account");
   check(replies.length === 0, "All scripted HTTP outcomes were consumed");
   console.log(`Admin API: ${checks} checks PASS`);

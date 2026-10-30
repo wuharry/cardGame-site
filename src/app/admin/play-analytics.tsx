@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AdminAPI, AdminError } from "./admin-api";
 import { countAxis, dailyRows, hasMeasurement, livePresence, measuredSegments, tickIndices, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
-import MatchDuration from "./match-duration";
-import CardStatsPanel from "./card-stats";
 import styles from "./admin.module.css";
 import { DashboardOverview, WinLossBar } from "./dashboard-visuals";
 
@@ -139,7 +137,9 @@ export function OnlineChart({ data }: { data: PlayDashboard }) {
     </tbody></table></div></details></>;
 }
 
-export default function PlayAnalytics({ api, disabled, onExpired }: { api: AdminAPI; disabled: boolean; onExpired: () => void }) {
+export default function PlayAnalytics({ api, disabled, onExpired, view = "analytics" }: {
+  api: AdminAPI; disabled: boolean; onExpired: () => void; view?: "analytics" | "guests" | "player-rates";
+}) {
   const [data, setData] = useState<PlayDashboard | null>(null);
   const [guests, setGuests] = useState<GuestList | null>(null);
   const [rates, setRates] = useState<PlayerRates | null>(null);
@@ -166,8 +166,10 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
       loading = true; setBusy(true);
       try {
         const dashboard = await api.rpc<PlayDashboard>("tcg_admin_play_dashboard", { p_days: 28 });
-        const guestList = await api.rpc<GuestList>("tcg_admin_guest_players", { p_page: guestPage });
-        const rateList = await api.rpc<PlayerRates>("tcg_admin_player_rates", { p_page: ratePage });
+        if (!active || request.current !== generation) return;
+        const guestList = view === "guests" ? await api.rpc<GuestList>("tcg_admin_guest_players", { p_page: guestPage }) : null;
+        if (!active || request.current !== generation) return;
+        const rateList = view === "player-rates" ? await api.rpc<PlayerRates>("tcg_admin_player_rates", { p_page: ratePage }) : null;
         if (!active || request.current !== generation) return;
         setData(dashboard); setGuests(guestList); setRates(rateList); setError(""); setClock(Date.now());
       } catch (e) {
@@ -183,24 +185,26 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
     const poll = window.setInterval(() => void load(), 30000);
     const age = window.setInterval(() => { if (active) setClock(Date.now()); }, 5000);
     return () => { active = false; window.clearInterval(poll); window.clearInterval(age); };
-  }, [api, disabled, guestPage, ratePage, revision, revoked, clearPrivateData]);
+  }, [api, disabled, guestPage, ratePage, revision, revoked, clearPrivateData, view]);
 
   if (revoked) return <p role="status">登入或管理權限已失效，私人統計已清除。</p>;
 
   const live = data ? livePresence(data, clock) : null;
   const guestFresh = data && clock - Date.parse(data.generated_at) < 90000;
-  return <section id="analytics" aria-label="遊玩統計">
-    <div className={styles.toolbar}><div><h2>遊玩概況</h2><small>台北日期 · 累計指標與近 28 日趨勢 · 排除管理者註冊／收藏</small></div>
+  return <section aria-label={view === "analytics" ? "遊玩統計" : view === "guests" ? "遊客統計" : "玩家戰績統計"}>
+    <div className={styles.toolbar}><div><h2>{view === "analytics" ? "遊玩概況" : view === "guests" ? "遊客活動" : "正式玩家戰績"}</h2><small>台北日期 · 累計指標與近 28 日趨勢 · 排除管理者註冊／收藏</small></div>
       <div><small>{data ? `資料更新：${date(data.generated_at)}` : "登入後載入統計"}</small>
         <button disabled={busy || disabled} onClick={() => setRevision(v => v + 1)}>{busy ? "更新中…" : "更新統計"}</button></div></div>
     {error && <p className={styles.message} role="status">{error} {data && "下方保留上次數據。"}</p>}
-    <DashboardOverview data={data} now={clock} live={live} guestFresh={!!guestFresh} />
+    {view === "analytics" && <><DashboardOverview data={data} now={clock} live={live} guestFresh={!!guestFresh} />
     <p className={styles.note}>遊客裝置 ID 清除存檔／重裝後可能改變，不能視為不同人數；離線活動要等連網才看得到。遊客活動數與主機連線可能重疊，不能相加。</p>
-    {data && <><div className={styles.chartGrid}>
+    {data && <div className={styles.chartGrid}>
       <article className={styles.panel}><h3>每日玩家活動 · 近 28 日</h3><DailyChart data={data} /></article>
       <article className={styles.panel}><h3>主機連線 · 最近 24 小時</h3><OnlineChart data={data} />
         {data.servers.map(s => <small key={s.server_id}>{s.server_id} · 回報 {date(s.received_at)} · {s.fresh && clock - Date.parse(s.received_at) < 45000 ? "有效" : "已過期"}</small>)}</article>
-    </div><section className={styles.panel}><h3>遊客遊玩模式占比 · 累計自行回報</h3>
+    </div>}
+    {data && <section className={styles.panel}><h3>正式完賽原因 · 近 28 日</h3><div className={styles.legend}><span>擊敗 {data.formal_outcomes.defeat}</span><span>離開／斷線 {data.formal_outcomes.disconnect}</span><span>其中平手 {data.formal_outcomes.draws}</span></div></section>}</>}
+    {view === "guests" && data && <><section className={styles.panel}><h3>遊客遊玩模式占比 · 累計自行回報</h3>
       <p className={styles.note}>以各模式的對局開始次數計算；同一裝置可遊玩多種模式，不代表玩家人數占比。</p><ModeChart data={data} />
     </section><section className={styles.panel}><h3>遊客遊玩結果 · 累計自行回報</h3>
       <p className={styles.note}>不作排名或收藏證明。本機雙人的勝敗以本機 player 座位計算；外網正式戰績以伺服器紀錄為準。</p>
@@ -208,22 +212,20 @@ export default function PlayAnalytics({ api, disabled, onExpired }: { api: Admin
         <span>{modes[m.mode] ?? m.mode} · {m.started} 次開始</span><div className={styles.stacked} role="img" aria-label={`${m.wins} 勝、${m.losses} 敗、${m.draws} 平、${m.abandoned} 中途離開`}>
           {[m.wins, m.losses, m.draws, m.abandoned].map((n, i) => <span key={i} style={{ width: `${n / total * 100}%`, background: ["#7cc9bf", "#de9d98", "#dcc58c", "#6f8090"][i] }} />)}</div>
         <small>{m.wins} 勝 · {m.losses} 敗 · {m.draws} 平 · {m.abandoned} 中途離開 · {m.started - m.wins - m.losses - m.draws - m.abandoned} 尚未結束</small></div>; }) : <p className={styles.empty}>尚無遊客回報。更新遊戲客戶端後才開始收集。</p>}
-      <h3>正式完賽原因 · 近 28 日</h3><div className={styles.legend}><span>擊敗 {data.formal_outcomes.defeat}</span><span>離開／斷線 {data.formal_outcomes.disconnect}</span><span>其中平手 {data.formal_outcomes.draws}</span></div></section></>}
-    <MatchDuration api={api} disabled={disabled} onExpired={clearPrivateData} />
-    <CardStatsPanel api={api} disabled={disabled} onExpired={clearPrivateData} />
-    <section className={styles.panel}><h3>每位玩家勝敗率 · 正式伺服器紀錄（累計）</h3><p className={styles.note}>勝率＝勝／（勝＋敗），平手另列。樣本少時只供觀察；未完賽顯示無樣本。</p>
+      </section></>}
+    {view === "player-rates" && <section className={styles.panel}><h3>每位玩家勝敗率 · 正式伺服器紀錄（累計）</h3><p className={styles.note}>勝率＝勝／（勝＋敗），平手另列。樣本少時只供觀察；未完賽顯示無樣本。</p>
       <div className={styles.tableScroll}><table><thead><tr><th>玩家</th><th>場次／勝敗平</th><th>勝率</th><th>敗率</th><th>目前狀態</th></tr></thead><tbody>{rates?.players.map(p => <tr key={p.id}>
         <td>{p.email}<small>{p.id}</small></td><td>{p.total} 場 · {p.wins}／{p.losses}／{p.draws}</td><td><WinLossBar wins={p.wins} losses={p.losses} draws={p.draws} /></td><td>{percent(p.loss_rate)}</td>
         <td>{live && p.verified_match_online ? "正式對戰中" : "未確認對戰在線"}</td></tr>)}</tbody></table></div>
       <footer className={styles.pagination}><button disabled={busy || disabled || ratePage === 0} onClick={() => setRatePage(p => p - 1)}>上一頁戰績</button><span>第 {ratePage + 1} 頁</span>
         <button disabled={busy || disabled || (rates?.players.length ?? 0) < 25} onClick={() => setRatePage(p => p + 1)}>下一頁戰績</button></footer>
-    </section>
-    <section className={styles.panel}><h3>遊客裝置資料 · 匿名自行回報</h3><div className={styles.tableScroll}><table><thead><tr><th>匿名裝置 ID</th><th>最近活動／首次回報</th><th>版本／平台</th><th>啟動／對戰時間</th><th>模式與結果</th></tr></thead>
+    </section>}
+    {view === "guests" && <section className={styles.panel}><h3>遊客裝置資料 · 匿名自行回報</h3><div className={styles.tableScroll}><table><thead><tr><th>匿名裝置 ID</th><th>最近活動／首次回報</th><th>版本／平台</th><th>啟動／對戰時間</th><th>模式與結果</th></tr></thead>
       <tbody>{guests?.players.map(g => <tr key={g.install_id}><td>{g.install_id}<small>{guestFresh && g.online ? "近期收到活動" : "未確認活動"}</small></td>
         <td>{date(g.last_seen)}<small>{date(g.first_seen)}</small></td><td>{g.stats.version}<small>{g.stats.platform}</small></td>
         <td>{g.stats.launches} 次 · {Math.floor(g.stats.play_seconds / 60)} 分</td><td>{Object.entries(g.stats.modes).filter(([, c]) => c.started > 0).map(([m, c]) => <small key={m}>{modes[m] ?? m}：{c.started} 開始 · {c.wins} 勝 {c.losses} 敗 {c.draws} 平 {c.abandoned} 離開</small>)}</td></tr>)}</tbody></table></div>
       {guests?.players.length === 0 && <p className={styles.empty}>尚無遊客統計，不會自動取得舊版或完全離線玩家的資料。</p>}
       <footer className={styles.pagination}><button disabled={busy || disabled || guestPage === 0} onClick={() => setGuestPage(p => p - 1)}>上一頁遊客</button><span>第 {guestPage + 1} 頁 · {guests?.total ?? "—"} 個裝置</span>
-        <button disabled={busy || disabled || !guests || (guestPage + 1) * 25 >= guests.total} onClick={() => setGuestPage(p => p + 1)}>下一頁遊客</button></footer></section>
+        <button disabled={busy || disabled || !guests || (guestPage + 1) * 25 >= guests.total} onClick={() => setGuestPage(p => p + 1)}>下一頁遊客</button></footer></section>}
   </section>;
 }

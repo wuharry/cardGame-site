@@ -27,6 +27,7 @@ try {
   assert(await page.evaluate(() => document.querySelectorAll('link[rel="preload"][as="font"]').length <= 1), "Only the display font may be globally preloaded");
   assert(await page.evaluate(() => document.querySelectorAll('link[rel="stylesheet"]').length === 0), "Cold first paint uses styles delivered with HTML");
   assert.equal(await page.locator(".hero-backdrop").getAttribute("fetchpriority"), "high");
+  assert(new URL(await page.locator(".hero-backdrop").getAttribute("src"), base).searchParams.get("q") === "35", "Decorative hero uses the lighter image quality");
   await page.getByRole("button", { name: "開啟導覽選單" }).click();
   assert(await page.getByRole("navigation", { name: "手機導覽" }).isVisible());
   await page.getByRole("button", { name: "關閉導覽選單" }).click();
@@ -77,20 +78,21 @@ try {
   const firstScreenFonts = await normal.evaluate(() => performance.getEntriesByType("resource")
     .filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2"))
     .map(entry => ({ name: entry.name, bytes: entry.encodedBodySize })));
-  assert.equal(firstScreenFonts.length, 1, "First screen must not download the entire Chinese family");
-  assert(firstScreenFonts[0].bytes > 0 && firstScreenFonts[0].bytes <= 120000, "First-screen Chinese font budget is 120 KB");
+  assert.equal(firstScreenFonts.length, 0, "Mobile first screen uses installed Chinese fonts without downloading subsets");
   await normal.locator("#support").scrollIntoViewIfNeeded();
-  // Scroll completion can precede content-visibility activation and the next
-  // paint. Wait for a real deferred font response, not an already-idle network.
-  await normal.waitForFunction(() => performance.getEntriesByType("resource")
-    .filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2")).length > 1,
-  undefined, { timeout: 10000 });
   await normal.waitForLoadState("networkidle");
   await normal.evaluate(() => document.fonts.ready);
-  assert(await normal.evaluate(() => document.fonts.check('500 40px "Noto Serif TC"', "這是持續開發中的獨立遊戲。好玩的地方、讓你挫折的時刻")), "Deferred sections retain the original Chinese typeface");
-  assert(await normal.evaluate(() => performance.getEntriesByType("resource").filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2")).length > 1), "Scrolling loads the remaining original glyphs instead of dropping them");
-  console.log("PASS cold first-screen font budget and original typeface after scrolling");
+  assert(await normal.evaluate(() => performance.getEntriesByType("resource").filter(entry => entry.name.includes("noto-serif-tc-site-") && entry.name.endsWith(".woff2")).length === 0), "Mobile scrolling keeps using installed Chinese fonts");
+  assert(!(await normal.locator("#support h2").evaluate(el => getComputedStyle(el).fontFamily)).includes("Noto Serif TC"));
+  console.log("PASS mobile Chinese font budget before and after scrolling");
   await normal.close();
+
+  const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await desktop.goto(base + "/", { waitUntil: "networkidle" });
+  await desktop.evaluate(() => document.fonts.ready);
+  assert((await desktop.locator(".hero-copy h1").evaluate(el => getComputedStyle(el).fontFamily)).includes("Noto Serif TC"), "Desktop retains the original Chinese typography");
+  assert(await desktop.evaluate(() => performance.getEntriesByType("resource").some(entry => entry.name.includes("noto-serif-tc-site-"))), "Desktop loads the original Chinese fonts");
+  await desktop.close();
 
   // Estimated offscreen heights once pushed #download away after arrival (10/19).
   // Keep sampling past the jump and the font swap, not only at click time.

@@ -191,7 +191,7 @@ html:has(.marketing-home) { scroll-behavior: auto; }
 .mode-number { display: block; font: 40px/1.2 var(--font-display); color: #89764e; margin-bottom: 24px; }
 .modes-grid h3 { font-size: 24px; margin: 8px 0 18px; font-weight: 600; }
 .modes-grid article > p:not(.overline) { font-size: 14px; line-height: 1.9; color: #62665e; }
-.modes-grid small { display: block; margin-top: 24px; font-size: 11px; color: #766442; }
+.modes-grid small { display: block; margin-top: 24px; font-size: 11px; color: #6d5b3d; }
 .marketing-home #download { background: #10191e; border-color: var(--line); }
 .marketing-home #download > div { max-width: 1296px; padding-inline: 48px; padding-block: 94px; }
 .marketing-home #download .eyebrow { color: var(--gold); }

@@ -56,6 +56,17 @@
     color-scheme: dark;
   }
 
+  /* Mobile uses installed CJK fonts so the first paint never waits on the
+     large Chinese webfont subsets. Keep the small Latin brand fonts. */
+  @media (max-width: 1000px) {
+    :root {
+      --font-display: var(--font-cinzel), ui-serif, serif;
+      --font-serif: ui-serif, "Songti TC", "PMingLiU", serif;
+      --font-sans: var(--font-barlow), system-ui, sans-serif;
+      --font-hud: var(--font-barlow-condensed), system-ui, sans-serif;
+    }
+  }
+
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 4.5rem;

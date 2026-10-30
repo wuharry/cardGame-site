@@ -87,8 +87,30 @@
 .durationSource td { white-space: nowrap; }
 .header { border-bottom: 1px solid #35484a; padding-bottom: 26px; }
 .headerCaption { font-size: 14px; color: #9db0ad; font-weight: 450; margin-left: 16px; }
-.quickNav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-.quickNav a { padding: 7px 13px; border: 1px solid #415354; border-radius: 6px; text-decoration: none; font-size: 12px; }
+.workspace { display: grid; grid-template-columns: 224px minmax(0, 1fr); align-items: start; gap: 32px; padding-top: 24px; }
+.workspaceContent { min-width: 0; }
+.sidebar { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 25px; padding: 24px 14px; border: 1px solid #35484a; border-radius: 12px; background: #132126; max-height: calc(100dvh - 48px); overflow-y: auto; }
+.sidebarBrand { padding: 0 12px 20px; border-bottom: 1px solid #35484a; }
+.sidebarBrand strong { display: block; font-size: 20px; margin: 10px 0 4px; }
+.pageNav { display: grid; gap: 8px; }
+.root .pageNav a { display: flex; align-items: center; gap: 12px; padding: 13px 10px; border: 1px solid transparent; border-radius: 8px; color: #c4d3d0; text-decoration: none; }
+.pageNav a strong { font-size: 14px; font-weight: 550; }
+.root .pageNav a:hover { background: #203339; }
+.root .pageNav a[aria-current=page] { background: #303b32; border-color: #756a45; color: #efdaa3; }
+.pageNav a[aria-disabled=true] { opacity: .5; cursor: default; }
+.pageNav a:focus-visible { outline: 2px solid #dbc486; outline-offset: 2px; }
+.navNumber { font-size: 10px; color: #93aba7; font-variant-numeric: tabular-nums; }
+.root .navHelp { color: #9db0ad; font-size: 11px; padding: 0 10px; margin: 0; }
+.root .mobilePageSelect { display: none; }
+.workspace .header { margin-top: 6px; }
+@media (max-width: 900px) {
+  .workspace { display: block; padding-top: 0; }
+  .sidebar { top: 0; z-index: 20; max-height: none; overflow: visible; margin: 0 -20px 24px; border-radius: 0; border-width: 0 0 1px; padding: 12px 20px; gap: 8px; background: #132126f5; backdrop-filter: blur(12px); }
+  .sidebarBrand, .pageNav { display: none; }
+  .root .mobilePageSelect { display: flex; flex-direction: row; align-items: center; gap: 18px; color: #d0b87a; font-size: 12px; white-space: nowrap; }
+  .mobilePageSelect select { flex: 1; font-size: 14px; }
+  .root .navHelp { padding: 0; }
+}
 .root section[id] { scroll-margin-top: 20px; }
 .overviewGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 20px 0 16px; }
 .metricCard { --tone: #7cc9bf; position: relative; min-width: 0; padding: 22px; border: 1px solid #35484a; border-top: 2px solid var(--tone); border-radius: 12px; background: linear-gradient(155deg, #1c3036, #152227 75%); }

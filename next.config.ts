@@ -25,6 +25,8 @@ const nextConfig: NextConfig = {
     })];
   },
   images: {
+    // The heavily shaded hero backdrop needs fewer bytes than gameplay captures.
+    qualities: [35, 75],
     // 匯入清單的內容 hash 會放在 query，更新素材時避開舊圖片快取。
     localPatterns: [{ pathname: "/media/**" }, { pathname: "/apple-icon.png", search: "" }],
   },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Link from "next/link";
 import { AdminAPI, AdminError, type AdminSession, type Change, type PlayerDetail, type PlayerList, type PlayerMailList } from "./admin-api";
 import cards from "./card-names.json";
@@ -10,6 +10,9 @@ import PlayerCommerce from "./player-commerce";
 import { PlayerCards, ManaCurve } from "./player-cards";
 import { WinLossBar } from "./dashboard-visuals";
 import { recentStreak } from "./dashboard-metrics";
+import AdminNavigation, { adminPages, pageFromHash, type AdminPage } from "./admin-navigation";
+import CardStatsPanel from "./card-stats";
+import MatchDuration from "./match-duration";
 
 const date = (value?: string | null) => value ? new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "—";
 const name = (id: string) => (cards as Record<string, string>)[id] ?? id;
@@ -44,6 +47,21 @@ export default function AdminConsole() {
   const [mailBody, setMailBody] = useState("");
   const [mail, setMail] = useState<PlayerMailList | null>(null);
   const [mailOffset, setMailOffset] = useState(0);
+  const [page, setPage] = useState<AdminPage>("analytics");
+  const activePage = useRef<AdminPage>("analytics");
+
+  const clearPrivateState = () => {
+    setSession(null); setSetupSession(null); setSetup(false); setSent(false);
+    setPassword(""); setConfirmPassword(""); setCode("");
+    setList(null); setDetail(null); setMail(null); setMailOffset(0); setSearch("");
+    setPending(null); setAttempted(false); setReason(""); setMailTitle(""); setMailBody("");
+    setTab("collection"); setAction("grant_tickets"); setAmount(1); setCardId(Object.keys(cards)[0]);
+  };
+
+  const expired = () => {
+    clearPrivateState(); void api.signOut();
+    setMessage("登入或管理權限已失效，請重新登入。");
+  };
 
   const loadMail = async (account: string, offset = 0) => {
     setMail(await api.rpc<PlayerMailList>("tcg_admin_player_mail", { p_account: account, p_offset: offset }));
@@ -64,28 +82,72 @@ export default function AdminConsole() {
     catch (error) {
       setMessage(error instanceof Error ? error.message : "操作失敗，請稍後重試。");
       if (error instanceof AdminError && [401, 403].includes(error.status)) {
-        setSession(null); setSetupSession(null); setSent(false);
-        setPassword(""); setConfirmPassword(""); setCode(""); setDetail(null); setList(null); setPending(null);
+        clearPrivateState();
         await api.signOut();
       }
     } finally { lock.current = false; setBusy(false); }
   };
 
+  const writePage = (next: AdminPage, replace = false) => {
+    activePage.current = next; setPage(next);
+    if (replace) window.history.replaceState(null, "", `#${next}`);
+    else window.history.pushState(null, "", `#${next}`);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  };
+
+  const selectPage = (next: AdminPage) => {
+    if (lock.current || pending || next === activePage.current) return;
+    writePage(next);
+    if (session && next === "players" && !list) void work(() => loadList());
+  };
+
+  const synchronizePage = useEffectEvent(() => {
+    const next = pageFromHash(window.location.hash);
+    if (next === activePage.current) return;
+    // History navigation must not hide an operation whose outcome is still uncertain.
+    if ((session && lock.current) || pending) {
+      window.history.replaceState(null, "", `#${activePage.current}`);
+      return;
+    }
+    activePage.current = next; setPage(next); window.scrollTo({ top: 0, behavior: "instant" });
+    if (session && next === "players" && !list) void work(() => loadList());
+  });
+
+  const expireSession = useEffectEvent(expired);
+  useEffect(() => api.onSessionExpired(() => expireSession()), [api]);
+
+  useEffect(() => {
+    const synchronize = () => synchronizePage();
+    window.addEventListener("popstate", synchronize);
+    window.addEventListener("hashchange", synchronize);
+    return () => {
+      window.removeEventListener("popstate", synchronize);
+      window.removeEventListener("hashchange", synchronize);
+    };
+  }, []);
+
   const login = async () => {
+    const requestedPage = pageFromHash(window.location.hash);
     const credential = password;
     setPassword(""); setConfirmPassword("");
     const s = await api.signIn(email.trim(), credential);
-    setSession(s); setCode(""); await loadList();
+    setSession(s); setCode("");
+    writePage(requestedPage, true);
     const saved = sessionStorage.getItem(journalKey(s.account_id));
     if (saved) {
       try {
         const change = JSON.parse(saved) as Change;
         if (!change.p_request || !change.p_account || !Object.hasOwn(actions, change.p_action)) throw new Error("invalid journal");
+        writePage("players", true);
         setDetail(await api.rpc<PlayerDetail>("tcg_admin_player", { p_account: change.p_account }));
         setPending(change); setAttempted(true);
         setMessage("找到一筆尚未確認的操作，請重試同一筆以確認結果。");
-      } catch (error) { throw new AdminError(error instanceof Error ? `待確認操作無法恢復：${error.message}` : "待確認操作無法恢復。"); }
+      } catch (error) {
+        if (error instanceof AdminError && [401, 403].includes(error.status)) throw error;
+        throw new AdminError(error instanceof Error ? `待確認操作無法恢復：${error.message}` : "待確認操作無法恢復。");
+      }
     }
+    if (requestedPage === "players" || saved) await loadList();
   };
 
   const cancelSetup = async () => {
@@ -155,15 +217,16 @@ export default function AdminConsole() {
     await loadList(list?.page ?? 0);
   };
 
-  return <main className={styles.root}>
+  const currentPage = adminPages.find(item => item.id === page)!;
+  return <main className={`${styles.root} ${session ? styles.workspace : ""}`}>
+    {session && <AdminNavigation page={page} disabled={busy || !!pending} pending={!!pending} onSelect={selectPage} />}
+    <div className={styles.workspaceContent}>
     <header className={styles.header}>
-      <div><p className={styles.eyebrow}>DECKMARCH / OPERATIONS</p><h1>玩家管理<span className={styles.headerCaption}>營運控制台</span></h1>
-        <p>掌握遊玩活動、對局與玩家資產</p>
-        {session && <nav className={styles.quickNav} aria-label="後台區段"><a href="#analytics">營運總覽</a><a href="#card-stats">卡牌統計</a><a href="#players">玩家查詢</a></nav>}</div>
+      <div><p className={styles.eyebrow}>DECKMARCH / OPERATIONS</p><h1>{session ? currentPage.label : "管理後台"}</h1>
+        <p>{session ? currentPage.description : "掌握遊玩活動、對局與玩家資產"}</p></div>
       <div className={styles.headerRight}><Link href="/">回官網</Link>{session && <>
         <span>{session.email}</span><button disabled={busy || !!pending} onClick={() => void work(async () => {
-          await api.signOut(); setSession(null); setList(null); setDetail(null); setSent(false);
-          setPassword(""); setConfirmPassword(""); setSetupSession(null); setSetup(false);
+          await api.signOut(); clearPrivateState();
         })}>登出</button></>}</div>
     </header>
     {message && <p role="status" className={styles.message}>{message}</p>}
@@ -201,10 +264,11 @@ export default function AdminConsole() {
       </form>
       <p className={styles.note}>此頁查詢正式雲端資料。未註冊的本機訪客不列入註冊玩家。</p>
     </section> : <>
-      <PlayAnalytics api={api} disabled={busy || !!pending} onExpired={() => {
-        void api.signOut(); setSession(null); setList(null); setDetail(null); setPending(null);
-        setMessage("登入或管理權限已失效，請重新登入。");
-      }} />
+      {(page === "analytics" || page === "guests" || page === "player-rates") &&
+        <PlayAnalytics key={page} view={page} api={api} disabled={busy || !!pending} onExpired={expired} />}
+      {page === "card-stats" && <CardStatsPanel api={api} disabled={busy || !!pending} onExpired={expired} />}
+      {page === "match-duration" && <MatchDuration api={api} disabled={busy || !!pending} onExpired={expired} />}
+      {page === "players" && <>
       <section className={styles.summary}>
         <div><span>Auth 帳號（含管理者）</span><strong>{list?.registered ?? "—"}</strong></div>
         <div><span>本次搜尋結果</span><strong>{list?.total ?? "—"}</strong></div>
@@ -304,7 +368,9 @@ export default function AdminConsole() {
           </form>}
         </section>}
       </section>}
+      </>}
     </>}
     <footer className={styles.footnote}>資料時間以台北顯示 · 登入後才查詢私人資料 · 最近抽卡／對局／操作各顯示 30 筆</footer>
+    </div>
   </main>;
 }

@@ -10,7 +10,7 @@ export function EntryScreen() {
   const paused = BUILDS.find((build) => build.status === "suspended");
   return (
     <section className="codex-hero" aria-labelledby="hero-title">
-      <Image src={mediaUrl("/media/screens/town.webp")} alt="" fill loading="eager" fetchPriority="high" sizes="100vw" className="hero-backdrop" />
+      <Image src={mediaUrl("/media/screens/town.webp")} alt="" fill quality={35} loading="eager" fetchPriority="high" sizes="100vw" className="hero-backdrop" />
       <div className="hero-shade" />
       <div className="hero-inner">
         <div className="hero-copy">

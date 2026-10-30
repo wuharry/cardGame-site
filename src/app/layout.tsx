@@ -11,10 +11,10 @@ import "./marketing.css";
 /* 銘刻感的羅馬碑刻體：只給徽標與段落編號，維持「金屬牌」的印象。 */
 const cinzel = localFont({
   variable: "--font-cinzel",
-  src: [
-    { path: "../fonts/cinzel-600-latin.woff2", weight: "600", style: "normal" },
-    { path: "../fonts/cinzel-700-latin.woff2", weight: "700", style: "normal" },
-  ],
+  // Both saved weight files contain the same variable font; load it only once.
+  src: "../fonts/cinzel-600-latin.woff2",
+  weight: "400 900",
+  style: "normal",
   display: "swap",
 });
 

@@ -1,13 +1,14 @@
 // Builds an isolated copy without environment files, then exercises synthetic RPCs only.
 // node scripts/test-play-analytics-browser.mjs [screenshot-directory]
 import { strict as assert } from "node:assert";
-import { cp, mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { chromium } from "playwright-core";
+import { installAdminNavigationFixture } from "./lib/admin-navigation-fixture.mjs";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const scratch = await mkdtemp(join(tmpdir(), "cardgame-admin-fixture-"));
@@ -25,11 +26,18 @@ try {
   for (const path of ["src", "public", "package.json", "tsconfig.json", "next.config.ts", "postcss.config.mjs", "next-env.d.ts"]) {
     await cp(join(repo, path), join(scratch, path), { recursive: true, filter: path => !/(^|\/)\.env(?:\.|$)/.test(path) });
   }
+  // The real console runs against intercepted local URLs only; credentials are synthetic.
+  const apiPath = join(scratch, "src/app/admin/admin-api.ts");
+  const apiSource = await readFile(apiPath, "utf8");
+  assert(apiSource.includes('const ORIGIN = "https://xmyksnpupebxkskydkes.supabase.co";'));
+  await writeFile(apiPath, apiSource.replace('const ORIGIN = "https://xmyksnpupebxkskydkes.supabase.co";', 'const ORIGIN = "/fixture-backend";'));
   await symlink(join(repo, "node_modules"), join(scratch, "node_modules"), process.platform === "win32" ? "junction" : "dir");
   await mkdir(join(scratch, "src/app/analytics-fixture"));
   await writeFile(join(scratch, "src/app/analytics-fixture/page.tsx"), `"use client";
 import { useState } from "react";
 import PlayAnalytics from "../admin/play-analytics";
+import CardStatsPanel from "../admin/card-stats";
+import MatchDuration from "../admin/match-duration";
 import { AdminAPI, AdminError } from "../admin/admin-api";
 import styles from "../admin/admin.module.css";
 class FixtureAPI extends AdminAPI {
@@ -45,23 +53,15 @@ export default function Fixture() {
   const [signed, setSigned] = useState(true);
   return <main className={styles.root}><h1>管理統計 · 合成資料驗證</h1>
     <button onClick={() => setSigned(value => !value)}>{signed ? "Fixture 登出" : "Fixture 登入"}</button>
-    {signed ? <PlayAnalytics api={api} disabled={false} onExpired={() => setSigned(false)} /> : <p>PRIVATE DATA CLEARED</p>}
+    {signed ? <>
+      <PlayAnalytics api={api} disabled={false} onExpired={() => setSigned(false)} />
+      <PlayAnalytics view="guests" api={api} disabled={false} onExpired={() => setSigned(false)} />
+      <PlayAnalytics view="player-rates" api={api} disabled={false} onExpired={() => setSigned(false)} />
+      <MatchDuration api={api} disabled={false} onExpired={() => setSigned(false)} />
+      <CardStatsPanel api={api} disabled={false} onExpired={() => setSigned(false)} />
+    </> : <p>PRIVATE DATA CLEARED</p>}
   </main>;
 }`);
-  const buildLog = await run([join(repo, "node_modules/next/dist/bin/next"), "build", scratch, "--webpack"], scratch);
-  await writeFile(join(output, "build.log"), buildLog);
-  console.log("PASS full Next production build in isolated copy (no .env, existing dependencies, webpack)");
-  const portProbe = createServer();
-  await new Promise(resolve => portProbe.listen(0, "127.0.0.1", resolve));
-  const port = portProbe.address().port;
-  await new Promise(resolve => portProbe.close(resolve));
-  server = spawn(process.execPath, [join(repo, "node_modules/next/dist/bin/next"), "start", scratch, "--hostname", "127.0.0.1", "-p", String(port)], { cwd: scratch, stdio: ["ignore", "pipe", "pipe"] });
-  await new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(new Error("Fixture server did not become ready")), 30000);
-    server.stdout.on("data", b => { if (b.toString().includes("Ready")) { clearTimeout(timeout); resolve(); } });
-    server.on("error", reject); server.on("exit", code => reject(new Error(`Fixture server exited ${code}`)));
-  });
-  browser = await chromium.launch({ executablePath: process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", headless: true });
   const generated_at = new Date().toISOString();
   const daily = Array.from({ length: 28 }, (_, i) => ({ day: `2026-10-${String(i + 1).padStart(2, "0")}`, registered: i === 8 ? null : i % 6,
     guest_installs: i % 4, guest_active: i === 8 ? null : i % 13, matches: i % 9 }));
@@ -95,6 +95,28 @@ export default function Fixture() {
     versions: [{ version: "2026.10.29-R22", matches: 6 }, { version: "2026.10.29-R21", matches: 9 }],
     cards: [cardRow("tf_tide_healer"), cardRow("soldier", { edit_seen: 12, edit_kept: 5, edit_keep_rate: 41.7, recycle_rate: 45 }),
       cardRow("knight", { skill_chances: 0, skill_chance_uses: 0, chance_use_rate: null, edit_seen: 0, edit_kept: 0, edit_keep_rate: null })] };
+  if (process.argv.includes("--serve-fixture")) await installAdminNavigationFixture(scratch, { dashboard, duration, cards: cardStats });
+  const buildLog = await run([join(repo, "node_modules/next/dist/bin/next"), "build", scratch, "--webpack"], scratch);
+  await writeFile(join(output, "build.log"), buildLog);
+  console.log("PASS full Next production build in isolated copy (no .env, existing dependencies, webpack)");
+  const portProbe = createServer();
+  await new Promise(resolve => portProbe.listen(0, "127.0.0.1", resolve));
+  const port = portProbe.address().port;
+  await new Promise(resolve => portProbe.close(resolve));
+  server = spawn(process.execPath, [join(repo, "node_modules/next/dist/bin/next"), "start", scratch, "--hostname", "127.0.0.1", "-p", String(port)], { cwd: scratch, stdio: ["ignore", "pipe", "pipe"] });
+  await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error("Fixture server did not become ready")), 30000);
+    server.stdout.on("data", b => { if (b.toString().includes("Ready")) { clearTimeout(timeout); resolve(); } });
+    server.on("error", reject); server.on("exit", code => reject(new Error(`Fixture server exited ${code}`)));
+  });
+  if (process.argv.includes("--serve-fixture")) {
+    console.log(`LOCAL FIXTURE READY http://127.0.0.1:${port}/admin#card-stats`);
+    console.log(`Controls / request log: http://127.0.0.1:${port}/fixture-backend/control`);
+    console.log("Login: fixture-admin@example.invalid / synthetic-password-only. All data is synthetic and all RPCs remain local.");
+    await new Promise(resolve => { process.once("SIGTERM", resolve); process.once("SIGINT", resolve); });
+    process.exitCode = 0;
+  } else {
+  browser = await chromium.launch({ executablePath: process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", headless: true });
   let scenario = "normal";
   let delayDashboard = false;
   const requests = [], errors = [], outside = [];
@@ -234,7 +256,7 @@ export default function Fixture() {
       "Missing card stats RPC names both migrations and leaves the overview");
     delayDashboard = true;
     const delayedOverview = page.waitForRequest(request => request.url().includes("tcg_admin_play_dashboard"));
-    await page.getByRole("button", { name: "更新統計", exact: true }).click(); await delayedOverview;
+    await page.getByRole("button", { name: "更新統計", exact: true }).first().click(); await delayedOverview;
     scenario = "expired";
     await section.getByRole("button", { name: "套用／更新耗時" }).click();
     await page.getByText("PRIVATE DATA CLEARED").waitFor();
@@ -249,8 +271,129 @@ export default function Fixture() {
     assert(!(await page.locator("body").innerText()).includes("fixture-account-001"));
     console.log(`PASS ${prefix}: keyboard/hover/touch, units/ticks, zero/null, series filters, exact backend params, stale responses, missing RPC isolation, revoked access/logout, card stats filters/sort/retention`);
   }
+  for (const mobile of [false, true]) {
+    const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, isMobile: mobile, hasTouch: mobile });
+    contexts.push(context);
+    const calls = [];
+    let denyCards = false, uncertainChange = true, slowCards = false;
+    const user = { id: "navigation-player", email: "navigation-player@example.invalid", created_at: generated_at,
+      email_confirmed_at: generated_at, last_sign_in_at: generated_at, suspended: false, has_wallet: true,
+      pack_tickets: 2, starter_draws_remaining: 0, card_types: 1, card_copies: 1 };
+    const detail = { user, wallet: { pack_tickets: 2, starter_draws_remaining: 0, opened_packs: 1, last_claim_day: null },
+      collection: { soldier: 1 }, restriction: { suspended: false }, record: { wins: 1, losses: 0, draws: 0, total: 1 },
+      receipts: [], matches: [], last_submitted_deck: null, audit: [] };
+    await context.route("**/*", async route => {
+      const url = new URL(route.request().url());
+      if (url.hostname !== "127.0.0.1") { outside.push(url.origin); return route.abort(); }
+      if (!url.pathname.startsWith("/fixture-backend/")) return route.continue();
+      const name = url.pathname.split("/").at(-1), body = route.request().postDataJSON();
+      calls.push({ name, body });
+      let result;
+      if (name === "token") result = { access_token: "synthetic-access", refresh_token: "synthetic-refresh", expires_in: 3600 };
+      else if (name === "logout") result = {};
+      else if (name === "tcg_admin_session") result = { account_id: "fixture-admin", email: "fixture-admin@example.invalid", access_level: "operator" };
+      else if (name === "tcg_admin_card_stats") {
+        if (slowCards) await new Promise(resolve => setTimeout(resolve, 650));
+        if (denyCards) return route.fulfill({ status: 403, json: { code: "42501", message: "Permission revoked" } });
+        result = cardStats;
+      } else if (name === "tcg_admin_play_dashboard") result = dashboard;
+      else if (name === "tcg_admin_players") result = { registered: 2, total: 1, page: 0, page_size: 25, players: [user] };
+      else if (name === "tcg_admin_player") result = detail;
+      else if (name === "tcg_admin_player_mail") result = { total: 1, items: [{ id: "private-mail", title: "PRIVATE MAIL TITLE", body: "PRIVATE MAIL BODY", pack_tickets: 1,
+        sender_id: "fixture-admin", reason: "Fixture verification", created_at: generated_at, claimed_at: null, tickets_before: null, tickets_after: null }] };
+      else if (name === "tcg_admin_player_rates") result = { page: 0, players: [{ ...user, wins: 1, losses: 0, draws: 0, total: 1, win_rate: 100, loss_rate: 0, verified_match_online: false }] };
+      else if (name === "tcg_admin_guest_players") result = { page: 0, total: 0, players: [] };
+      else if (name === "tcg_admin_match_analytics") result = duration;
+      else if (name === "tcg_admin_change") {
+        if (uncertainChange) return route.fulfill({ status: 503, json: { message: "Synthetic uncertain operation" } });
+        result = {};
+      } else throw new Error(`Unexpected console fixture RPC ${name}`);
+      return route.fulfill({ json: result });
+    });
+    const page = await context.newPage();
+    page.on("pageerror", error => errors.push(error.message));
+    const login = async () => {
+      await page.getByRole("textbox", { name: "管理者 Email", exact: true }).fill("fixture-admin@example.invalid");
+      await page.getByLabel("管理後台密碼", { exact: true }).fill("synthetic-password-only");
+      await page.getByRole("button", { name: "登入管理後台", exact: true }).click();
+      await page.getByRole("button", { name: "登出", exact: true }).waitFor();
+    };
+    const select = async (id, label) => {
+      if (mobile) await page.getByRole("combobox", { name: "後台功能", exact: true }).selectOption(id);
+      else await page.getByRole("navigation", { name: "後台功能", exact: true }).getByRole("link", { name: new RegExp(label) }).click();
+      await page.getByRole("heading", { level: 1, name: label, exact: true }).waitFor();
+    };
+    await page.goto(`http://127.0.0.1:${port}/admin#card-stats`, { waitUntil: "networkidle" });
+    assert.equal(calls.length, 0, "Signed-out console requests no private data");
+    await login();
+    await page.getByRole("region", { name: "逐卡統計表", exact: true }).waitFor();
+    assert.deepEqual(calls.filter(c => c.name.startsWith("tcg_admin_")).map(c => c.name), ["tcg_admin_session", "tcg_admin_card_stats"], "Deep link loads only card statistics");
+    assert.equal(await page.getByRole("region", { name: "遊玩統計", exact: true }).count(), 0);
+    await select("analytics", "營運總覽");
+    await page.getByRole("heading", { name: "每日玩家活動 · 近 28 日" }).waitFor();
+    assert.equal(await page.getByRole("region", { name: "卡牌統計", exact: true }).count(), 0, "Previous page unmounts");
+    assert.equal(calls.filter(c => ["tcg_admin_guest_players", "tcg_admin_player_rates", "tcg_admin_players", "tcg_admin_match_analytics"].includes(c.name)).length, 0);
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    const navigation = mobile ? page.getByRole("combobox", { name: "後台功能", exact: true }) : page.getByRole("navigation", { name: "後台功能", exact: true });
+    const bounds = await navigation.boundingBox();
+    assert(bounds.y >= 0 && bounds.y < 220 && bounds.y + bounds.height < (mobile ? 844 : 1000), "Navigation remains visible while content scrolls");
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "Console has no horizontal page overflow");
+    await page.screenshot({ path: join(output, `${mobile ? "mobile" : "desktop"}-navigation.png`) });
+    await page.goBack();
+    await page.getByRole("heading", { level: 1, name: "卡牌統計", exact: true }).waitFor();
+    await select("players", "玩家查詢");
+    await page.getByRole("button", { name: "查看資料", exact: true }).click();
+    await page.getByRole("textbox", { name: "原因", exact: true }).fill("Synthetic navigation test");
+    await page.getByRole("button", { name: "檢查操作內容", exact: true }).click();
+    if (mobile) assert(await navigation.isDisabled());
+    else assert.equal(await navigation.getByRole("link", { name: /卡牌統計/ }).getAttribute("aria-disabled"), "true");
+    await page.goBack();
+    await page.getByRole("button", { name: "確認／重試同一筆操作", exact: true }).waitFor();
+    assert.equal(new URL(page.url()).hash, "#players", "Back cannot strand a pending mutation");
+    await page.getByRole("button", { name: "取消", exact: true }).click();
+    await page.getByRole("button", { name: "檢查操作內容", exact: true }).click();
+    await page.getByRole("button", { name: "確認／重試同一筆操作", exact: true }).click();
+    await page.getByText("Synthetic uncertain operation", { exact: true }).waitFor();
+    const mutationId = calls.find(c => c.name === "tcg_admin_change").body.p_request;
+    await page.goto(`http://127.0.0.1:${port}/admin#card-stats`);
+    await login();
+    await page.getByText("找到一筆尚未確認的操作，請重試同一筆以確認結果。", { exact: true }).waitFor();
+    assert.equal(new URL(page.url()).hash, "#players", "Restored operation opens its own player page");
+    uncertainChange = false;
+    await page.getByRole("button", { name: "確認／重試同一筆操作", exact: true }).click();
+    await page.getByText("操作完成並已留下紀錄。", { exact: true }).waitFor();
+    assert.deepEqual(calls.filter(c => c.name === "tcg_admin_change").map(c => c.body.p_request), [mutationId, mutationId], "Retry preserves mutation UUID");
+    await select("guests", "遊客分析");
+    await page.getByText("遊客裝置資料 · 匿名自行回報", { exact: true }).waitFor();
+    await select("player-rates", "玩家戰績");
+    await page.getByText("每位玩家勝敗率 · 正式伺服器紀錄（累計）", { exact: true }).waitFor();
+    assert.equal(await page.getByText("遊客裝置資料 · 匿名自行回報", { exact: true }).count(), 0);
+    slowCards = true;
+    await select("card-stats", "卡牌統計");
+    await select("match-duration", "對局耗時");
+    await page.getByText("fixture-formal-new", { exact: true }).waitFor();
+    await page.waitForTimeout(750);
+    assert.equal(await page.getByRole("region", { name: "卡牌統計", exact: true }).count(), 0, "Unmounted request cannot restore an old page");
+    slowCards = false; denyCards = true;
+    await select("card-stats", "卡牌統計");
+    await page.getByRole("button", { name: "登入管理後台", exact: true }).waitFor();
+    assert(!(await page.locator("body").innerText()).includes(user.email), "Revoked permission clears private player data from every page");
+    denyCards = false;
+    await login();
+    await page.getByRole("region", { name: "逐卡統計表", exact: true }).waitFor();
+    const playersBefore = calls.filter(c => c.name === "tcg_admin_players").length;
+    await select("players", "玩家查詢");
+    await page.getByRole("button", { name: "查看資料", exact: true }).waitFor();
+    assert.equal(calls.filter(c => c.name === "tcg_admin_players").length, playersBefore + 1, "Re-login reloads player data instead of reusing prior session cache");
+    assert.equal(await page.getByRole("textbox", { name: "原因", exact: true }).count(), 0, "Prior player detail is cleared");
+    await page.getByRole("button", { name: "登出", exact: true }).click();
+    await page.getByRole("button", { name: "登入管理後台", exact: true }).waitFor();
+    console.log(`PASS ${mobile ? "mobile" : "desktop"} console: sticky navigation, deep links/back, page isolation, request scoping, pending mutation/retry restoration, stale requests, revoked session and re-login`);
+    await context.close();
+  }
   assert.deepEqual(errors, []); assert.deepEqual(outside, []);
   console.log(`PASS no browser errors or external backend requests; screenshots: ${output}`);
+  }
 } finally {
   if (browser) await browser.close();
   if (server) { server.kill("SIGTERM"); await new Promise(resolve => server.once("exit", resolve)); }
