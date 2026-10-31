@@ -101,17 +101,29 @@ const allowed = new Set();
 for (const build of releases.BUILDS) {
   const url = releases.downloadUrl(build);
   allowed.add(url); allowed.add(releases.releasePageUrl(build));
-  if (["windows", "macos"].includes(build.id)) {
-    check(build.version === game.GAME_FACTS.version, `${build.id} offers the current desktop release`);
-  } else {
+  if (build.id === "linux") {
     check(build.version === "2026.10.25-R19" && build.build === 2026102501,
-      `${build.id} keeps its accepted R19 artifact while desktop platforms update`);
+      "Linux keeps its accepted R19 artifact while Android and desktop platforms update");
+    check(build.protocol === 28 && build.minimumBuild === 2026102101,
+      "Retained Linux metadata preserves its original compatibility gate");
+    check(build.downloadNotice?.zh.includes("僅支援離線遊玩") && build.downloadNotice?.en.includes("Offline play only"),
+      "Linux explicitly discloses that its R19 package remains offline-only");
+  } else {
+    check(build.version === game.GAME_FACTS.version && build.build === 2026103001 && build.minimumBuild === 2026103001
+      && build.protocol === game.GAME_FACTS.protocol, `${build.id} offers the current R23 package and online compatibility gate`);
+    if (build.id === "android") {
+      check(build.downloadNotice?.zh.includes("Android") && /(?:尚未|未).*實機驗證/.test(build.downloadNotice.zh)
+        && build.downloadNotice?.en.includes("Android") && /(?:not been run|not been tested|untested)/i.test(build.downloadNotice.en),
+      "Android R23 clearly discloses native NOT RUN instead of inheriting the R19 offline restriction");
+      check(!/(?:僅支援離線|offline-only|cannot join R23)/i.test(`${build.note} ${build.noteEn} ${build.downloadNotice.zh} ${build.downloadNotice.en}`),
+        "Android R23 no longer presents its retired R19 offline-only warning");
+    }
   }
   const websiteUrl = releases.websiteDownloadUrl(build);
   allowed.add(websiteUrl);
   check(live.panel.includes(`href="${websiteUrl}" download="${build.file}"`), `${build.id} offers its exact package from the configured primary source`);
 }
-check(live.panel.includes('href="/install/android"') && live.android.includes('.apk'), "Android installs the actual R19 APK");
+check(live.panel.includes('href="/install/android"') && live.android.includes('.apk'), "Android installs the actual R23 APK");
 for (const [name, html] of Object.entries(live)) {
   for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
     if (/https:\/\/(?:github\.com\/[^\s"<]+\/releases\/|wuharry\.itch\.io\/)/.test(href)) {

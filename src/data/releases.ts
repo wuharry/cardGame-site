@@ -168,30 +168,30 @@ export const BUILDS: Build[] = [
     "platform": "Android",
     "en": "APK · arm64",
     "status": "available",
-    "file": "TwilightCodex-Android-20261025-R19.apk",
-    "version": "2026.10.25-R19",
-    "size": "56.1 MiB",
-    "bytes": 58812359,
-    "updated": "2026-10-25",
-    "sha256": "2a7c4b6fa137e8936bb4dde24696a3831bc69d67b4b89125ccb32c6079c0e0d0",
-    "build": 2026102501,
-    "minimumBuild": 2026102101,
-    "protocol": 28,
+    "file": "TwilightCodex-Android-20261030-R23.apk",
+    "version": "2026.10.30-R23",
+    "size": "56.4 MiB",
+    "bytes": 59162624,
+    "updated": "2026-10-31",
+    "sha256": "2872f2a4c651f8911a56b4169168f4ea50f80dbca978d0b8e7e03cd9c72834ab",
+    "build": 2026103001,
+    "minimumBuild": 2026103001,
+    "protocol": 30,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-Android-20261025-R19-Content.pck",
-      "bytes": 108097020,
-      "sha256": "38342594c420204b49a120f4c927df163548e72a771babccd4cdfc242d1a1d26",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19/PaperRaven-Android-20261025-R19-Content.pck"
+      "filename": "TwilightCodex-Content-Android-20261030-R23.pck",
+      "bytes": 116903404,
+      "sha256": "206c6b814f6d6c52388adba0ee53ac819e1bdd6463f183031cc2b85c5997c4d7",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-Android-20261030-R23.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
     "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
     "downloadNotice": {
-      "zh": "目前僅支援離線遊玩，無法參加 R23 連線對戰。",
-      "en": "Offline play only for now. This version cannot join R23 online matches."
+      "zh": "本版尚未完成 Android 實機驗證；安裝、觸控與持續效能待驗。",
+      "en": "Native Android testing has not been run for this APK; installation, touch and sustained performance remain untested."
     },
-    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 沿用原更新簽章。上一版已由開發者實機測試，本次尚未重跑手機安裝、觸控與持續效能。 R19 目前僅支援離線遊玩，無法參加 R23 連線對戰。",
-    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Uses the existing update signing identity. The previous version was device-tested by the developer; this APK has not repeated installation, touch or sustained-performance tests. R19 is currently offline-only and cannot join R23 online matches.",
+    "note": "Android 更新至 R23，包含試煉之塔六區場景、行走與從者指令選單，以及教學提示與勝利後離開修正；連線版本對齊 R23。先安裝較小的 APK，再按「開始」下載本版美術與音效，同版本保留快取。沿用原更新簽章，更新時保留既有帳號、收藏、牌組與存檔。本版尚未完成 Android 實機驗證；手機安裝、首次素材下載、觸控、真人對局與持續效能待驗。",
+    "noteEn": "Android now uses R23, including six tower environments, improved movement and servant commands, and tutorial overlay and exit fixes; its online version matches R23. Install the smaller APK, then press Start to download this version's art and audio; the same version stays cached. Uses the original update signer and retains existing accounts, collections, decks and saves. Native Android testing has not been run for this APK; installation, first content download, touch, human matches and sustained performance remain untested.",
     "websiteDelivery": "static-apk"
   }
 ];
@@ -271,13 +271,13 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   "date": "2026-10-31",
   "title": "R23：六區試煉之塔與從者指令",
   "changes": [
-    "Windows／macOS 更新 R23；Linux／Android 保留 R19，暫時僅支援離線遊玩。既有帳號、收藏、牌組與存檔保留。連線對戰請更新至 R23。",
+    "Windows／macOS／Android 提供 R23；Linux 保留 R19，暫時僅支援離線遊玩。既有帳號、收藏、牌組與存檔保留。連線對戰請更新至 R23。",
     "試煉之塔三十層分成六區，每五層換一組場景：舊城石廊、盤根花園、熔火鍛爐、霜封聖所、星象書庫與雲頂王廳，各區有不同造景與遠景。",
     "塔內可點地面行走、走向守關者查看樓層詳情；改善障礙碰撞、角色遮擋與樓梯提示，減少動態設定會保留靜態場景。",
     "從者操作改為直式指令清單，攻擊、技能與取消更容易分辨；同步統一常用按鈕的視覺與操作回饋。",
     "修正新手教學提示與暗幕蓋住攻擊清單，取消後會恢復引導；改善小視窗魔力說明位置，教學勝利後可確認返回主選單。",
-    "Windows 實際成品已驗證教學出牌、攻擊、換回合、勝利退出，以及第一層爬塔行走與入口操作。macOS 本版尚未實機驗證；兩平台包內資源檢查通過。真人完整連線、其餘五區成品爬塔與持續效能仍待驗。",
-    "English: R23 introduces six tower environments, clearer servant commands and tutorial fixes. Windows tutorial play and floor-one controls were tested; native macOS testing remains pending. Online matches require R23. Linux and Android remain on R19 for offline play."
+    "Windows 實際成品已驗證教學出牌、攻擊、換回合、勝利退出，以及第一層爬塔行走與入口操作。macOS 本版尚未實機驗證；Android 沿用原更新簽章，本版手機安裝、觸控與持續效能尚未驗證。真人完整連線、其餘五區成品爬塔與持續效能仍待驗。",
+    "English: R23 introduces six tower environments, clearer servant commands and tutorial fixes. Windows tutorial play and floor-one controls were tested. Android now uses R23 with its original update signer; this APK's installation, touch and sustained performance remain untested, and native macOS testing remains pending. Online matches require R23. Linux remains on R19 for offline play."
   ]
 },
 {

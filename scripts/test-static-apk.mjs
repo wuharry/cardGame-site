@@ -9,6 +9,7 @@ import { prepareAndroidDownload } from "./prepare-android-download.mjs";
 import { loadTsModule } from "./lib/load-ts-module.mjs";
 
 const releases = await loadTsModule(new URL("../src/data/releases.ts", import.meta.url));
+const shine = await loadTsModule(new URL("../src/components/download-shine.tsx", import.meta.url), {}, { allowNodeModules: true });
 const versions = await loadTsModule(new URL("../src/data/game-version.ts", import.meta.url), { "./releases": releases });
 const game = await loadTsModule(new URL("../src/data/game.ts", import.meta.url));
 const help = await loadTsModule(new URL("../src/data/install-help.ts", import.meta.url));
@@ -32,9 +33,11 @@ assert.equal(versions.versionManifest([build]).platforms.android.download_url, r
 const link = { __esModule: true, default: (props) => createElement("a", props) };
 const data = { ...releases, BUILDS: [build] };
 const panel = await loadTsModule(new URL("../src/components/download-panel.tsx", import.meta.url), {
+  "@/components/download-shine": shine,
   "@/data/releases": data, "@/data/game": game, "@/data/install-help": help, "next/link": link,
 });
 const guide = await loadTsModule(new URL("../src/app/install/android/page.tsx", import.meta.url), {
+  "@/components/download-shine": shine,
   "@/data/releases": data, "@/data/seo": { pageMetadata: () => ({}) }, "next/link": link,
 });
 for (const html of [renderToStaticMarkup(createElement(panel.DownloadPanel)), renderToStaticMarkup(createElement(guide.default))]) {
