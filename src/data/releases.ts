@@ -137,30 +137,30 @@ export const BUILDS: Build[] = [
     "platform": "Linux",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Linux-20261025-R19.zip",
-    "version": "2026.10.25-R19",
-    "size": "64.0 MiB",
-    "bytes": 67155595,
-    "updated": "2026-10-25",
-    "sha256": "2a579c6546eb4599d02eb03aa8fe735a329e96eda3fa8be0cd6c7a7e4ddbdf1f",
-    "build": 2026102501,
-    "minimumBuild": 2026102101,
-    "protocol": 28,
+    "file": "TwilightCodex-Linux-20261030-R23.zip",
+    "version": "2026.10.30-R23",
+    "size": "64.4 MiB",
+    "bytes": 67486007,
+    "updated": "2026-11-02",
+    "sha256": "9371a20e4a5148ef1709439f98d6a25a0c8cc4ffad7d150238b0214a9ed67356",
+    "build": 2026103001,
+    "minimumBuild": 2026103001,
+    "protocol": 30,
     "delivery": "streamed",
     "content": {
-      "filename": "PaperRaven-Linux-20261025-R19-Content.pck",
-      "bytes": 445177900,
-      "sha256": "e3f22b4dc3ec093d962e6c167a44f2050bbf4e8028bd8c2ff3568dd2e2756f55",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19/PaperRaven-Linux-20261025-R19-Content.pck"
+      "filename": "TwilightCodex-Content-Linux-20261030-R23.pck",
+      "bytes": 453979948,
+      "sha256": "7e70cba7b3d1293a8abc99890580bd10af50e7c25593271e90d555dcbef317c1",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-Linux-20261030-R23.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.25-r19",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
     "requirement": "Linux x86_64 · glibc 2.39+（Ubuntu 24.04+）· Vulkan 或 OpenGL 3.3",
     "downloadNotice": {
-      "zh": "目前僅支援離線遊玩，無法參加 R23 連線對戰。",
-      "en": "Offline play only for now. This version cannot join R23 online matches."
+      "zh": "Linux 自動啟動驗證已通過；實體顯示卡、操作與完整對局仍待驗。",
+      "en": "Linux automated startup passed; physical GPU, input and full-match testing remain pending."
     },
-    "note": "R19 更新爬塔與單人 NPC 難度配置、森林／洞窟／雪原遠景、戰鬥數值排版與本輪音效接線。按「開始」下載素材；同版本會保留快取。 本次完成包內資源檢查，尚未重跑 Linux 原生測試。 R19 目前僅支援離線遊玩，無法參加 R23 連線對戰。",
-    "noteEn": "R19 updates tower and solo NPC difficulty, forest/cavern/frostland vistas, battle number layout and audio event wiring. Press Start to download content; the same version stays cached. Packed resources were checked; native Linux testing has not been repeated for this build. R19 is currently offline-only and cannot join R23 online matches."
+    "note": "Linux 更新至 R23，包含六區試煉之塔、從者指令、教學修正與技能調整；連線版本對齊正式 R23。首次按「開始」下載素材，同版本保留快取。加密成品與核心／素材完整性檢查通過；Ubuntu 24.04 空快取下載、無視窗及虛擬視窗主選單啟動與正常退出通過。實體顯示卡、操作、真人對局與持續效能仍待驗。",
+    "noteEn": "Linux now uses R23, including six tower environments, servant commands, tutorial fixes and skill updates; its online version matches production R23. Press Start to download content; the same version stays cached. Encrypted package and core/content integrity checks passed. Fresh content download, headless and virtual-window main-menu startup and clean exit passed on Ubuntu 24.04. Physical GPU, input, human matches and sustained performance remain untested."
   },
   {
     "id": "android",
@@ -271,13 +271,13 @@ export const RELEASE_NOTES: ReleaseNote[] = [
   "date": "2026-10-31",
   "title": "R23：六區試煉之塔與從者指令",
   "changes": [
-    "Windows／macOS／Android 提供 R23；Linux 保留 R19，暫時僅支援離線遊玩。既有帳號、收藏、牌組與存檔保留。連線對戰請更新至 R23。",
+    "Windows／macOS／Linux／Android 均提供 R23；Linux 已補齊，連線版本對齊正式專服。既有帳號、收藏、牌組與存檔保留。連線對戰請更新至 R23。",
     "試煉之塔三十層分成六區，每五層換一組場景：舊城石廊、盤根花園、熔火鍛爐、霜封聖所、星象書庫與雲頂王廳，各區有不同造景與遠景。",
     "塔內可點地面行走、走向守關者查看樓層詳情；改善障礙碰撞、角色遮擋與樓梯提示，減少動態設定會保留靜態場景。",
     "從者操作改為直式指令清單，攻擊、技能與取消更容易分辨；同步統一常用按鈕的視覺與操作回饋。",
     "修正新手教學提示與暗幕蓋住攻擊清單，取消後會恢復引導；改善小視窗魔力說明位置，教學勝利後可確認返回主選單。",
     "Windows 實際成品已驗證教學出牌、攻擊、換回合、勝利退出，以及第一層爬塔行走與入口操作。macOS 本版尚未實機驗證；Android 沿用原更新簽章，本版手機安裝、觸控與持續效能尚未驗證。真人完整連線、其餘五區成品爬塔與持續效能仍待驗。",
-    "English: R23 introduces six tower environments, clearer servant commands and tutorial fixes. Windows tutorial play and floor-one controls were tested. Android now uses R23 with its original update signer; this APK's installation, touch and sustained performance remain untested, and native macOS testing remains pending. Online matches require R23. Linux remains on R19 for offline play."
+    "English: R23 introduces six tower environments, clearer servant commands and tutorial fixes. Windows tutorial play and floor-one controls were tested. Android now uses R23 with its original update signer; this APK's installation, touch and sustained performance remain untested, and native macOS testing remains pending. Online matches require R23. Linux now also uses R23 and passed fresh-download headless/virtual-window startup; physical GPU, input and full-match testing remain pending."
   ]
 },
 {

@@ -102,12 +102,12 @@ for (const build of releases.BUILDS) {
   const url = releases.downloadUrl(build);
   allowed.add(url); allowed.add(releases.releasePageUrl(build));
   if (build.id === "linux") {
-    check(build.version === "2026.10.25-R19" && build.build === 2026102501,
-      "Linux keeps its accepted R19 artifact while Android and desktop platforms update");
-    check(build.protocol === 28 && build.minimumBuild === 2026102101,
-      "Retained Linux metadata preserves its original compatibility gate");
-    check(build.downloadNotice?.zh.includes("僅支援離線遊玩") && build.downloadNotice?.en.includes("Offline play only"),
-      "Linux explicitly discloses that its R19 package remains offline-only");
+    check(build.version === game.GAME_FACTS.version && build.build === 2026103001,
+      "Linux offers the R23 supplement");
+    check(build.protocol === game.GAME_FACTS.protocol && build.minimumBuild === 2026103001,
+      "Linux matches the production R23 compatibility gate");
+    check(build.downloadNotice?.zh.includes("實體顯示卡") && build.downloadNotice?.en.includes("GPU"),
+      "Linux retains desktop GPU/input validation limits");
   } else {
     check(build.version === game.GAME_FACTS.version && build.build === 2026103001 && build.minimumBuild === 2026103001
       && build.protocol === game.GAME_FACTS.protocol, `${build.id} offers the current R23 package and online compatibility gate`);
