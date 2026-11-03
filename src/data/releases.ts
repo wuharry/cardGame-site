@@ -45,6 +45,8 @@ export interface Build {
   mirrorPageUrl?: string;
   /** 官網建置時校驗並附帶同一份 APK；遊戲更新 API 仍使用 GitHub。 */
   websiteDelivery?: "static-apk";
+  /** Offline previews keep the compatible online build in the legacy update channel. */
+  onlineUpdate?: Build;
 }
 
 const R15_SUMMARY = {
@@ -168,31 +170,63 @@ export const BUILDS: Build[] = [
     "platform": "Android",
     "en": "APK · arm64",
     "status": "available",
-    "file": "TwilightCodex-Android-20261030-R23.apk",
-    "version": "2026.10.30-R23",
-    "size": "56.4 MiB",
-    "bytes": 59162624,
-    "updated": "2026-10-31",
-    "sha256": "2872f2a4c651f8911a56b4169168f4ea50f80dbca978d0b8e7e03cd9c72834ab",
-    "build": 2026103001,
+    "file": "TwilightCodex-Android-20261103-R24.apk",
+    "version": "2026.11.03-R24",
+    "size": "56.5 MiB",
+    "bytes": 59262179,
+    "updated": "2026-11-03",
+    "sha256": "816ee2ba4d0f89259059b0fdc80a93b8b6292da285e0cf7dd0eabf8de4e758c2",
+    "build": 2026110301,
     "minimumBuild": 2026103001,
-    "protocol": 30,
+    "protocol": 31,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Android-20261030-R23.pck",
-      "bytes": 116903404,
-      "sha256": "206c6b814f6d6c52388adba0ee53ac819e1bdd6463f183031cc2b85c5997c4d7",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-Android-20261030-R23.pck"
+      "filename": "TwilightCodex-Content-Android-20261103-R24.pck",
+      "bytes": 119046480,
+      "sha256": "0101feb508202bfe304b93928e80a5a40dbac93cc9dfb4849c4bf34481d30caa",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.03-r24/TwilightCodex-Content-Android-20261103-R24.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.03-r24",
     "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
     "downloadNotice": {
-      "zh": "本版尚未完成 Android 實機驗證；安裝、觸控與持續效能待驗。",
-      "en": "Native Android testing has not been run for this APK; installation, touch and sustained performance remain untested."
+      "zh": "R24 Android 僅供離線單人遊玩，連線對戰與爬塔暫不開放。出發前請先完成遊戲內素材下載。本 APK 尚未完成 Android 實機驗證。",
+      "en": "Offline single-player only; online matches and tower are unavailable. Download game content before travelling. This Android APK is untested on a device."
     },
-    "note": "Android 更新至 R23，包含試煉之塔六區場景、行走與從者指令選單，以及教學提示與勝利後離開修正；連線版本對齊 R23。先安裝較小的 APK，再按「開始」下載本版美術與音效，同版本保留快取。沿用原更新簽章，更新時保留既有帳號、收藏、牌組與存檔。本版尚未完成 Android 實機驗證；手機安裝、首次素材下載、觸控、真人對局與持續效能待驗。",
-    "noteEn": "Android now uses R23, including six tower environments, improved movement and servant commands, and tutorial overlay and exit fixes; its online version matches R23. Install the smaller APK, then press Start to download this version's art and audio; the same version stays cached. Uses the original update signer and retains existing accounts, collections, decks and saves. Native Android testing has not been run for this APK; installation, first content download, touch, human matches and sustained performance remain untested.",
-    "websiteDelivery": "static-apk"
+    "note": "R24 手機離線單人版，包含最新單人玩法、技能提示、戰鬥排版與已採用音效；狗頭人礦工普攻前會自動磨刃。正式連線與伺服器爬塔暫不開放。先安裝 APK，再按「開始」連網下載本版素材，進入主選單後確認離線練習能開始；同版本素材保留快取。沿用原安裝身分與更新簽章，請直接覆蓋更新並保留既有資料。成品資源、分包完整性、簽章與對齊檢查通過；本版手機安裝、首次素材下載、觸控、GPU、音訊與持續效能尚未實機驗證。其他平台及正式專服仍為 R23。",
+    "noteEn": "R24 is an Android offline single-player release with updated solo modes, skill cues, battle layout and selected audio. Kobold Miner automatically sharpens before attacking. Official online matches and server tower challenges are disabled. Install the APK and press Start while online to download this version's content, reach the menu and check that offline practice starts before travelling. The same version stays cached. Uses the original application identity and update signer; update in place to retain existing data. Package resources, core/content integrity, signature and alignment checks passed. Device installation, first content download, touch, GPU, audio and sustained performance remain untested. Other platforms and the production server remain on R23.",
+    "websiteDelivery": "static-apk",
+    "onlineUpdate": {
+      "id": "android",
+      "displayName": "紙鴉牌",
+      "platform": "Android",
+      "en": "APK · arm64",
+      "status": "available",
+      "file": "TwilightCodex-Android-20261030-R23.apk",
+      "version": "2026.10.30-R23",
+      "size": "56.4 MiB",
+      "bytes": 59162624,
+      "updated": "2026-10-31",
+      "sha256": "2872f2a4c651f8911a56b4169168f4ea50f80dbca978d0b8e7e03cd9c72834ab",
+      "build": 2026103001,
+      "minimumBuild": 2026103001,
+      "protocol": 30,
+      "delivery": "streamed",
+      "content": {
+        "filename": "TwilightCodex-Content-Android-20261030-R23.pck",
+        "bytes": 116903404,
+        "sha256": "206c6b814f6d6c52388adba0ee53ac819e1bdd6463f183031cc2b85c5997c4d7",
+        "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-Android-20261030-R23.pck"
+      },
+      "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
+      "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
+      "downloadNotice": {
+        "zh": "本版尚未完成 Android 實機驗證；安裝、觸控與持續效能待驗。",
+        "en": "Native Android testing has not been run for this APK; installation, touch and sustained performance remain untested."
+      },
+      "note": "Android 更新至 R23，包含試煉之塔六區場景、行走與從者指令選單，以及教學提示與勝利後離開修正；連線版本對齊 R23。先安裝較小的 APK，再按「開始」下載本版美術與音效，同版本保留快取。沿用原更新簽章，更新時保留既有帳號、收藏、牌組與存檔。本版尚未完成 Android 實機驗證；手機安裝、首次素材下載、觸控、真人對局與持續效能待驗。",
+      "noteEn": "Android now uses R23, including six tower environments, improved movement and servant commands, and tutorial overlay and exit fixes; its online version matches R23. Install the smaller APK, then press Start to download this version's art and audio; the same version stays cached. Uses the original update signer and retains existing accounts, collections, decks and saves. Native Android testing has not been run for this APK; installation, first content download, touch, human matches and sustained performance remain untested.",
+      "websiteDelivery": "static-apk"
+    }
   }
 ];
 
@@ -266,6 +300,17 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+{
+  "version": "2026.11.03-R24",
+  "date": "2026-11-03",
+  "title": "R24 Android：旅途離線單人版",
+  "changes": [
+    "本次先提供 R24 Android APK；僅供離線單人遊玩，正式連線對戰與伺服器爬塔暫不開放。Windows／macOS／Linux 與正式專服維持 R23，舊版連線更新資訊保留。",
+    "收錄最新單人玩法、技能提示、戰鬥排版與已採用音效；狗頭人礦工普攻前自動磨刃。",
+    "出發前先安裝 APK，連網按「開始」下載完本版素材並進入主選單，再確認離線練習能開始。同版本素材保留快取；首次下載仍需網路。沿用原安裝身分與更新簽章，無需先解除安裝。",
+    "本版成品資源、核心／素材完整性、簽章及對齊檢查通過；Android 實機安裝／更新、首次遊戲內下載、觸控、GPU、音訊與持續效能仍為 NOT RUN，由下載後的手機實測確認。"
+  ]
+},
 {
   "version": "2026.10.30-R23",
   "date": "2026-10-31",

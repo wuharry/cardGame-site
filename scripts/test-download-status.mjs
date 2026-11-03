@@ -108,6 +108,14 @@ for (const build of releases.BUILDS) {
       "Linux matches the production R23 compatibility gate");
     check(build.downloadNotice?.zh.includes("實體顯示卡") && build.downloadNotice?.en.includes("GPU"),
       "Linux retains desktop GPU/input validation limits");
+  } else if (build.id === "android" && build.onlineUpdate) {
+    check(build.onlineUpdate.version === game.GAME_FACTS.version && build.onlineUpdate.protocol === game.GAME_FACTS.protocol,
+      "Android keeps the compatible online update separately from its newer offline offer");
+    check(build.downloadNotice?.zh.includes("離線") && build.downloadNotice?.en.toLowerCase().includes("offline")
+      && /未.*實機驗證/.test(build.downloadNotice.zh) && /untested/i.test(build.downloadNotice.en),
+      "Offline Android clearly discloses play restrictions and this APK's pending device tests");
+    check(manifest.offline_platforms.android.download_url === url && manifest.platforms.android.download_url === releases.downloadUrl(build.onlineUpdate),
+      "Online and offline API channels identify their exact different packages");
   } else {
     check(build.version === game.GAME_FACTS.version && build.build === 2026103001 && build.minimumBuild === 2026103001
       && build.protocol === game.GAME_FACTS.protocol, `${build.id} offers the current R23 package and online compatibility gate`);

@@ -14,7 +14,7 @@ const versions = await loadTsModule(new URL("../src/data/game-version.ts", impor
 const game = await loadTsModule(new URL("../src/data/game.ts", import.meta.url));
 const help = await loadTsModule(new URL("../src/data/install-help.ts", import.meta.url));
 const body = Buffer.from("Synthetic APK transport fixture; not an installable APK.");
-const build = { ...releases.BUILDS.find((item) => item.id === "android"), file: "Android-fixture.apk",
+const build = { ...releases.BUILDS.find((item) => item.id === "android"), onlineUpdate: undefined, file: "Android-fixture.apk",
   bytes: body.length, sha256: createHash("sha256").update(body).digest("hex") };
 const route = releases.staticApkPath(build);
 assert.match(route, /^\/downloads\/android\/[a-f0-9]{64}\/Android-fixture\.apk$/);

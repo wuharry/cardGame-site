@@ -20,6 +20,15 @@ assert.throws(() => versions.versionManifest([{ ...fixture, minimumBuild: fixtur
 assert.throws(() => versions.versionManifest([{ ...fixture, sha256: "invalid" }]));
 assert.equal(versions.versionManifest([{ ...fixture, status: "preparing" }]).platforms.windows, undefined);
 assert.equal(versions.versionManifest([{ ...fixture, status: "suspended" }]).platforms.windows, undefined);
+const offline = { ...fixture, build: fixture.build + 1, protocol: fixture.protocol + 1, onlineUpdate: fixture };
+const splitChannels = versions.versionManifest([offline]);
+assert.equal(splitChannels.platforms.windows.build, fixture.build, "Offline preview must not force online users to upgrade");
+assert.equal(splitChannels.platforms.windows.protocol, fixture.protocol, "Legacy online compatibility stays unchanged");
+assert.equal(splitChannels.offline_platforms.windows.build, offline.build, "Offline artifact identity remains discoverable");
+assert.equal(splitChannels.offline_platforms.windows.protocol, offline.protocol);
+assert.deepEqual(versions.versionManifest([{ ...offline, status: "suspended" }]), { schema_version: 1, platforms: {} },
+  "Suspending an offline offer also removes its retained links from the public update response");
+assert.throws(() => versions.versionManifest([{ ...offline, onlineUpdate: { ...fixture, id: "android" } }]));
 const response = route.GET();
 assert.equal(response.status, 200);
 assert.equal(response.headers.get("Cache-Control"), "no-store");
@@ -32,5 +41,8 @@ for (const build of releases.BUILDS.filter((item) => releases.downloadUrl(item))
   const trusted = new RegExp(`^https://github\\.com/wuharry/twilight-codex-downloads/releases/download/[A-Za-z0-9._-]+/TwilightCodex-${names[build.id]}-[A-Za-z0-9._-]+\\.${extension}$`);
   assert.match(releases.downloadUrl(build), trusted, "Official update links remain compatible with existing game trust rules");
 }
-assert.equal(releases.RELEASE_NOTES[0].version, GAME_FACTS.version, "Latest notes match the offered game version");
+const newestOffer = releases.BUILDS.filter((build) => releases.downloadUrl(build)).sort((a, b) => b.build - a.build)[0];
+assert.equal(releases.RELEASE_NOTES[0].version, newestOffer.version, "Latest notes match the newest offered platform");
+assert.ok(Object.values(versions.versionManifest().platforms).every((build) => build.version === GAME_FACTS.version),
+  "Stable game facts still describe every official online update");
 console.log("PASS game version manifest: published platform, exact download, minimum, invalid hashes, no-store endpoint, display version and client trust rules");

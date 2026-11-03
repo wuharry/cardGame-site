@@ -5,7 +5,7 @@ export function availableFixture(build) {
   const filename = `PaperRaven-${platform}-fixture-Content.pck`;
   return {
     ...build,
-    status: "available", hotfix: undefined,
+    status: "available", hotfix: undefined, onlineUpdate: undefined,
     file: `TwilightCodex-${platform}-fixture.${build.id === "android" ? "apk" : "zip"}`,
     version: "fixture", build: 1, minimumBuild: 1, protocol: 1,
     bytes: 1048576, size: "1.0 MiB", sha256: "a".repeat(64), releaseBase,

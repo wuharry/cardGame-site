@@ -71,8 +71,9 @@ assert.ok(latestDesktop.every((build) => build.version === GAME_FACTS.version &&
 assert.equal(GAME_FACTS.protocol, 30);
 assert.equal(GAME_FACTS.version, "2026.10.30-R23");
 assert.equal(latestBuild, 2026103001);
-assert.equal(releases.RELEASE_NOTES[0].version, GAME_FACTS.version);
-const latestNotes = releases.RELEASE_NOTES[0].changes.join("\n");
+const stableNotes = releases.RELEASE_NOTES.find((note) => note.version === GAME_FACTS.version);
+assert.ok(stableNotes, "Current online release keeps its own release notes");
+const latestNotes = stableNotes.changes.join("\n");
 assert.ok(latestNotes.includes("Windows／macOS／Linux／Android 均提供 R23") && !latestNotes.includes("Linux 保留 R19"),
   "Latest R23 news includes the Linux supplement");
 assert.ok(!latestNotes.includes("Linux／Android 保留 R19") && !latestNotes.includes("Linux and Android remain on R19"),
@@ -84,11 +85,12 @@ assert.ok(panel.includes("Read the built-in rulebook while it downloads") && pan
 assert.ok(panel.includes("同一版素材下載完成後，下次不用重載") && panel.includes("same version stays cached"), "Cache explanation is scoped to the same content version");
 assert.ok(!/href="[^"]+\.pck"/.test(panel) && !panel.includes("protocol"), "Players are not asked to open raw content packs or interpret protocol numbers");
 for (const build of downloads) {
+  const compatible = build.onlineUpdate ?? build;
   assert.equal(build.delivery, "streamed");
-  assert.equal(build.version, GAME_FACTS.version, `${build.id} offers the current R23 release`);
-  assert.equal(build.build, latestBuild);
-  assert.equal(build.minimumBuild, latestBuild, `${build.id} matches the current official online compatibility gate`);
-  assert.equal(build.protocol, GAME_FACTS.protocol);
+  assert.equal(compatible.version, GAME_FACTS.version, `${build.id} retains the current online release`);
+  assert.equal(compatible.build, latestBuild);
+  assert.equal(compatible.minimumBuild, latestBuild, `${build.id} matches the current official online compatibility gate`);
+  assert.equal(compatible.protocol, GAME_FACTS.protocol);
   assert.equal(build.size, `${(build.bytes / 1024 ** 2).toFixed(1)} MiB`);
   assert.ok(Number.isSafeInteger(build.content.bytes) && build.content.bytes > 0);
   assert.match(build.content.sha256, /^[a-f0-9]{64}$/);
@@ -110,7 +112,8 @@ const macos = downloads.find((build) => build.id === "macos");
 assert.ok(macos.note.includes("本版尚未完成 macOS 實機驗證")
   && macos.noteEn.includes("Native macOS testing has not been run for this release"),
 "R23 macOS download preserves its native-testing limitation");
-const android = downloads.find((build) => build.id === "android");
+const androidOffer = downloads.find((build) => build.id === "android");
+const android = androidOffer.onlineUpdate ?? androidOffer;
 const linux = downloads.find((build) => build.id === "linux");
 assert.ok(linux.downloadNotice?.zh.includes("實體顯示卡") && linux.downloadNotice?.en.includes("GPU"),
   "Linux headless checks cannot certify desktop GPU or input");
@@ -128,8 +131,9 @@ assert.equal((panel.match(/程式 APK · Game APK/g) ?? []).length, 1);
 const update = versions.versionManifest();
 assert.equal(update.schema_version, 1);
 for (const build of downloads) {
-  assert.equal(update.platforms[build.id].download_url, releases.downloadUrl(build));
-  assert.equal(update.platforms[build.id].bytes, build.bytes, "Update byte count identifies the ZIP, not the content pack");
+  const compatible = build.onlineUpdate ?? build;
+  assert.equal(update.platforms[build.id].download_url, releases.downloadUrl(compatible));
+  assert.equal(update.platforms[build.id].bytes, compatible.bytes, "Online update identifies its compatible package, not content or an offline preview");
 }
 assert.ok(Buffer.byteLength(JSON.stringify(update), "utf8") < 16 * 1024, "Game update response remains within the existing client limit");
 assert.ok(/href="[^"]+\.apk"/.test(panel), "Android preview offers the final APK");
@@ -232,4 +236,4 @@ if (linuxReleasePath) {
   assert.equal(checksums, [artifact, artifact.content].map((item) => `${item.sha256}  ${item.filename}\n`).join(""));
   for (const file of [artifact, artifact.content]) await verifyArtifact(dirname(resolve(linuxReleasePath)), file);
 }
-console.log(`PASS streamed downloads: all four platforms R23, separate content sizes and explicit native limitations, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; original desktop release.json SHA/pins matched" : ""}${androidReleasePath ? "; Android supplement SHA and real APK/content bytes matched" : ""}${linuxReleasePath ? "; Linux supplement SHA and ZIP/content bytes matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
+console.log(`PASS streamed downloads: all four online channels R23, separately pinned platform offers and content sizes and explicit native limitations, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; original desktop release.json SHA/pins matched" : ""}${androidReleasePath ? "; Android supplement SHA and real APK/content bytes matched" : ""}${linuxReleasePath ? "; Linux supplement SHA and ZIP/content bytes matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
