@@ -102,10 +102,10 @@ for (const build of releases.BUILDS) {
   const url = releases.downloadUrl(build);
   allowed.add(url); allowed.add(releases.releasePageUrl(build));
   if (build.id === "linux") {
-    check(build.version === game.GAME_FACTS.version && build.build === 2026103001,
-      "Linux offers the R23 supplement");
-    check(build.protocol === game.GAME_FACTS.protocol && build.minimumBuild === 2026103001,
-      "Linux matches the production R23 compatibility gate");
+    check(build.version === game.GAME_FACTS.version && build.build === 2026111101,
+      "Linux offers the R25 desktop package");
+    check(build.protocol === game.GAME_FACTS.protocol && build.minimumBuild === 2026111101,
+      "Linux matches the production R25 compatibility gate");
     check(build.downloadNotice?.zh.includes("實體顯示卡") && build.downloadNotice?.en.includes("GPU"),
       "Linux retains desktop GPU/input validation limits");
   } else if (build.id === "android" && build.onlineUpdate) {
@@ -117,8 +117,8 @@ for (const build of releases.BUILDS) {
     check(manifest.offline_platforms.android.download_url === url && manifest.platforms.android.download_url === releases.downloadUrl(build.onlineUpdate),
       "Online and offline API channels identify their exact different packages");
   } else {
-    check(build.version === game.GAME_FACTS.version && build.build === 2026103001 && build.minimumBuild === 2026103001
-      && build.protocol === game.GAME_FACTS.protocol, `${build.id} offers the current R23 package and online compatibility gate`);
+    check(build.version === game.GAME_FACTS.version && build.build === 2026111101 && build.minimumBuild === 2026111101
+      && build.protocol === game.GAME_FACTS.protocol, `${build.id} offers the current R25 package and online compatibility gate`);
     if (build.id === "android") {
       check(build.downloadNotice?.zh.includes("Android") && /(?:尚未|未).*實機驗證/.test(build.downloadNotice.zh)
         && build.downloadNotice?.en.includes("Android") && /(?:not been run|not been tested|untested)/i.test(build.downloadNotice.en),
@@ -131,7 +131,7 @@ for (const build of releases.BUILDS) {
   allowed.add(websiteUrl);
   check(live.panel.includes(`href="${websiteUrl}" download="${build.file}"`), `${build.id} offers its exact package from the configured primary source`);
 }
-check(live.panel.includes('href="/install/android"') && live.android.includes('.apk'), "Android installs the actual R23 APK");
+check(live.panel.includes('href="/install/android"') && live.android.includes('.apk'), "Android installs the actual R25 APK");
 for (const [name, html] of Object.entries(live)) {
   for (const [, href] of html.matchAll(/href="([^"]+)"/g)) {
     if (/https:\/\/(?:github\.com\/[^\s"<]+\/releases\/|wuharry\.itch\.io\/)/.test(href)) {

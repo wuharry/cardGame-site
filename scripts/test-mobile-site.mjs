@@ -33,7 +33,10 @@ try {
   await page.getByRole("button", { name: "關閉導覽選單" }).click();
   await page.getByRole("button", { name: /冰原/ }).click();
   assert((await page.locator("#arena-preview img").getAttribute("src")).includes("arena-frostlands"));
-  assert(await page.getByRole("button", { name: /^下載 Android APK/ }).isDisabled());
+  const androidDownload = page.getByRole("link", { name: /^下載 Android APK/ });
+  assert(await androidDownload.isVisible(), "Available Android offers a real download link");
+  assert.match(await androidDownload.getAttribute("href"), /^\/downloads\/android\/[a-f0-9]{64}\/TwilightCodex-Android-[A-Za-z0-9._-]+\.apk$/,
+    "The link identifies the verified static APK, rather than an unavailable-platform button");
   await page.getByRole("button", { name: /秘術/ }).click();
   assert.equal(await page.getByRole("button", { name: /秘術/ }).getAttribute("aria-pressed"), "true");
   // CSS inlining must also work after client navigation and back/forward.

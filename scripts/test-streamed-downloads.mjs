@@ -12,9 +12,8 @@ let releasePath;
 let helpPath;
 let androidReleasePath;
 let androidReleaseSha256;
-let linuxReleasePath;
-let linuxReleaseSha256;
-const originalManifestSha256 = "a63cc2a3ee7ac01da461f864e723bcd6f4795fd1d1d284df17b5ecb581a968c5";
+const originalManifestSha256 = "44d6086978b1a390b081d84f670418c713f1a8859a43b506a554ac2da206fa0d";
+const sourceRevision = "f792f1a5273ce756e880076e025bfca29b752075";
 for (let index = 2; index < process.argv.length; index += 1) {
   const argument = process.argv[index];
   if (argument === "--install-help") {
@@ -28,22 +27,13 @@ for (let index = 2; index < process.argv.length; index += 1) {
     assert.ok(!androidReleaseSha256, "Supply the Android manifest SHA-256 only once");
     androidReleaseSha256 = process.argv[++index];
     assert.match(androidReleaseSha256 ?? "", /^[a-f0-9]{64}$/, "--android-release-sha256 needs the actual fixed supplemental manifest SHA-256");
-  } else if (argument === "--linux-release") {
-    assert.ok(!linuxReleasePath);
-    linuxReleasePath = process.argv[++index];
-    assert.ok(linuxReleasePath);
-  } else if (argument === "--linux-release-sha256") {
-    assert.ok(!linuxReleaseSha256);
-    linuxReleaseSha256 = process.argv[++index];
-    assert.match(linuxReleaseSha256 ?? "", /^[a-f0-9]{64}$/);
   } else {
     assert.ok(!argument.startsWith("--") && !releasePath, "Supply one original release.json, optional --install-help source and pinned --android-release");
     releasePath = argument;
   }
 }
 assert.equal(Boolean(androidReleasePath), Boolean(androidReleaseSha256), "The Android manifest and its SHA-256 pin must be supplied together");
-assert.equal(Boolean(linuxReleasePath), Boolean(linuxReleaseSha256), "The Linux manifest and SHA-256 pin must be supplied together");
-assert.equal(Boolean(androidReleasePath), Boolean(releasePath), "Final-artifact validation requires both the original R23 desktop manifest and pinned Android supplement");
+assert.equal(Boolean(androidReleasePath), Boolean(releasePath), "Final-artifact validation requires both the R25 desktop manifest and pinned Android manifest");
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports);
 const shine = await loadTsModule(new URL("../src/components/download-shine.tsx", import.meta.url), {}, { allowNodeModules: true });
 const releases = await load("../src/data/releases.ts");
@@ -63,19 +53,19 @@ const component = await load("../src/components/download-panel.tsx", {
 const panel = renderToStaticMarkup(createElement(component.DownloadPanel));
 const downloads = releases.BUILDS.filter((build) => releases.downloadUrl(build));
 assert.deepEqual(downloads.map((build) => build.id).sort(), ["android", "linux", "macos", "windows"]);
-const latestDesktop = downloads.filter((build) => ["windows", "macos"].includes(build.id));
+const latestDesktop = downloads.filter((build) => ["windows", "macos", "linux"].includes(build.id));
 const latestBuild = latestDesktop[0].build;
 assert.ok(Number.isSafeInteger(latestBuild) && latestBuild >= 2026102801);
 assert.ok(latestDesktop.every((build) => build.version === GAME_FACTS.version && build.build === latestBuild),
   "Windows and macOS share the current release while retained platforms keep their accepted packages");
-assert.equal(GAME_FACTS.protocol, 30);
-assert.equal(GAME_FACTS.version, "2026.10.30-R23");
-assert.equal(latestBuild, 2026103001);
+assert.equal(GAME_FACTS.protocol, 33);
+assert.equal(GAME_FACTS.version, "2026.11.11-R25");
+assert.equal(latestBuild, 2026111101);
 const stableNotes = releases.RELEASE_NOTES.find((note) => note.version === GAME_FACTS.version);
 assert.ok(stableNotes, "Current online release keeps its own release notes");
 const latestNotes = stableNotes.changes.join("\n");
-assert.ok(latestNotes.includes("Windows／macOS／Linux／Android 均提供 R23") && !latestNotes.includes("Linux 保留 R19"),
-  "Latest R23 news includes the Linux supplement");
+assert.ok(latestNotes.includes("Windows／macOS／Linux／Android：2026.11.11-R25。") && !latestNotes.includes("Linux 保留 R19"),
+  "Latest news identifies the same R25 on all four platforms");
 assert.ok(!latestNotes.includes("Linux／Android 保留 R19") && !latestNotes.includes("Linux and Android remain on R19"),
   "Latest news cannot retain the obsolete shared Linux/Android R19 announcement");
 assert.ok(panel.includes('id="download"') && panel.includes('id="download-windows"'), "Existing download anchors remain available");
@@ -109,9 +99,9 @@ for (const build of downloads) {
   assert.equal(releases.downloadMirrorPageUrl(build), null);
 }
 const macos = downloads.find((build) => build.id === "macos");
-assert.ok(macos.note.includes("本版尚未完成 macOS 實機驗證")
-  && macos.noteEn.includes("Native macOS testing has not been run for this release"),
-"R23 macOS download preserves its native-testing limitation");
+assert.ok(macos.downloadNotice.zh.includes("本版尚未完成 macOS 實機驗證")
+  && macos.downloadNotice.en.includes("Native macOS testing has not been run for this release"),
+"macOS download preserves its native-testing limitation before the download action");
 const androidOffer = downloads.find((build) => build.id === "android");
 const android = androidOffer.onlineUpdate ?? androidOffer;
 const linux = downloads.find((build) => build.id === "linux");
@@ -191,26 +181,33 @@ if (releasePath) {
   assert.equal(final.build, latestBuild);
   assert.equal(final.protocol, GAME_FACTS.protocol);
   assert.equal(final.delivery, "streamed");
-  assert.deepEqual(final.artifacts.map((item) => item.platform).sort(), ["macos", "windows"], "Original R23 desktop manifest remains unchanged");
+  assert.equal(final.source_revision, sourceRevision);
+  assert.equal(final.tag, "v2026.11.11-r25");
+  assert.equal(final.minimum_build, latestBuild);
+  assert.deepEqual(final.artifacts.map((item) => item.platform).sort(), ["linux", "macos", "windows"], "R25 desktop manifest includes Linux");
   for (const build of latestDesktop) {
     const artifact = final.artifacts.find((item) => item.platform === build.id);
     matchesArtifact(build, artifact);
+    for (const file of [artifact, artifact.content]) await verifyArtifact(dirname(resolve(releasePath)), file);
   }
+  const files = final.artifacts.flatMap((item) => [item, item.content]);
+  assert.deepEqual([...final.public_asset_allowlist].sort(), [...files.map((item) => item.filename), "release.json", "SHA256SUMS"].sort());
+  assert.equal(await readFile(resolve(dirname(releasePath), "SHA256SUMS"), "utf8"),
+    files.map((item) => `${item.sha256}  ${item.filename}\n`).join(""));
 }
 if (androidReleasePath) {
   const supplement = await pinnedManifest(androidReleasePath, "release-android.json", androidReleaseSha256);
-  assert.equal(supplement.schema, "paper-raven-platform-supplement/v1");
+  assert.equal(supplement.schema, "paper-raven-android-release/v1");
   assert.equal(supplement.version, GAME_FACTS.version);
   assert.equal(supplement.build, latestBuild);
   assert.equal(supplement.minimum_build, latestBuild);
   assert.equal(supplement.protocol, GAME_FACTS.protocol);
-  assert.equal(supplement.source_revision, "c7f3146c50e9e40b99b0b55b989289fa8d6a0f88");
-  assert.equal(supplement.tag, "v2026.10.30-r23");
+  assert.equal(supplement.source_revision, sourceRevision);
+  assert.equal(supplement.tag, "v2026.11.11-r25");
   assert.equal(supplement.delivery, "streamed");
   assert.equal(supplement.protection_mode, "encrypted");
-  assert.equal(supplement.supplements.manifest_filename, "release.json");
-  assert.equal(supplement.supplements.manifest_sha256, originalManifestSha256);
-  assert.equal(supplement.supplements.existing_artifacts_modified, false);
+  assert.equal(supplement.android_signing.same_update_signer, true);
+  assert.equal(supplement.android_signing.version_code, latestBuild);
   assert.deepEqual(supplement.artifacts.map((item) => item.platform), ["android"], "This supplement only changes Android");
   const artifact = supplement.artifacts[0];
   matchesArtifact(android, artifact);
@@ -223,17 +220,4 @@ if (androidReleasePath) {
     await verifyArtifact(dirname(resolve(androidReleasePath)), file);
   }
 }
-if (linuxReleasePath) {
-  const supplement = await pinnedManifest(linuxReleasePath, "release-linux.json", linuxReleaseSha256);
-  assert.equal(supplement.supplemental_to_manifest_sha256, originalManifestSha256);
-  assert.equal(supplement.source_revision, "c7f3146c50e9e40b99b0b55b989289fa8d6a0f88");
-  assert.deepEqual(supplement.artifacts.map((item) => item.platform), ["linux"]);
-  const artifact = supplement.artifacts[0];
-  matchesArtifact(linux, artifact);
-  assert.deepEqual([...supplement.public_asset_allowlist].sort(), [artifact.filename, artifact.content.filename,
-    "release-linux.json", "SHA256SUMS-linux"].sort());
-  const checksums = await readFile(resolve(dirname(linuxReleasePath), "SHA256SUMS-linux"), "utf8");
-  assert.equal(checksums, [artifact, artifact.content].map((item) => `${item.sha256}  ${item.filename}\n`).join(""));
-  for (const file of [artifact, artifact.content]) await verifyArtifact(dirname(resolve(linuxReleasePath)), file);
-}
-console.log(`PASS streamed downloads: all four online channels R23, separately pinned platform offers and content sizes and explicit native limitations, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; original desktop release.json SHA/pins matched" : ""}${androidReleasePath ? "; Android supplement SHA and real APK/content bytes matched" : ""}${linuxReleasePath ? "; Linux supplement SHA and ZIP/content bytes matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);
+console.log(`PASS streamed downloads: all four online channels R25, pinned packages/content and explicit native limitations, schema1/${Buffer.byteLength(JSON.stringify(update), "utf8")} bytes${releasePath ? "; desktop manifest, checksums and real ZIP/content bytes matched" : ""}${androidReleasePath ? "; Android manifest, signer and real APK/content bytes matched" : ""}${helpPath ? "; exported HEAD install-help matched" : ""}`);

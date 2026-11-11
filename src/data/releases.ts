@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -81,26 +81,24 @@ export const BUILDS: Build[] = [
     "platform": "Windows",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Windows-20261030-R23.zip",
-    "version": "2026.10.30-R23",
-    "size": "62.0 MiB",
-    "bytes": 65011198,
-    "updated": "2026-10-31",
-    "sha256": "bf0fa339adc0995b558f47a51fbabf609ccf0187f1181bbb3059d910f12b370f",
-    "build": 2026103001,
-    "minimumBuild": 2026103001,
-    "protocol": 30,
+    "file": "TwilightCodex-Windows-20261111-R25.zip",
+    "version": "2026.11.11-R25",
+    "size": "78.9 MiB",
+    "bytes": 82710468,
+    "updated": "2026-11-12",
+    "sha256": "386820d1898fb1db8238f597ee2c4c2bf6f5c50cb178cd8b41e9ca0a4c983d88",
+    "build": 2026111101,
+    "minimumBuild": 2026111101,
+    "protocol": 33,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Windows-20261030-R23.pck",
-      "bytes": 453979932,
-      "sha256": "6ab5bc21226316fae0c276053466af95b1b5a742047dae7a5ae958431ca5e608",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-Windows-20261030-R23.pck"
+      "filename": "TwilightCodex-Content-Windows-20261111-R25.pck",
+      "bytes": 457064016,
+      "sha256": "eed8056d003f8330ff0bf913153613985e4985d13e4eed074d6293b30af1698e",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25/TwilightCodex-Content-Windows-20261111-R25.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
-    "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤",
-    "note": "R23 更新試煉之塔六區場景、行走與從者指令選單，並修正教學提示遮住攻擊及勝利後無法離開。連線對戰需要 R23。首次按「開始」下載素材，同版本保留快取。Windows 已實測教學對局、第一層行走與正常退出；完整真人連線及持續效能待驗。",
-    "noteEn": "R23 adds six tower environments, improves movement and servant commands, and fixes tutorial overlays blocking Attack and the exit after victory. Online matches require R23. Press Start to download content; the same version stays cached. Windows tutorial play, floor-one movement and normal exit were tested. Full human online matches and sustained performance remain untested."
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25",
+    "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤"
   },
   {
     "id": "macos",
@@ -108,30 +106,28 @@ export const BUILDS: Build[] = [
     "platform": "macOS",
     "en": "ZIP · Universal",
     "status": "available",
-    "file": "TwilightCodex-macOS-20261030-R23.zip",
-    "version": "2026.10.30-R23",
-    "size": "82.9 MiB",
-    "bytes": 86911308,
-    "updated": "2026-10-31",
-    "sha256": "4fc653f8c63e2262fe60afb1aa22374594fd69b48f38b67efe1c72d7bee5a562",
-    "build": 2026103001,
-    "minimumBuild": 2026103001,
-    "protocol": 30,
+    "file": "TwilightCodex-macOS-20261111-R25.zip",
+    "version": "2026.11.11-R25",
+    "size": "99.8 MiB",
+    "bytes": 104610695,
+    "updated": "2026-11-12",
+    "sha256": "5fe0e44a979231c6055542ed2761fbcd4302dd74c1bfbe8c8a2376681aa4ab20",
+    "build": 2026111101,
+    "minimumBuild": 2026111101,
+    "protocol": 33,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-macOS-20261030-R23.pck",
-      "bytes": 453979932,
-      "sha256": "81defe03c480d9b015e3c07aff5d5b2e47d8bd4f1ae0fba9cfe1e6a30f26819b",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-macOS-20261030-R23.pck"
+      "filename": "TwilightCodex-Content-macOS-20261111-R25.pck",
+      "bytes": 457064016,
+      "sha256": "a13ce9e102fbc0edb0bf2440422872f2389cec111ab4bc92a5aa27c0e5c6608a",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25/TwilightCodex-Content-macOS-20261111-R25.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25",
     "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
     "downloadNotice": {
       "zh": "本版尚未完成 macOS 實機驗證。",
       "en": "Native macOS testing has not been run for this release."
-    },
-    "note": "R23 更新試煉之塔六區場景、行走與從者指令選單，並修正教學提示與勝利後離開。連線對戰需要 R23。首次按「開始」下載素材，同版本保留快取。本版尚未完成 macOS 實機驗證；包內資源檢查通過。ad-hoc 簽章，未 Apple 公證；真人對局與持續效能待驗。",
-    "noteEn": "R23 adds six tower environments, improves movement and servant commands, and fixes tutorial overlays and the exit after victory. Online matches require R23. Press Start to download content; the same version stays cached. Native macOS testing has not been run for this release; packaged resource checks passed. Ad-hoc signed, not Apple-notarized. Human matches and sustained performance remain untested."
+    }
   },
   {
     "id": "linux",
@@ -139,30 +135,28 @@ export const BUILDS: Build[] = [
     "platform": "Linux",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Linux-20261030-R23.zip",
-    "version": "2026.10.30-R23",
-    "size": "64.4 MiB",
-    "bytes": 67486007,
-    "updated": "2026-11-02",
-    "sha256": "9371a20e4a5148ef1709439f98d6a25a0c8cc4ffad7d150238b0214a9ed67356",
-    "build": 2026103001,
-    "minimumBuild": 2026103001,
-    "protocol": 30,
+    "file": "TwilightCodex-Linux-20261111-R25.zip",
+    "version": "2026.11.11-R25",
+    "size": "81.2 MiB",
+    "bytes": 85184830,
+    "updated": "2026-11-12",
+    "sha256": "805d3d700f395e58e2ef63d99e71f863750f755241ebe671391abc337f522d3c",
+    "build": 2026111101,
+    "minimumBuild": 2026111101,
+    "protocol": 33,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Linux-20261030-R23.pck",
-      "bytes": 453979948,
-      "sha256": "7e70cba7b3d1293a8abc99890580bd10af50e7c25593271e90d555dcbef317c1",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-Linux-20261030-R23.pck"
+      "filename": "TwilightCodex-Content-Linux-20261111-R25.pck",
+      "bytes": 457064016,
+      "sha256": "39c41f5cee27b0f35a87525810ddb8d911646a696974619d83544bd6c7f1a6b0",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25/TwilightCodex-Content-Linux-20261111-R25.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25",
     "requirement": "Linux x86_64 · glibc 2.39+（Ubuntu 24.04+）· Vulkan 或 OpenGL 3.3",
     "downloadNotice": {
-      "zh": "Linux 自動啟動驗證已通過；實體顯示卡、操作與完整對局仍待驗。",
-      "en": "Linux automated startup passed; physical GPU, input and full-match testing remain pending."
-    },
-    "note": "Linux 更新至 R23，包含六區試煉之塔、從者指令、教學修正與技能調整；連線版本對齊正式 R23。首次按「開始」下載素材，同版本保留快取。加密成品與核心／素材完整性檢查通過；Ubuntu 24.04 空快取下載、無視窗及虛擬視窗主選單啟動與正常退出通過。實體顯示卡、操作、真人對局與持續效能仍待驗。",
-    "noteEn": "Linux now uses R23, including six tower environments, servant commands, tutorial fixes and skill updates; its online version matches production R23. Press Start to download content; the same version stays cached. Encrypted package and core/content integrity checks passed. Fresh content download, headless and virtual-window main-menu startup and clean exit passed on Ubuntu 24.04. Physical GPU, input, human matches and sustained performance remain untested."
+      "zh": "Linux 實體顯示卡、操作與完整對局仍待驗。",
+      "en": "Linux physical GPU, input and full-match testing remain pending."
+    }
   },
   {
     "id": "android",
@@ -170,63 +164,29 @@ export const BUILDS: Build[] = [
     "platform": "Android",
     "en": "APK · arm64",
     "status": "available",
-    "file": "TwilightCodex-Android-20261103-R24.apk",
-    "version": "2026.11.03-R24",
-    "size": "56.5 MiB",
-    "bytes": 59262179,
-    "updated": "2026-11-03",
-    "sha256": "816ee2ba4d0f89259059b0fdc80a93b8b6292da285e0cf7dd0eabf8de4e758c2",
-    "build": 2026110301,
-    "minimumBuild": 2026103001,
-    "protocol": 31,
+    "file": "TwilightCodex-Android-20261111-R25.apk",
+    "version": "2026.11.11-R25",
+    "size": "73.3 MiB",
+    "bytes": 76902040,
+    "updated": "2026-11-12",
+    "sha256": "d7d32650acd4a2a7e61514176823435fb9ad3653247d188893391f7034992f92",
+    "build": 2026111101,
+    "minimumBuild": 2026111101,
+    "protocol": 33,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Android-20261103-R24.pck",
-      "bytes": 119046480,
-      "sha256": "0101feb508202bfe304b93928e80a5a40dbac93cc9dfb4849c4bf34481d30caa",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.03-r24/TwilightCodex-Content-Android-20261103-R24.pck"
+      "filename": "TwilightCodex-Content-Android-20261111-R25.pck",
+      "bytes": 119987504,
+      "sha256": "5f78647ac2fa9b0f91687e97741fa57f08c6843ba5382ef219597fa691d70761",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25/TwilightCodex-Content-Android-20261111-R25.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.03-r24",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.11-r25",
     "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
     "downloadNotice": {
-      "zh": "R24 Android 僅供離線單人遊玩，連線對戰與爬塔暫不開放。出發前請先完成遊戲內素材下載。本 APK 尚未完成 Android 實機驗證。",
-      "en": "Offline single-player only; online matches and tower are unavailable. Download game content before travelling. This Android APK is untested on a device."
+      "zh": "本版尚未完成 Android 實機驗證；安裝、觸控與持續效能待驗。",
+      "en": "Native Android testing has not been run for this APK; installation, touch and sustained performance remain untested."
     },
-    "note": "R24 手機離線單人版，包含最新單人玩法、技能提示、戰鬥排版與已採用音效；狗頭人礦工普攻前會自動磨刃。正式連線與伺服器爬塔暫不開放。先安裝 APK，再按「開始」連網下載本版素材，進入主選單後確認離線練習能開始；同版本素材保留快取。沿用原安裝身分與更新簽章，請直接覆蓋更新並保留既有資料。成品資源、分包完整性、簽章與對齊檢查通過；本版手機安裝、首次素材下載、觸控、GPU、音訊與持續效能尚未實機驗證。其他平台及正式專服仍為 R23。",
-    "noteEn": "R24 is an Android offline single-player release with updated solo modes, skill cues, battle layout and selected audio. Kobold Miner automatically sharpens before attacking. Official online matches and server tower challenges are disabled. Install the APK and press Start while online to download this version's content, reach the menu and check that offline practice starts before travelling. The same version stays cached. Uses the original application identity and update signer; update in place to retain existing data. Package resources, core/content integrity, signature and alignment checks passed. Device installation, first content download, touch, GPU, audio and sustained performance remain untested. Other platforms and the production server remain on R23.",
-    "websiteDelivery": "static-apk",
-    "onlineUpdate": {
-      "id": "android",
-      "displayName": "紙鴉牌",
-      "platform": "Android",
-      "en": "APK · arm64",
-      "status": "available",
-      "file": "TwilightCodex-Android-20261030-R23.apk",
-      "version": "2026.10.30-R23",
-      "size": "56.4 MiB",
-      "bytes": 59162624,
-      "updated": "2026-10-31",
-      "sha256": "2872f2a4c651f8911a56b4169168f4ea50f80dbca978d0b8e7e03cd9c72834ab",
-      "build": 2026103001,
-      "minimumBuild": 2026103001,
-      "protocol": 30,
-      "delivery": "streamed",
-      "content": {
-        "filename": "TwilightCodex-Content-Android-20261030-R23.pck",
-        "bytes": 116903404,
-        "sha256": "206c6b814f6d6c52388adba0ee53ac819e1bdd6463f183031cc2b85c5997c4d7",
-        "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23/TwilightCodex-Content-Android-20261030-R23.pck"
-      },
-      "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.10.30-r23",
-      "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
-      "downloadNotice": {
-        "zh": "本版尚未完成 Android 實機驗證；安裝、觸控與持續效能待驗。",
-        "en": "Native Android testing has not been run for this APK; installation, touch and sustained performance remain untested."
-      },
-      "note": "Android 更新至 R23，包含試煉之塔六區場景、行走與從者指令選單，以及教學提示與勝利後離開修正；連線版本對齊 R23。先安裝較小的 APK，再按「開始」下載本版美術與音效，同版本保留快取。沿用原更新簽章，更新時保留既有帳號、收藏、牌組與存檔。本版尚未完成 Android 實機驗證；手機安裝、首次素材下載、觸控、真人對局與持續效能待驗。",
-      "noteEn": "Android now uses R23, including six tower environments, improved movement and servant commands, and tutorial overlay and exit fixes; its online version matches R23. Install the smaller APK, then press Start to download this version's art and audio; the same version stays cached. Uses the original update signer and retains existing accounts, collections, decks and saves. Native Android testing has not been run for this APK; installation, first content download, touch, human matches and sustained performance remain untested.",
-      "websiteDelivery": "static-apk"
-    }
+    "websiteDelivery": "static-apk"
   }
 ];
 
@@ -300,6 +260,16 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+{
+  "version": "2026.11.11-R25",
+  "date": "2026-11-12",
+  "title": "R25",
+  "changes": [
+    "Windows／macOS／Linux／Android：2026.11.11-R25。",
+    "BUILD／最低線上 BUILD：2026111101；protocol：33；Godot：4.7.2。",
+    "macOS 原生、Android 實機、真人完整對局與持續效能：NOT RUN。"
+  ]
+},
 {
   "version": "2026.11.03-R24",
   "date": "2026-11-03",

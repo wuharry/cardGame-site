@@ -43,7 +43,7 @@ if (current.status !== "available") {
 }
 
 // 可下載流程用 available fixture 驗證，不受目前是否暫停下載影響。
-const actual = { ...current, status: "available", file: "TwilightCodex-Android-fixture.apk", size: "100 MB", sha256: "a".repeat(64) };
+const actual = { ...current, status: "available", file: "TwilightCodex-Android-fixture.apk", size: "100 MB", sha256: "a".repeat(64), note: "fixture detailed validation note" };
 const publishedBuilds = releases.BUILDS.map((build) => build.id === "android" ? actual : build);
 const panel = await renderPanel(publishedBuilds);
 check(/<a\b[^>]*href="[^"]+\.apk"[^>]*>[\s\S]*?下載 Android APK/.test(panel), "Android download action explicitly says APK");
