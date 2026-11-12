@@ -5,8 +5,8 @@ import { AdminAPI, AdminError } from "./admin-api";
 import { countAxis, dailyRows, hasMeasurement, livePresence, measuredSegments, tickIndices, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
 import styles from "./admin.module.css";
 import { DashboardOverview, WinLossBar } from "./dashboard-visuals";
-import { guestCode, guestFunnel, missingGrowthRPC, platformLabels, readGrowth, type Growth, type GuestSearch, type Onboarding } from "./growth-data";
-import { BarList, DeviceModes, EconomyPanel, FunnelChart, PlatformBadge, RetentionPanel, TutorialBadge, TutorialSteps } from "./growth-visuals";
+import { guestCode, missingGrowthRPC, platformLabels, readGrowth, type Growth, type GuestSearch, type Onboarding } from "./growth-data";
+import { BarList, DeviceModes, EconomyPanel, GuestProgress, PlatformBadge, RetentionPanel, TutorialBadge, TutorialSteps } from "./growth-visuals";
 
 const date = (s: string) => new Date(s).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
 const modes: Record<string, string> = { pve: "單人 AI", lan: "區網", pvp: "外網", hotseat: "本機雙人" };
@@ -183,12 +183,14 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
   const [busy, setBusy] = useState(false);
   const [clock, setClock] = useState(0);
   const request = useRef(0);
+  const searchRequest = useRef(0);
+  useEffect(() => () => { searchRequest.current++; }, [api, view]);
   const [revoked, setRevoked] = useState(false);
   const expired = useRef(onExpired);
   const [revision, setRevision] = useState(0);
   useEffect(() => { expired.current = onExpired; }, [onExpired]);
   const clearPrivateData = useCallback(() => {
-    request.current++; setRevoked(true);
+    request.current++; searchRequest.current++; setRevoked(true);
     setData(null); setGuests(null); setRates(null); setGrowth(null); setFound(null); expired.current();
   }, []);
   useEffect(() => {
@@ -235,11 +237,17 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
 
   const runSearch = async (event: React.FormEvent) => {
     event.preventDefault();
+    const generation = ++searchRequest.current;
     const code = guestCode(search);
     if (!code) { setFound(null); setSearchNote("請輸入 Traveler- 後面的 8 碼，例如 1A2B3C4D。"); return; }
-    setSearchNote("查詢中…");
-    try { setFound(await api.rpc<GuestSearch>("tcg_admin_guest_search", { p_code: code })); setSearchNote(""); }
+    setFound(null); setSearchNote("查詢中…");
+    try {
+      const result = await api.rpc<GuestSearch>("tcg_admin_guest_search", { p_code: code });
+      if (generation !== searchRequest.current) return;
+      setFound(result); setSearchNote("");
+    }
     catch (e) {
+      if (generation !== searchRequest.current) return;
       setFound(null);
       if (e instanceof AdminError && (e.status === 401 || e.status === 403)) { clearPrivateData(); return; }
       setSearchNote(missingGrowthRPC(e) ? "查詢功能尚未啟用：資料庫還沒套用 20261112_growth_analytics.sql。"
@@ -276,6 +284,16 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
       <article className={styles.panel}><h3>正式對戰怎麼結束 · 近 28 日</h3><OutcomeBar outcomes={data.formal_outcomes} /></article>
       <article className={styles.panel}><h3>金幣流向 · 近 28 日</h3>{growth ? <EconomyPanel growth={growth} /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
     </div>}</>}
+    {view === "guests" && <section className={`${styles.panel} ${styles.guestLookup}`}><h3>找某位試玩者</h3>
+      <form className={styles.searchRow} onSubmit={runSearch}>
+        <label>Traveler 碼<input value={search} maxLength={60} placeholder="例：Traveler-1A2B3C4D" disabled={disabled}
+          onChange={event => { searchRequest.current++; setFound(null); setSearchNote(""); setSearch(event.target.value); }} /></label>
+        <button type="submit" disabled={disabled}>查詢</button>
+      </form>
+      {searchNote && <p className={styles.note} role="status">{searchNote}</p>}
+      {found && (found.players.length ? <GuestTable rows={found.players} fresh={!!guestFresh} tutorial />
+        : <p className={styles.empty}>沒有符合 {found.code.toUpperCase()} 的裝置。</p>)}
+    </section>}
     {view === "guests" && data && <>
       <div className={styles.rateTiles} data-size="large">
         <div><span>遊客裝置</span><strong>{data.counts.guest_installs.toLocaleString("zh-TW")}</strong><small>曾回報</small></div>
@@ -284,11 +302,11 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
         <div><span>現在線上</span><strong>{guestFresh ? data.counts.guest_online : "—"}</strong><small>90 秒內有回報</small></div>
       </div>
       <div className={styles.chartGrid}>
-        <article className={styles.panel}><h3>遊客走到哪一步 · 近 28 日新裝置</h3>{growth
-          ? <FunnelChart steps={guestFunnel(growth.funnel)} label="遊客漏斗" /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
+        <article className={styles.panel}><h3>遊客遊玩里程碑 · 近 28 日新裝置</h3>{growth
+          ? <GuestProgress funnel={growth.funnel} /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
         <article className={styles.panel}><h3>有沒有回來 · 依首次出現日</h3>{growth
           ? <RetentionPanel rows={growth.retention} /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
-        <article className={styles.panel}><h3>教學停在哪一步</h3>{growth
+        <article className={styles.panel}><h3>最遠教學進度</h3>{growth
           ? <TutorialSteps growth={growth} /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
         <article className={styles.panel}><h3>平台與版本 · 近 28 日活躍</h3>{growth ? <>
           <BarList unit="台" rows={growth.platforms.map(p => ({ label: platformLabels[p.platform] ?? p.platform, value: p.installs }))} />
@@ -308,16 +326,6 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
         <td>{live && p.verified_match_online ? "正式對戰中" : "未確認對戰在線"}</td></tr>)}</tbody></table></div>
       <footer className={styles.pagination}><button disabled={busy || disabled || ratePage === 0} onClick={() => setRatePage(p => p - 1)}>上一頁戰績</button><span>第 {ratePage + 1} 頁</span>
         <button disabled={busy || disabled || (rates?.players.length ?? 0) < 25} onClick={() => setRatePage(p => p + 1)}>下一頁戰績</button></footer>
-    </section>}
-    {view === "guests" && <section className={styles.panel}><h3>找某位試玩者</h3>
-      <form className={styles.searchRow} onSubmit={runSearch}>
-        <label>Traveler 碼<input value={search} maxLength={60} placeholder="例：Traveler-1A2B3C4D" disabled={disabled}
-          onChange={event => setSearch(event.target.value)} /></label>
-        <button type="submit" disabled={disabled}>查詢</button>
-      </form>
-      {searchNote && <p className={styles.note} role="status">{searchNote}</p>}
-      {found && (found.players.length ? <GuestTable rows={found.players} fresh={!!guestFresh} tutorial />
-        : <p className={styles.empty}>沒有符合 {found.code.toUpperCase()} 的裝置。</p>)}
     </section>}
     {view === "guests" && <section className={styles.panel}><h3>所有遊客裝置</h3>
       <GuestTable rows={guests?.players ?? []} fresh={!!guestFresh} />

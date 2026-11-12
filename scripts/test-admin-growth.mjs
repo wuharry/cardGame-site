@@ -36,7 +36,7 @@ checks++;
 
 const guest = data.funnelRates(data.guestFunnel(growth.funnel));
 check(guest.every(step => step.ofFirst === null || step.ofFirst <= 1), "steps that are not nested never exceed the starting count");
-check(guest.find(step => step.label === "開始第一場").ofFirst === 0.5, "a step is a share of the first step");
+check(guest.find(step => step.label === "曾開局").ofFirst === 0.5, "a step is a share of the first step");
 check(data.funnelRates([{ label: "a", value: 0 }, { label: "b", value: 0 }]).every(step => step.ofFirst === null), "an empty start has no rates");
 check(data.accountFunnel({ registered: 5, collection_users: 4, admitted_users: 2, completed_users: 1 }).map(s => s.value).join() === "5,4,2,1",
   "account funnel keeps the dashboard counts in order");
@@ -79,7 +79,11 @@ check(device.includes("單人 AI") && !device.includes("區網") && device.inclu
 check(render(visuals.DeviceModes, { modes: { pve: { ...modes.lan } } }).includes("尚未開局"), "a device without matches says so");
 const badge = render(visuals.TutorialBadge, { onboarding: { version: "x", tutorial_started: 1, tutorial_completed: 0, tutorial_step: 7,
   tutorial_step_name: "BLOCK", tutorial_steps: 16, updated_at: "2026-11-12T00:00:00Z" } });
-check(badge.includes("停在 前排阻擋") && badge.includes("width:50%"), "tutorial badge shows where the tester stopped");
+check(badge.includes("最遠到 前排阻擋") && badge.includes("width:50%"), "tutorial badge identifies furthest progress, not dropout");
 check(render(visuals.TutorialBadge, { onboarding: null }).includes("無教學紀錄"), "devices without reports show no progress");
 check(JSON.stringify(growth) === frozen, "rendering never mutates RPC data");
+check(render(visuals.GuestProgress, { funnel: { ...growth.funnel, onboarding_reported: 0, tutorial_started: 0, tutorial_completed: 0 } }).includes("不能判定"), "missing tutorial telemetry is unknown, never zero progress");
+check(data.guestFunnel(growth.funnel).some(row => row.label === "曾完賽") && !data.guestFunnel(growth.funnel).some(row => row.label.includes("第一場")), "independent match milestones do not claim first-attempt completion");
+assert.throws(() => data.readGrowth({ ...growth, platforms: [{ platform: "Android", installs: -1 }] })); checks++;
+assert.throws(() => data.readGrowth({ ...growth, tutorial_steps: [{ version: "x", name: "SUMMON", step: 3, steps: 0, installs: 1, completed: 0 }] })); checks++;
 console.log(`PASS admin growth: ${checks} checks for payload validation, funnels, retention windows, tutorial steps, guest codes and visuals`);

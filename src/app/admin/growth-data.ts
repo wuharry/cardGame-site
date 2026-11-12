@@ -19,8 +19,8 @@ export type GuestSearch = { code: string; players: { install_id: string; first_s
   stats: GuestStats; onboarding: Onboarding | null }[] };
 export type FunnelStep = { label: string; value: number };
 
-const count = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0;
-const nullableCount = (value: unknown) => value === null || count(value);
+const count = (value: unknown): value is number => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+const nullableCount = (value: unknown) => value === null || (typeof value === "number" && Number.isFinite(value) && value >= 0);
 
 export const missingGrowthRPC = (error: unknown) => error instanceof AdminError && error.status === 404 &&
   /尚未安裝|PGRST202|tcg_admin_growth|tcg_admin_guest_search/.test(error.message);
@@ -33,10 +33,16 @@ export function readGrowth(value: unknown): Growth {
     || typeof data.today !== "string" || !funnel || ![funnel.installs, funnel.onboarding_reported, funnel.tutorial_started,
       funnel.tutorial_completed, funnel.first_match_started, funnel.first_match_finished, funnel.second_match_started].every(count)
     || ![data.tutorial_steps, data.retention, data.platforms, data.versions, data.turns, data.economy].every(Array.isArray)
+    || !count(data.days) || data.days < 1
+    || !data.platforms.every(row => typeof row?.platform === "string" && count(row.installs))
+    || !data.versions.every(row => typeof row?.version === "string" && count(row.installs))
+    || !data.turns.every(row => typeof row?.mode === "string" && count(row.samples)
+      && [row.median, row.p90, row.max].every(nullableCount))
     || !data.retention.every(row => typeof row?.day === "string" && count(row.installs)
       && [row.d1, row.d7, row.within7].every(nullableCount))
     || !data.tutorial_steps.every(row => typeof row?.name === "string" && typeof row.version === "string"
-      && [row.step, row.steps, row.installs, row.completed].every(count))
+      && [row.step, row.steps, row.installs, row.completed].every(count)
+      && row.steps > 0 && row.step < row.steps && row.completed <= row.installs)
     || !data.economy.every(row => typeof row?.action === "string" && [row.receipts, row.gold_in, row.gold_out].every(count)))
     throw new Error("成長統計資料格式不符，請確認資料庫版本。");
   return data;
@@ -55,9 +61,8 @@ export const accountFunnel = (counts: { registered: number; collection_users: nu
   { label: "進正式對戰", value: counts.admitted_users }, { label: "完成正式對戰", value: counts.completed_users }];
 
 export const guestFunnel = (funnel: GrowthFunnel): FunnelStep[] => [
-  { label: "遊客裝置", value: funnel.installs }, { label: "開始教學", value: funnel.tutorial_started },
-  { label: "完成教學", value: funnel.tutorial_completed }, { label: "開始第一場", value: funnel.first_match_started },
-  { label: "打完第一場", value: funnel.first_match_finished }, { label: "開第二場", value: funnel.second_match_started }];
+  { label: "遊客裝置", value: funnel.installs }, { label: "曾開局", value: funnel.first_match_started },
+  { label: "曾完賽", value: funnel.first_match_finished }, { label: "開局至少兩次", value: funnel.second_match_started }];
 
 // A retention rate exists only when the window has closed and the cohort is not empty.
 export const retentionRate = (returned: number | null, installs: number) =>
@@ -84,7 +89,7 @@ export function stepsByVersion(rows: TutorialStep[]) {
 
 // Accepts "Traveler-1A2B3C4D", "1a2b3c4d" or the full installation ID; returns the 8 hex digits or null.
 export function guestCode(input: string) {
-  const match = input.trim().match(/^(?:traveler-)?([0-9a-f]{8})(?:-[0-9a-f-]{27})?$/i);
+  const match = input.trim().match(/^(?:traveler-)?([0-9a-f]{8})(?:-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$/i);
   return match ? match[1].toLowerCase() : null;
 }
 

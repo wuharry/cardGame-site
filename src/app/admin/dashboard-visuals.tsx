@@ -1,7 +1,7 @@
 import { hasMeasurement, measuredSegments, type PlayDashboard } from "./play-analytics-types";
 import { recentDays, weekTrend, winSplit } from "./dashboard-metrics";
-import { accountFunnel, guestFunnel, type Growth } from "./growth-data";
-import { FunnelChart } from "./growth-visuals";
+import { accountFunnel, type Growth } from "./growth-data";
+import { FunnelChart, GuestProgress } from "./growth-visuals";
 import styles from "./admin.module.css";
 
 export function Sparkline({ values, label, dates }: { values: (number | null)[]; label: string; dates?: string[] }) {
@@ -64,11 +64,10 @@ export function DashboardOverview({ data, now, live, guestFresh, growth = null, 
     {data && <div className={styles.funnelGrid}>
       <article className={styles.panel}><h3>帳號玩家走到哪一步 · 累計</h3>
         <FunnelChart steps={accountFunnel(data.counts)} label="帳號玩家漏斗" /></article>
-      <article className={styles.panel}><h3>遊客走到哪一步 · 近 {growth?.days ?? 28} 日新裝置</h3>
-        {growth ? <FunnelChart steps={guestFunnel(growth.funnel)} label="遊客漏斗" />
+      <article className={styles.panel}><h3>遊客遊玩里程碑 · 近 {growth?.days ?? 28} 日新裝置</h3>
+        {growth ? <GuestProgress funnel={growth.funnel} />
           : <p className={styles.empty}>{growthNote ?? "載入中…"}</p>}
-        {growth && growth.funnel.onboarding_reported < growth.funnel.installs &&
-          <small>教學進度只來自新版遊戲：{growth.funnel.onboarding_reported}／{growth.funnel.installs} 台有回報。</small>}</article>
+</article>
     </div>}
   </>;
 }

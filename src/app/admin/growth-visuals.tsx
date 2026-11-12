@@ -1,4 +1,4 @@
-import { economyLabels, funnelRates, platformLabels, retentionRate, retentionTotals, stepLabels, stepsByVersion,
+import { guestFunnel, economyLabels, funnelRates, platformLabels, retentionRate, retentionTotals, stepLabels, stepsByVersion,
   type FunnelStep, type Growth, type Onboarding, type RetentionRow } from "./growth-data";
 import type { ModeCounters } from "./play-analytics-types";
 import styles from "./admin.module.css";
@@ -8,7 +8,7 @@ const number = (value: number) => value.toLocaleString("zh-TW");
 const modes: Record<string, string> = { pve: "單人 AI", lan: "區網", pvp: "外網", hotseat: "本機雙人",
   casual: "休閒", ranked: "天梯", ante: "賭牌", unknown: "未記錄" };
 
-// Each bar is drawn against the first step, so the shape shows where players leave.
+// Independent milestones share a denominator; these are not sequential dropout rates.
 export function FunnelChart({ steps, label }: { steps: FunnelStep[]; label: string }) {
   const rows = funnelRates(steps);
   if (!rows.length || rows[0].value <= 0) return <p className={styles.empty}>尚無資料。</p>;
@@ -20,6 +20,20 @@ export function FunnelChart({ steps, label }: { steps: FunnelStep[]; label: stri
       <small>{i === 0 ? "起點" : `佔 ${percent(row.ofFirst)}`}</small>
     </li>)}
   </ol>;
+}
+
+export function GuestProgress({ funnel }: { funnel: Growth["funnel"] }) {
+  return <>
+    <FunnelChart steps={guestFunnel(funnel)} label="遊客遊玩里程碑" />
+    <p className={styles.note}>各項獨立累計；曾完賽不代表第一次開局就完成。</p>
+    <h4>教學紀錄</h4>
+    {funnel.onboarding_reported ? <FunnelChart label="有回報裝置的教學進度" steps={[
+      { label: "有教學回報", value: funnel.onboarding_reported },
+      { label: "曾開始教學", value: funnel.tutorial_started },
+      { label: "曾完成教學", value: funnel.tutorial_completed },
+    ]} /> : <p className={styles.empty}>尚無教學回報，不能判定是否開始教學。</p>}
+    <p className={styles.note}>教學回報涵蓋 {funnel.onboarding_reported}／{funnel.installs} 台；其餘進度未知。</p>
+  </>;
 }
 
 export function RetentionPanel({ rows }: { rows: RetentionRow[] }) {
@@ -59,7 +73,7 @@ export function BarList({ rows, unit, tone = "teal" }: { rows: { label: string; 
   </ul>;
 }
 
-// Where each tester stopped: the furthest step reached, per client version.
+// Furthest-ever reported step, not the point at which a player left.
 export function TutorialSteps({ growth }: { growth: Growth }) {
   const groups = stepsByVersion(growth.tutorial_steps);
   if (!groups.length) return <p className={styles.empty}>還沒有裝置回報教學進度（需新版遊戲）。</p>;
@@ -117,6 +131,6 @@ export function TutorialBadge({ onboarding }: { onboarding: Onboarding | null })
   return <div className={styles.tutorialBadge} data-done={done}
     title={`最遠到第 ${onboarding.tutorial_step + 1}／${onboarding.tutorial_steps} 步（${onboarding.tutorial_step_name}）；開始 ${onboarding.tutorial_started} 次、完成 ${onboarding.tutorial_completed} 次`}>
     <div><i style={{ width: `${(onboarding.tutorial_step + 1) / onboarding.tutorial_steps * 100}%` }} /></div>
-    <small>{done ? "教學完成" : `停在 ${stepLabels[onboarding.tutorial_step_name] ?? onboarding.tutorial_step_name}`}</small>
+    <small>{done ? "教學完成" : `最遠到 ${stepLabels[onboarding.tutorial_step_name] ?? onboarding.tutorial_step_name}`}</small>
   </div>;
 }

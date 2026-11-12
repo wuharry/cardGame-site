@@ -332,3 +332,9 @@
   .rangeList li, .flowList li { grid-template-columns: 90px minmax(0, 1fr) 80px; }
   .searchRow { flex-direction: column; align-items: stretch; }
 }
+
+.guestLookup { display: grid; grid-template-columns: minmax(140px, .45fr) minmax(0, 1fr); align-items: center; gap: 12px 24px; }
+.guestLookup h3 { margin: 0; }
+.guestLookup .searchRow { margin: 0; max-width: 680px; width: 100%; }
+.guestLookup > p, .guestLookup > div { grid-column: 1 / -1; }
+@media (max-width: 760px) { .guestLookup { grid-template-columns: minmax(0, 1fr); } }

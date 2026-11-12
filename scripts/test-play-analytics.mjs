@@ -5,7 +5,10 @@ import { loadTsModule } from "./lib/load-ts-module.mjs";
 
 const load = (file, imports) => loadTsModule(new URL(file, import.meta.url), imports, { allowNodeModules: true });
 const helpers = await load("../src/app/admin/play-analytics-types.ts");
+const growthData = await load("../src/app/admin/growth-data.ts", { "./admin-api": {} });
+const growthVisuals = await load("../src/app/admin/growth-visuals.tsx", { "./growth-data": growthData, "./admin.module.css": {} });
 const charts = await load("../src/app/admin/play-analytics.tsx", {
+  "./growth-data": growthData, "./growth-visuals": growthVisuals,
   "./play-analytics-types": helpers, "./admin-api": {}, "./match-duration": { default: () => null },
   "./card-stats": { default: () => null }, "./admin.module.css": {},
   "./dashboard-visuals": { DashboardOverview: () => null, WinLossBar: () => null },
