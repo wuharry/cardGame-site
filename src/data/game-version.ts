@@ -28,10 +28,15 @@ export function versionManifest(builds: readonly Build[] = BUILDS) {
       || !/^[a-f0-9]{64}$/.test(build.sha256) || build.bytes < 1) {
       throw new Error(`Invalid published build metadata: ${build.id}`);
     }
+    // Older Android clients download the APK directly, before visiting the install guide.
+    const installationNotice = build.id === "android" ? build.downloadNotice : undefined;
     destination[build.id] = {
       build: build.build, minimum_build: build.minimumBuild, protocol: build.protocol,
       version: build.version, download_url: url, sha256: build.sha256, bytes: build.bytes,
-      notes: { zh_TW: build.note ?? "", en: build.noteEn ?? "" },
+      notes: {
+        zh_TW: [build.note, installationNotice?.zh].filter(Boolean).join("\n\n"),
+        en: [build.noteEn, installationNotice?.en].filter(Boolean).join("\n\n"),
+      },
     };
   }
   return Object.keys(offlinePlatforms).length

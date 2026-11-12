@@ -45,3 +45,5 @@ downloadNotice: {
 | 驗收／封存 | 主下載與 GitHub 備用均完整下載驗 SHA；同手機安裝、首次素材下載、登入後重開、操作與持續效能記錄實際結果；保存版本、來源及限制，不複用 R25 的 PASS |
 
 依[下載與安裝改善](download-delivery-plan.md)的現有工具驗同站下載、Range 與安裝頁。只改本文件時不需執行會抓 APK 的網站 build；實際切換 metadata 時才執行對應測試、build 和正式下載複驗。這份文件完成不代表新 APK 已打包或發布。
+
+舊版遊戲也可能直接開啟更新 API 的 APK 連結，略過官網。`versionManifest()` 因此會將 Android 的既有 `downloadNotice` 合併進中英 `notes`，由舊版更新視窗在下載前顯示；保留既有受信任的 APK URL。`scripts/test-game-version.mjs` 驗證原說明、另裝提醒、無原說明時的提醒及桌面隔離，不能只驗官網上的文字。

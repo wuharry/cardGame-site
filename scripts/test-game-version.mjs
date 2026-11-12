@@ -12,6 +12,23 @@ const fixture = {
   bytes: 100, sha256: "a".repeat(64), note: "新版本", noteEn: "New version",
 };
 const manifest = versions.versionManifest([fixture, { id: "linux", status: "planned", file: null }]);
+const newAndroid = {
+  ...fixture, id: "android", file: "TwilightCodex-Android-fixture.apk",
+  downloadNotice: {
+    zh: "這是新 App，需要另外安裝。確認新版正常後，舊版可以移除。遊客與本機進度不會自動轉移；使用原本的帳號登入，可恢復雲端收藏與錢包。",
+    en: "This is a new app and must be installed separately. You can remove the old app after confirming the new one works. Guest and local progress do not transfer automatically. Sign in with your existing account to restore your cloud collection and wallet.",
+  },
+};
+const androidUpdate = versions.versionManifest([newAndroid]).platforms.android;
+assert.equal(androidUpdate.notes.zh_TW, `${fixture.note}\n\n${newAndroid.downloadNotice.zh}`,
+  "Existing Android clients see the separate-app and local-progress warning before direct APK download");
+assert.equal(androidUpdate.notes.en, `${fixture.noteEn}\n\n${newAndroid.downloadNotice.en}`);
+assert.equal(androidUpdate.download_url, releases.downloadUrl(newAndroid), "Keep the older client's trusted APK URL");
+assert.deepEqual(versions.versionManifest([{ ...newAndroid, note: undefined, noteEn: undefined }]).platforms.android.notes,
+  { zh_TW: newAndroid.downloadNotice.zh, en: newAndroid.downloadNotice.en },
+  "The installation warning is retained even without separate release notes");
+assert.deepEqual(versions.versionManifest([{ ...fixture, downloadNotice: newAndroid.downloadNotice }]).platforms.windows.notes,
+  { zh_TW: fixture.note, en: fixture.noteEn }, "Android installation guidance does not alter desktop release notes");
 assert.deepEqual(Object.keys(manifest.platforms), ["windows"]);
 assert.equal(manifest.platforms.windows.download_url, releases.downloadUrl(fixture));
 assert.equal(manifest.platforms.windows.build, fixture.build);
