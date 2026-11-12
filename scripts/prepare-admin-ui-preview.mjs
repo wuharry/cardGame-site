@@ -4,7 +4,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const output = resolve(root, "build/admin-ui-20261024/preview");
+// Optional first argument: a new, empty output directory (an existing preview is kept as evidence).
+const output = resolve(process.argv[2] ?? resolve(root, "build/admin-ui-20261024/preview"));
 await mkdir(dirname(output), { recursive: true });
 await mkdir(output); // A previous preview is evidence; never overwrite it.
 for (const path of ["src", "public", "package.json", "tsconfig.json", "postcss.config.mjs", "next.config.ts"]) {
@@ -27,6 +28,7 @@ const previewCommerce = {initialized:true,gold:1250,diamonds:80,equipped_emotes:
 export class AdminAPI {
  async signIn(_email:string, _password:string) {return {account_id:"fixture-admin",email:"preview@example.invalid",access_level:"operator"} as AdminSession;}
  async signOut() {}
+ onSessionExpired(_listener:()=>void) {return ()=>{};}
  async sendSetupCode(_email:string) {throw new Error("合成預覽不寄送驗證碼");}
  async verifySetupCode(_email:string, _code:string): Promise<AdminSession> {throw new Error("合成預覽不驗證真實帳號");}
  async updatePassword(_credential:string) {throw new Error("合成預覽不變更密碼");}
