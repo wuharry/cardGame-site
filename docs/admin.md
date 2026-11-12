@@ -68,3 +68,15 @@ API 依據：[Supabase 密碼登入](https://supabase.com/docs/guides/auth/passw
 驗證入口：`node scripts/test-admin-dashboard.mjs`、既有 `test-admin-api`、`test-play-analytics`、`test-match-duration`、`test-player-commerce`、`npm run lint`、`npm run build`。視覺驗收用 `node scripts/prepare-admin-ui-preview.mjs` 產生忽略目錄內的獨立副本，再依輸出命令啟動本機預覽；不複製環境檔，僅使用假帳號與合成 RPC，寫入一律拒絕。`build/` 同時被 Git、ESLint 和 TypeScript 排除，避免把驗收副本當作正式應用程式輸入。合成預覽不是正式登入驗收；瀏覽器中既有擴充套件注入的 `cz-shortcut-listen` 造成一次 hydration 警告，未以隱藏警告或停用擴充套件處理。
 
 目前驗收紀錄在 `build/admin-ui-20261024/`：桌面與窄螢幕截圖、資料邊界與認證回歸、建置日誌、部署後公開頁驗證。正式管理者登入後的真實資料與人工管理操作另行驗收，不以合成帳號或公開登入頁代替。
+
+## 成長統計與少字改版（2026-11-12）
+
+需要遊戲 repo 的 `deploy/account/20261112_growth_analytics.sql`（`tcg_admin_growth`、`tcg_admin_guest_search`）。資料庫尚未套用時，新區塊顯示「尚未啟用」，其他頁照常運作。
+
+- 營運總覽：原本五格里程碑數字改成兩條漏斗。帳號：註冊 → 建立收藏 → 進正式對戰 → 完成正式對戰（累計）。遊客：近 28 日新裝置 → 開始教學 → 完成教學 → 開始第一場 → 打完第一場 → 開第二場。每一層顯示「佔起點」的比例；遊客可以跳過教學直接開局，所以不算「佔上一層」。另加正式對戰結束方式色帶與金幣流向（依收據動作分收入／支出，排除失敗收據與管理者）。
+- 遊客分析：四格數字（裝置、有開局、總遊玩小時、現在線上）、漏斗、首日群組留存（隔天、7 天內、第 7 天；窗口未滿顯示斜線、不算 0，旁邊附分母）、教學最遠步驟（依遊戲版本分組）、平台與版本分布。可用 `Traveler-` 後 8 碼找某位試玩者，結果附教學進度。裝置清單改用每個模式一條小色條。
+- 卡牌統計：組入率 × 打出率散佈圖（點越大越多牌組帶；有提醒的卡為金色，「常帶卻打不出」在右下）。表格比率格內加長度條，卡名前加費用寶石與稀有度色條，有插畫的卡顯示縮圖。
+- 對局耗時：正式對戰每場回合數（雙方回合合計；長條到九成場次，白線為中位數）。
+- 教學進度只來自新版遊戲（回報開始／完成次數與最遠步驟）；留存以收到回報的日期計算，離線遊玩要連網後才算進那一天。
+
+驗證：`node scripts/test-admin-growth.mjs`（25 項）、`test-admin-dashboard`、`test-match-duration`、`test-card-stats`、`test-admin-api`、`eslint`、`tsc --noEmit`、`next build --webpack`。合成預覽：`node scripts/prepare-admin-ui-preview.mjs <新的空資料夾>`，已補新 RPC 與卡牌統計的假資料，以及 `onSessionExpired`（舊預覽少了這個方法，頁面會直接當掉）。
