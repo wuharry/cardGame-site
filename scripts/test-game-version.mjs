@@ -20,13 +20,17 @@ const newAndroid = {
   },
 };
 const androidUpdate = versions.versionManifest([newAndroid]).platforms.android;
-assert.equal(androidUpdate.notes.zh_TW, `${fixture.note}\n\n${newAndroid.downloadNotice.zh}`,
+assert.equal(androidUpdate.notes.zh_TW, `${newAndroid.downloadNotice.zh}\n\n${fixture.note}`,
   "Existing Android clients see the separate-app and local-progress warning before direct APK download");
-assert.equal(androidUpdate.notes.en, `${fixture.noteEn}\n\n${newAndroid.downloadNotice.en}`);
+assert.equal(androidUpdate.notes.en, `${newAndroid.downloadNotice.en}\n\n${fixture.noteEn}`);
 assert.equal(androidUpdate.download_url, releases.downloadUrl(newAndroid), "Keep the older client's trusted APK URL");
 assert.deepEqual(versions.versionManifest([{ ...newAndroid, note: undefined, noteEn: undefined }]).platforms.android.notes,
   { zh_TW: newAndroid.downloadNotice.zh, en: newAndroid.downloadNotice.en },
   "The installation warning is retained even without separate release notes");
+const longAndroidNotes = versions.versionManifest([{ ...newAndroid, note: "x".repeat(2000), noteEn: "x".repeat(2000) }]).platforms.android.notes;
+assert.ok(longAndroidNotes.zh_TW.slice(0, 1200).startsWith(newAndroid.downloadNotice.zh)
+  && longAndroidNotes.en.slice(0, 1200).startsWith(newAndroid.downloadNotice.en),
+"The separate-app warning survives the older client's 1200-character note limit");
 assert.deepEqual(versions.versionManifest([{ ...fixture, downloadNotice: newAndroid.downloadNotice }]).platforms.windows.notes,
   { zh_TW: fixture.note, en: fixture.noteEn }, "Android installation guidance does not alter desktop release notes");
 assert.deepEqual(Object.keys(manifest.platforms), ["windows"]);
