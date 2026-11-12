@@ -13,6 +13,7 @@ import { recentStreak } from "./dashboard-metrics";
 import AdminNavigation, { adminPages, pageFromHash, type AdminPage } from "./admin-navigation";
 import CardStatsPanel from "./card-stats";
 import MatchDuration from "./match-duration";
+import DemoRequests, { LinkedGuestHistory } from "./demo-requests";
 
 const date = (value?: string | null) => value ? new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "—";
 const name = (id: string) => (cards as Record<string, string>)[id] ?? id;
@@ -22,6 +23,8 @@ const outcome = { win: "勝", loss: "敗", draw: "平手" };
 export default function AdminConsole() {
   const [api] = useState(() => new AdminAPI());
   const lock = useRef(false);
+  const [demoCount, setDemoCount] = useState<number | null>(null);
+  const [demoPending, setDemoPending] = useState(false);
   const [session, setSession] = useState<AdminSession | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,6 +54,7 @@ export default function AdminConsole() {
   const activePage = useRef<AdminPage>("analytics");
 
   const clearPrivateState = () => {
+    setDemoCount(null); setDemoPending(false);
     setSession(null); setSetupSession(null); setSetup(false); setSent(false);
     setPassword(""); setConfirmPassword(""); setCode("");
     setList(null); setDetail(null); setMail(null); setMailOffset(0); setSearch("");
@@ -96,7 +100,7 @@ export default function AdminConsole() {
   };
 
   const selectPage = (next: AdminPage) => {
-    if (lock.current || pending || next === activePage.current) return;
+    if (lock.current || pending || demoPending || next === activePage.current) return;
     writePage(next);
     if (session && next === "players" && !list) void work(() => loadList());
   };
@@ -105,7 +109,7 @@ export default function AdminConsole() {
     const next = pageFromHash(window.location.hash);
     if (next === activePage.current) return;
     // History navigation must not hide an operation whose outcome is still uncertain.
-    if ((session && lock.current) || pending) {
+    if ((session && lock.current) || pending || demoPending) {
       window.history.replaceState(null, "", `#${activePage.current}`);
       return;
     }
@@ -177,7 +181,7 @@ export default function AdminConsole() {
   };
 
   const prepareChange = () => {
-    if (!detail || pending || reason.trim().length < 3) return;
+    if (!detail || pending || demoPending || reason.trim().length < 3) return;
     if (["grant_tickets", "grant_card", "send_mail"].includes(action) && (!Number.isInteger(amount) || amount < 1 || amount > (action === "grant_card" ? 3 : 100))) {
       setMessage("請填有效的整數數量。"); return;
     }
@@ -219,12 +223,13 @@ export default function AdminConsole() {
 
   const currentPage = adminPages.find(item => item.id === page)!;
   return <main className={`${styles.root} ${session ? styles.workspace : ""}`}>
-    {session && <AdminNavigation page={page} disabled={busy || !!pending} pending={!!pending} onSelect={selectPage} />}
+    {session && <AdminNavigation page={page} disabled={busy || !!pending || demoPending} pending={!!pending || demoPending} onSelect={selectPage} />}
     <div className={styles.workspaceContent}>
     <header className={styles.header}>
       <h1>{session ? currentPage.label : "管理後台"}</h1>
       <div className={styles.headerRight}><Link href="/">回官網</Link>{session && <>
-        <span>{session.email}</span><button disabled={busy || !!pending} onClick={() => void work(async () => {
+        <button disabled={busy || !!pending || demoPending} onClick={() => selectPage("demo-requests")} aria-label={`鑽石申請，${demoCount === null ? "數量待確認" : `${demoCount} 筆待處理`}`}>◇ 鑽石申請 {demoCount ?? "—"}</button>
+        <span>{session.email}</span><button disabled={busy || !!pending || demoPending} onClick={() => void work(async () => {
           await api.signOut(); clearPrivateState();
         })}>登出</button></>}</div>
     </header>
@@ -289,21 +294,21 @@ export default function AdminConsole() {
           <span>第 {(list?.page ?? 0) + 1} 頁</span><button disabled={busy || !!pending || !list || (list.page + 1) * list.page_size >= list.total}
             onClick={() => void work(() => loadList((list?.page ?? 0) + 1))}>下一頁</button></footer>
       </section>
-      {detail && <section className={styles.panel}>
+      {detail && <section id="player-detail" className={styles.panel}>
         <div className={styles.toolbar}><div><h2>{detail.user.email}</h2><small>{detail.user.id}</small></div>
           <span className={styles.badge}>{detail.restriction.suspended ? "對戰已停權" : "對戰正常"}</span></div>
         <div className={styles.detailStats}>
           <span>註冊 {date(detail.user.created_at)}</span><span>最近登入 {date(detail.user.last_sign_in_at)}</span>
           <span>包券 {detail.wallet?.pack_tickets ?? "尚未初始化"}</span><span>新手抽數 {detail.wallet?.starter_draws_remaining ?? "尚未初始化"}</span>
-          <span>戰績 {detail.record.wins} 勝／{detail.record.losses} 敗／{detail.record.draws} 平</span>
+          <span>鑽石 {detail.commerce?.diamonds ?? "尚未初始化"}</span><span>戰績 {detail.record.wins} 勝／{detail.record.losses} 敗／{detail.record.draws} 平</span>
         </div>
         <div className={styles.playerPerformance}><WinLossBar wins={detail.record.wins} losses={detail.record.losses} draws={detail.record.draws} />
           {recentStreak(detail.matches).wins >= 2 && <span className={styles.streakBadge}>近期紀錄{recentStreak(detail.matches).limited ? "至少 " : " "}{recentStreak(detail.matches).wins} 連勝</span>}
         </div>
         {detail.restriction.reason && <p>停權／恢復原因：{detail.restriction.reason}</p>}
         <nav aria-label="玩家資料分類" className={styles.tabs}>{[
-          ["commerce", "商店與資產"], ["collection", "持有卡牌"], ["receipts", "抽卡紀錄"], ["matches", "對局紀錄"], ["deck", "最近對局牌組"], ["audit", "管理操作紀錄"], ["mail", "禮物信件"],
-        ].map(([key, label]) => <button disabled={busy} aria-pressed={tab === key} onClick={() => {
+          ["demo", "Demo 鑽石申請"], ["commerce", "商店與資產"], ["collection", "持有卡牌"], ["receipts", "抽卡紀錄"], ["matches", "對局紀錄"], ["deck", "最近對局牌組"], ["audit", "管理操作紀錄"], ["mail", "禮物信件"],
+        ].map(([key, label]) => <button disabled={busy || demoPending} aria-pressed={tab === key} onClick={() => {
           setTab(key); if (key === "mail") void work(() => loadMail(detail.user.id));
         }} key={key}>{label}</button>)}</nav>
         {tab === "mail" && <div>
@@ -320,7 +325,7 @@ export default function AdminConsole() {
             <button disabled={busy || !mail || mailOffset + 20 >= mail.total} onClick={() => void work(() => loadMail(detail.user.id, mailOffset + 20))}>下一頁信件</button>
           </footer>
         </div>}
-        {tab === "commerce" && <PlayerCommerce key={detail.user.id} value={detail.commerce} />}
+        {tab === "commerce" && <><PlayerCommerce key={detail.user.id} value={detail.commerce} /><LinkedGuestHistory key={`history:${detail.user.id}`} api={api} account={detail.user.id} onExpired={expired} /></>}
         {tab === "collection" && <><details className={styles.helpDetails}><summary>資料來源</summary><p>持有量取自雲端；費用與稀有度依公開 R18 卡池，未收錄的卡片保留識別碼。</p></details><PlayerCards cards={detail.collection} />
           {!Object.keys(detail.collection).length && <p className={styles.empty}>玩家目前沒有持有卡牌。</p>}</>}
         {tab === "receipts" && <div className={styles.tableScroll}><table><thead><tr><th>時間</th><th>來源／數量</th><th>結果</th></tr></thead><tbody>
@@ -337,7 +342,7 @@ export default function AdminConsole() {
           {detail.audit.map((a) => <tr key={a.request_id}><td>{date(a.created_at)}<small>{actions[a.action as keyof typeof actions] ?? a.action}</small></td>
             <td>{a.reason}<small>{a.actor_id}</small></td><td><code>{JSON.stringify(a.before_value)} → {JSON.stringify(a.after_value)}</code></td></tr>)}</tbody></table>
           {!detail.audit.length && <p className={styles.empty}>尚無管理操作。</p>}</div>}
-        {session.access_level === "operator" && <section className={styles.management}>
+        {session.access_level === "operator" && tab !== "demo" && <section className={styles.management}>
           <h3>管理操作</h3>
           {(pending?.p_action ?? action) === "suspend" && <p className={styles.note}>停權會阻止新的正式對戰；既有對局、帳號與收藏不受影響。</p>}
           {pending ? <div className={styles.confirmation}>
@@ -360,12 +365,24 @@ export default function AdminConsole() {
             {["grant_tickets", "grant_card", "send_mail"].includes(action) && <label>數量<input type="number" min={1} max={action === "grant_card" ? 3 : 100} value={amount}
               onChange={(e) => setAmount(Number(e.target.value))} disabled={busy} required /></label>}
             <label className={styles.reason}>原因<input minLength={3} maxLength={300} required value={reason} onChange={(e) => setReason(e.target.value)} disabled={busy} /></label>
-            <button disabled={busy || (["grant_tickets", "grant_card"].includes(action) && !detail.wallet)}>檢查操作內容</button>
+            <button disabled={busy || demoPending || (["grant_tickets", "grant_card"].includes(action) && !detail.wallet)}>檢查操作內容</button>
           </form>}
         </section>}
       </section>}
       </>}
     </>}
+    {session && <DemoRequests key={session.account_id} api={api} actor={session.account_id} operator={session.access_level === "operator"}
+      visible={page === "demo-requests" || (page === "players" && !!detail && tab === "demo")} account={page === "players" ? detail?.user.id ?? null : null}
+      disabled={busy || !!pending} onExpired={expired} onCount={setDemoCount} onPending={setDemoPending}
+      onReviewed={account => { if (account && detail?.user.id === account) void work(async () => {
+        setDetail(await api.rpc<PlayerDetail>("tcg_admin_player", { p_account: account }));
+      }); }}
+      onOpenAccount={account => { if (demoPending) return; void work(async () => {
+        const player = await api.rpc<PlayerDetail>("tcg_admin_player", { p_account: account });
+        setDetail(player); setTab("demo"); setReason(""); setMail(null); writePage("players");
+        if (!list) await loadList();
+        requestAnimationFrame(() => document.getElementById("player-detail")?.scrollIntoView({ block: "start" }));
+      }); }} />}
     {session && <footer className={styles.footnote}>台北時間{page === "players" && " · 抽卡／對局／操作各顯示最近 30 筆"}</footer>}
     </div>
   </main>;

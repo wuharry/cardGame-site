@@ -80,3 +80,13 @@ API 依據：[Supabase 密碼登入](https://supabase.com/docs/guides/auth/passw
 - 教學進度只來自新版遊戲（回報開始／完成次數與最遠步驟）；留存以收到回報的日期計算，離線遊玩要連網後才算進那一天。
 
 驗證：`node scripts/test-admin-growth.mjs`（25 項）、`test-admin-dashboard`、`test-match-duration`、`test-card-stats`、`test-admin-api`、`eslint`、`tsc --noEmit`、`next build --webpack`。合成預覽：`node scripts/prepare-admin-ui-preview.mjs <新的空資料夾>`，已補新 RPC 與卡牌統計的假資料，以及 `onSessionExpired`（舊預覽少了這個方法，頁面會直接當掉）。
+
+
+## Demo 鑽石申請（2026-11-12，本機完成、未部署）
+
+需遊戲 repo 的 `deploy/account/20261112_demo_diamonds.sql`。全站頁首顯示待處理數；獨立申請列表區分「待建立錢包」「可發放」「已發放」「已結束」。點玩家檔案直接開啟 Demo 申請分頁，並顯示目前鑽石餘額；人工填數量與原因，先預覽再確認，成功後更新餘額。
+
+- 遊客可以申請，註冊／登入接上申請後才可發放；每位帳號／遊客限一筆 Demo 申請。由 operator 決定數量，不自動給幣。申請與帳號關聯不等於同意關聯遊玩紀錄；後者是遊戲裡的獨立選填選項，取得同意後可在玩家商店資產頁展開查看。
+- 發放／結案／功能開關共用可重試 UUID，瀏覽器 sessionStorage 只存操作內容，不存 JWT。已送出結果未明時不能重新填另一筆，重新登入仍恢復原操作。
+- 後台關閉 Demo 同時限制伺服器申請／發放，新遊戲隱藏入口；歷史與已發餘額不刪除。通知採後台待辦，沒有 Email 寄送。
+- 新驗證：`node scripts/test-demo-requests.mjs`。本機合成預覽保留明確標示，所有寫入仍拒絕；不能以預覽結果代表正式資料庫已部署。

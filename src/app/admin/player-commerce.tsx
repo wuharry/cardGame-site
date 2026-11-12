@@ -6,7 +6,7 @@ import styles from "./admin.module.css";
 import { currencyFlow } from "./dashboard-metrics";
 
 const date = (value: string) => new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
-const actions: Record<string, string> = { buy_emote: "購買台詞", equip_emote: "裝備台詞", unequip_emote: "卸下台詞",
+const actions: Record<string, string> = { demo_diamond_grant: "Demo 鑽石發放", buy_emote: "購買台詞", equip_emote: "裝備台詞", unequip_emote: "卸下台詞",
   buy_pack: "金幣卡包", starter_deck: "新手牌組", weekly: "每週獎勵", choose_core: "自選卡片", equip_title: "裝備稱號", claim_season: "賽季稱號" };
 
 export default function PlayerCommerce({ value }: { value?: Commerce | null }) {

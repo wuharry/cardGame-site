@@ -333,6 +333,19 @@
   .searchRow { flex-direction: column; align-items: stretch; }
 }
 
+/* Requests prioritize recipient, readiness and the next action over raw IDs. */
+.demoRequests { display: grid; gap: 12px; margin-block: 24px; }
+.demoRequest { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 18px 20px; background: #15222b; border-radius: 12px; }
+.demoRequest strong, .demoRequest small { display: block; overflow-wrap: anywhere; }
+.demoRequest small { margin-block: 6px; color: #b5c4cd; }
+.demoDiamond { font-size: 36px; color: #9cd9d4; text-align: center; }
+.demoActions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: end; max-width: 320px; }
+.demoRequest [data-ready="true"] { color: #a9e4d7; background: #244c45; }
+@media (max-width: 760px) {
+  .demoRequest { grid-template-columns: 28px minmax(0, 1fr); padding: 16px; gap: 12px; }
+  .demoActions { grid-column: 2; justify-content: start; max-width: none; }
+}
+
 .guestLookup { display: grid; grid-template-columns: minmax(140px, .45fr) minmax(0, 1fr); align-items: center; gap: 12px 24px; }
 .guestLookup h3 { margin: 0; }
 .guestLookup .searchRow { margin: 0; max-width: 680px; width: 100%; }

@@ -7,6 +7,7 @@ export const adminPages = [
   { id: "players", label: "玩家查詢", description: "收藏、信件與管理操作", number: "04" },
   { id: "player-rates", label: "玩家戰績", description: "正式對戰勝敗與勝率", number: "05" },
   { id: "guests", label: "遊客分析", description: "匿名裝置與模式分布", number: "06" },
+  { id: "demo-requests", label: "鑽石申請", description: "Demo 申請與人工發放", number: "07" },
 ] as const;
 
 export type AdminPage = typeof adminPages[number]["id"];
