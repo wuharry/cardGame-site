@@ -5,6 +5,8 @@ import { AdminAPI, AdminError } from "./admin-api";
 import { countAxis, dailyRows, hasMeasurement, livePresence, measuredSegments, tickIndices, type PlayDashboard, type GuestList, type PlayerRates } from "./play-analytics-types";
 import styles from "./admin.module.css";
 import { DashboardOverview, WinLossBar } from "./dashboard-visuals";
+import { guestCode, guestFunnel, missingGrowthRPC, platformLabels, readGrowth, type Growth, type GuestSearch, type Onboarding } from "./growth-data";
+import { BarList, DeviceModes, EconomyPanel, FunnelChart, PlatformBadge, RetentionPanel, TutorialBadge, TutorialSteps } from "./growth-visuals";
 
 const date = (s: string) => new Date(s).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
 const modes: Record<string, string> = { pve: "單人 AI", lan: "區網", pvp: "外網", hotseat: "本機雙人" };
@@ -13,13 +15,13 @@ const colors = ["#dcc58c", "#7cc9bf", "#a9a7df"];
 
 const dailySeries = [
   { key: "registered", label: "新增註冊", unit: "人" },
-  { key: "guest_active", label: "活躍遊客裝置（收到回報）", unit: "台" },
+  { key: "guest_active", label: "活躍遊客", unit: "台" },
   { key: "matches", label: "正式完賽", unit: "場" },
 ] as const;
 const onlineSeries = [
-  { key: "online_connections", label: "全部連線", unit: "條" },
-  { key: "lobby_connections", label: "大廳連線", unit: "條" },
-  { key: "playing_connections", label: "對戰連線", unit: "條" },
+  { key: "online_connections", label: "全部", unit: "條" },
+  { key: "lobby_connections", label: "大廳", unit: "條" },
+  { key: "playing_connections", label: "對戰中", unit: "條" },
 ] as const;
 const measured = (value: unknown) => hasMeasurement(value) ? value.toLocaleString("zh-TW") : "無資料";
 
@@ -136,12 +138,45 @@ export function OnlineChart({ data }: { data: PlayDashboard }) {
     </tbody></table></div></details></>;
 }
 
+const share = (part: number, whole: number) => whole > 0 ? `${Math.round(part / whole * 100)}% 的裝置` : "—";
+const hours = (seconds: number) => (seconds / 3600).toLocaleString("zh-TW", { maximumFractionDigits: seconds < 36000 ? 1 : 0 });
+
+function OutcomeBar({ outcomes }: { outcomes: PlayDashboard["formal_outcomes"] }) {
+  const parts = [["擊敗", outcomes.defeat, "#7cc9bf"], ["離開／斷線", outcomes.disconnect, "#de9d98"]] as const;
+  if (!outcomes.defeat && !outcomes.disconnect) return <p className={styles.empty}>近 28 日沒有正式對戰。</p>;
+  return <><div className={styles.spectrumBar} role="img" aria-label={parts.map(([label, n]) => `${label} ${n} 場`).join("，")}>
+    {parts.map(([label, n, color]) => <span key={label} style={{ flexGrow: n, background: color }} />)}</div>
+    <div className={styles.legend}>{parts.map(([label, n, color]) => <span key={label}><span style={{ color }} aria-hidden="true">● </span>{label} {n}</span>)}
+      <span>其中平手 {outcomes.draws}</span></div></>;
+}
+
+type GuestRow = GuestList["players"][number] & { onboarding?: Onboarding | null };
+
+function GuestTable({ rows, fresh, tutorial = false }: { rows: GuestRow[]; fresh: boolean; tutorial?: boolean }) {
+  if (!rows.length) return null;
+  return <div className={styles.tableScroll}><table><thead><tr><th>Traveler 碼</th><th>最近活動</th><th>平台／版本</th><th>遊玩</th>
+    {tutorial && <th>教學</th>}<th>各模式結果</th></tr></thead>
+    <tbody>{rows.map(g => <tr key={g.install_id}>
+      <td title={g.install_id}><strong className={styles.guestCode}>{g.install_id.slice(0, 8).toUpperCase()}</strong>
+        {fresh && g.online && <small className={styles.onlineDot}>線上</small>}</td>
+      <td>{date(g.last_seen)}<small>首次 {date(g.first_seen)}</small></td>
+      <td><PlatformBadge platform={g.stats.platform} /><small>{g.stats.version}</small></td>
+      <td>{Math.floor(g.stats.play_seconds / 60)} 分<small>啟動 {g.stats.launches} 次</small></td>
+      {tutorial && <td><TutorialBadge onboarding={g.onboarding ?? null} /></td>}
+      <td><DeviceModes modes={g.stats.modes} /></td></tr>)}</tbody></table></div>;
+}
+
 export default function PlayAnalytics({ api, disabled, onExpired, view = "analytics" }: {
   api: AdminAPI; disabled: boolean; onExpired: () => void; view?: "analytics" | "guests" | "player-rates";
 }) {
   const [data, setData] = useState<PlayDashboard | null>(null);
   const [guests, setGuests] = useState<GuestList | null>(null);
   const [rates, setRates] = useState<PlayerRates | null>(null);
+  const [growth, setGrowth] = useState<Growth | null>(null);
+  const [growthNote, setGrowthNote] = useState("");
+  const [search, setSearch] = useState("");
+  const [found, setFound] = useState<GuestSearch | null>(null);
+  const [searchNote, setSearchNote] = useState("");
   const [guestPage, setGuestPage] = useState(0);
   const [ratePage, setRatePage] = useState(0);
   const [error, setError] = useState("");
@@ -154,7 +189,7 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
   useEffect(() => { expired.current = onExpired; }, [onExpired]);
   const clearPrivateData = useCallback(() => {
     request.current++; setRevoked(true);
-    setData(null); setGuests(null); setRates(null); expired.current();
+    setData(null); setGuests(null); setRates(null); setGrowth(null); setFound(null); expired.current();
   }, []);
   useEffect(() => {
     let active = true;
@@ -171,6 +206,18 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
         const rateList = view === "player-rates" ? await api.rpc<PlayerRates>("tcg_admin_player_rates", { p_page: ratePage }) : null;
         if (!active || request.current !== generation) return;
         setData(dashboard); setGuests(guestList); setRates(rateList); setError(""); setClock(Date.now());
+        if (view !== "player-rates") {
+          try {
+            const next = readGrowth(await api.rpc<unknown>("tcg_admin_growth", { p_days: 28 }));
+            if (!active || request.current !== generation) return;
+            setGrowth(next); setGrowthNote("");
+          } catch (e) {
+            if (!active || request.current !== generation) return;
+            if (e instanceof AdminError && (e.status === 401 || e.status === 403)) throw e;
+            setGrowth(null);
+            setGrowthNote(missingGrowthRPC(e) ? "成長統計尚未啟用：資料庫還沒套用 20261112_growth_analytics.sql。" : e instanceof Error ? e.message : "成長統計查詢失敗。");
+          }
+        }
       } catch (e) {
         if (!active || request.current !== generation) return;
         setError(e instanceof Error ? e.message : "統計查詢失敗。");
@@ -185,6 +232,20 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
     const age = window.setInterval(() => { if (active) setClock(Date.now()); }, 5000);
     return () => { active = false; window.clearInterval(poll); window.clearInterval(age); };
   }, [api, disabled, guestPage, ratePage, revision, revoked, clearPrivateData, view]);
+
+  const runSearch = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const code = guestCode(search);
+    if (!code) { setFound(null); setSearchNote("請輸入 Traveler- 後面的 8 碼，例如 1A2B3C4D。"); return; }
+    setSearchNote("查詢中…");
+    try { setFound(await api.rpc<GuestSearch>("tcg_admin_guest_search", { p_code: code })); setSearchNote(""); }
+    catch (e) {
+      setFound(null);
+      if (e instanceof AdminError && (e.status === 401 || e.status === 403)) { clearPrivateData(); return; }
+      setSearchNote(missingGrowthRPC(e) ? "查詢功能尚未啟用：資料庫還沒套用 20261112_growth_analytics.sql。"
+        : e instanceof Error ? e.message : "查詢失敗。");
+    }
+  };
 
   if (revoked) return <p role="status">登入或管理權限已失效，私人統計已清除。</p>;
 
@@ -204,21 +265,43 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
         <p>模式占比依對局開始次數計算，同一裝置可玩多種模式。勝敗不作排名或收藏證明；本機雙人以 player 座位計算，正式戰績以專服紀錄為準。</p>
       </> : <p>正式伺服器累計戰績。勝率＝勝／（勝＋敗），平手另列；少量樣本僅供觀察，未完賽顯示無樣本。</p>}
     </details>
-    {view === "analytics" && <><DashboardOverview data={data} now={clock} live={live} guestFresh={!!guestFresh} />
+    {view === "analytics" && <><DashboardOverview data={data} now={clock} live={live} guestFresh={!!guestFresh} growth={growth} growthNote={growthNote} />
     {data && <div className={styles.chartGrid}>
       <article className={styles.panel}><h3>每日玩家活動 · 近 28 日</h3><DailyChart data={data} /></article>
       <article className={styles.panel}><h3>主機連線 · 最近 24 小時</h3><OnlineChart data={data} />
         {!!data.servers.length && <details className={styles.helpDetails}><summary>主機回報狀態</summary>
           {data.servers.map(s => <p key={s.server_id}>{s.server_id} · {date(s.received_at)} · {s.fresh && clock - Date.parse(s.received_at) < 45000 ? "有效" : "已過期"}</p>)}</details>}</article>
     </div>}
-    {data && <section className={styles.panel}><h3>正式完賽原因 · 近 28 日</h3><div className={styles.legend}><span>擊敗 {data.formal_outcomes.defeat}</span><span>離開／斷線 {data.formal_outcomes.disconnect}</span><span>其中平手 {data.formal_outcomes.draws}</span></div></section>}</>}
-    {view === "guests" && data && <><section className={styles.panel}><h3>模式占比 · 自行回報</h3><ModeChart data={data} />
-    </section><section className={styles.panel}><h3>遊玩結果 · 自行回報</h3>
-      {data.guest_modes.length ? data.guest_modes.map(m => { const total = Math.max(1, m.started); return <div className={styles.modeRow} key={m.mode}>
-        <span>{modes[m.mode] ?? m.mode} · {m.started} 次開始</span><div className={styles.stacked} role="img" aria-label={`${m.wins} 勝、${m.losses} 敗、${m.draws} 平、${m.abandoned} 中途離開`}>
-          {[m.wins, m.losses, m.draws, m.abandoned].map((n, i) => <span key={i} style={{ width: `${n / total * 100}%`, background: ["#7cc9bf", "#de9d98", "#dcc58c", "#6f8090"][i] }} />)}</div>
-        <small>{m.wins} 勝 · {m.losses} 敗 · {m.draws} 平 · {m.abandoned} 中途離開 · {m.started - m.wins - m.losses - m.draws - m.abandoned} 尚未結束</small></div>; }) : <p className={styles.empty}>尚無遊客回報。更新遊戲客戶端後才開始收集。</p>}
-      </section></>}
+    {data && <div className={styles.chartGrid}>
+      <article className={styles.panel}><h3>正式對戰怎麼結束 · 近 28 日</h3><OutcomeBar outcomes={data.formal_outcomes} /></article>
+      <article className={styles.panel}><h3>金幣流向 · 近 28 日</h3>{growth ? <EconomyPanel growth={growth} /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
+    </div>}</>}
+    {view === "guests" && data && <>
+      <div className={styles.rateTiles} data-size="large">
+        <div><span>遊客裝置</span><strong>{data.counts.guest_installs.toLocaleString("zh-TW")}</strong><small>曾回報</small></div>
+        <div><span>有開過局</span><strong>{data.counts.guest_played.toLocaleString("zh-TW")}</strong><small>{share(data.counts.guest_played, data.counts.guest_installs)}</small></div>
+        <div><span>總遊玩</span><strong>{hours(data.counts.guest_play_seconds)}</strong><small>小時</small></div>
+        <div><span>現在線上</span><strong>{guestFresh ? data.counts.guest_online : "—"}</strong><small>90 秒內有回報</small></div>
+      </div>
+      <div className={styles.chartGrid}>
+        <article className={styles.panel}><h3>遊客走到哪一步 · 近 28 日新裝置</h3>{growth
+          ? <FunnelChart steps={guestFunnel(growth.funnel)} label="遊客漏斗" /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
+        <article className={styles.panel}><h3>有沒有回來 · 依首次出現日</h3>{growth
+          ? <RetentionPanel rows={growth.retention} /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
+        <article className={styles.panel}><h3>教學停在哪一步</h3>{growth
+          ? <TutorialSteps growth={growth} /> : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
+        <article className={styles.panel}><h3>平台與版本 · 近 28 日活躍</h3>{growth ? <>
+          <BarList unit="台" rows={growth.platforms.map(p => ({ label: platformLabels[p.platform] ?? p.platform, value: p.installs }))} />
+          <BarList unit="台" tone="blue" rows={growth.versions.map(v => ({ label: v.version, value: v.installs }))} /></>
+          : <p className={styles.empty}>{growthNote || "載入中…"}</p>}</article>
+        <article className={styles.panel}><h3>玩哪個模式</h3><ModeChart data={data} /></article>
+        <article className={styles.panel}><h3>各模式結果</h3>
+          {data.guest_modes.length ? data.guest_modes.map(m => { const total = Math.max(1, m.started); return <div className={styles.modeRow} key={m.mode}>
+            <span>{modes[m.mode] ?? m.mode} · {m.started} 場</span><div className={styles.stacked} role="img" aria-label={`${m.wins} 勝、${m.losses} 敗、${m.draws} 平、${m.abandoned} 中途離開`}>
+              {[m.wins, m.losses, m.draws, m.abandoned].map((n, i) => <span key={i} style={{ width: `${n / total * 100}%`, background: ["#7cc9bf", "#de9d98", "#dcc58c", "#6f8090"][i] }} />)}</div>
+            <small>{m.wins} 勝 · {m.losses} 敗 · {m.draws} 平 · {m.abandoned} 離開</small></div>; }) : <p className={styles.empty}>尚無遊客回報。</p>}
+        </article>
+      </div></>}
     {view === "player-rates" && <section className={styles.panel}><p className={styles.note}>正式伺服器 · 累計戰績</p>
       <div className={styles.tableScroll}><table><thead><tr><th>玩家</th><th>場次／勝敗平</th><th>勝率</th><th>敗率</th><th>目前狀態</th></tr></thead><tbody>{rates?.players.map(p => <tr key={p.id}>
         <td>{p.email}<small>{p.id}</small></td><td>{p.total} 場 · {p.wins}／{p.losses}／{p.draws}</td><td><WinLossBar wins={p.wins} losses={p.losses} draws={p.draws} /></td><td>{percent(p.loss_rate)}</td>
@@ -226,12 +309,20 @@ export default function PlayAnalytics({ api, disabled, onExpired, view = "analyt
       <footer className={styles.pagination}><button disabled={busy || disabled || ratePage === 0} onClick={() => setRatePage(p => p - 1)}>上一頁戰績</button><span>第 {ratePage + 1} 頁</span>
         <button disabled={busy || disabled || (rates?.players.length ?? 0) < 25} onClick={() => setRatePage(p => p + 1)}>下一頁戰績</button></footer>
     </section>}
-    {view === "guests" && <section className={styles.panel}><h3>匿名裝置</h3><div className={styles.tableScroll}><table><thead><tr><th>匿名裝置 ID</th><th>最近活動／首次回報</th><th>版本／平台</th><th>啟動／對戰時間</th><th>模式與結果</th></tr></thead>
-      <tbody>{guests?.players.map(g => <tr key={g.install_id}><td>{g.install_id}<small>{guestFresh && g.online ? "近期收到活動" : "未確認活動"}</small></td>
-        <td>{date(g.last_seen)}<small>{date(g.first_seen)}</small></td><td>{g.stats.version}<small>{g.stats.platform}</small></td>
-        <td>{g.stats.launches} 次 · {Math.floor(g.stats.play_seconds / 60)} 分</td><td>{Object.entries(g.stats.modes).filter(([, c]) => c.started > 0).map(([m, c]) => <small key={m}>{modes[m] ?? m}：{c.started} 開始 · {c.wins} 勝 {c.losses} 敗 {c.draws} 平 {c.abandoned} 離開</small>)}</td></tr>)}</tbody></table></div>
-      {guests?.players.length === 0 && <p className={styles.empty}>尚無遊客統計，不會自動取得舊版或完全離線玩家的資料。</p>}
-      <footer className={styles.pagination}><button disabled={busy || disabled || guestPage === 0} onClick={() => setGuestPage(p => p - 1)}>上一頁遊客</button><span>第 {guestPage + 1} 頁 · {guests?.total ?? "—"} 個裝置</span>
+    {view === "guests" && <section className={styles.panel}><h3>找某位試玩者</h3>
+      <form className={styles.searchRow} onSubmit={runSearch}>
+        <label>Traveler 碼<input value={search} maxLength={60} placeholder="例：Traveler-1A2B3C4D" disabled={disabled}
+          onChange={event => setSearch(event.target.value)} /></label>
+        <button type="submit" disabled={disabled}>查詢</button>
+      </form>
+      {searchNote && <p className={styles.note} role="status">{searchNote}</p>}
+      {found && (found.players.length ? <GuestTable rows={found.players} fresh={!!guestFresh} tutorial />
+        : <p className={styles.empty}>沒有符合 {found.code.toUpperCase()} 的裝置。</p>)}
+    </section>}
+    {view === "guests" && <section className={styles.panel}><h3>所有遊客裝置</h3>
+      <GuestTable rows={guests?.players ?? []} fresh={!!guestFresh} />
+      {guests?.players.length === 0 && <p className={styles.empty}>尚無遊客統計。</p>}
+      <footer className={styles.pagination}><button disabled={busy || disabled || guestPage === 0} onClick={() => setGuestPage(p => p - 1)}>上一頁遊客</button><span>第 {guestPage + 1} 頁 · {guests?.total ?? "—"} 台</span>
         <button disabled={busy || disabled || !guests || (guestPage + 1) * 25 >= guests.total} onClick={() => setGuestPage(p => p + 1)}>下一頁遊客</button></footer></section>}
   </section>;
 }

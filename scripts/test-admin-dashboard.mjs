@@ -7,7 +7,11 @@ import { loadTsModule } from "./lib/load-ts-module.mjs";
 const load = (file, imports = {}) => loadTsModule(new URL(file, import.meta.url), imports);
 const types = await load("../src/app/admin/play-analytics-types.ts");
 const metrics = await load("../src/app/admin/dashboard-metrics.ts", { "./play-analytics-types": types });
-const visuals = await load("../src/app/admin/dashboard-visuals.tsx", { "./play-analytics-types": types, "./dashboard-metrics": metrics, "./admin.module.css": {} });
+const { AdminError } = await load("../src/app/admin/admin-api.ts");
+const growthData = await load("../src/app/admin/growth-data.ts", { "./admin-api": { AdminError } });
+const growthVisuals = await load("../src/app/admin/growth-visuals.tsx", { "./growth-data": growthData, "./admin.module.css": {} });
+const visuals = await load("../src/app/admin/dashboard-visuals.tsx", { "./play-analytics-types": types, "./dashboard-metrics": metrics,
+  "./growth-data": growthData, "./growth-visuals": growthVisuals, "./admin.module.css": {} });
 const spectrum = await load("../src/app/admin/duration-spectrum.tsx", { "./dashboard-metrics": metrics, "./admin.module.css": {} });
 const catalog = JSON.parse(await readFile(new URL("../src/app/admin/card-catalog.json", import.meta.url)));
 const names = JSON.parse(await readFile(new URL("../src/app/admin/card-names.json", import.meta.url)));

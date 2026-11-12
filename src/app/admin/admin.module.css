@@ -158,10 +158,6 @@
 .sparkline { width: 100%; height: 48px; color: var(--tone, #7cc9bf); margin: 2px 0 7px; }
 .trendLine { margin-top: 10px; border-top: 1px solid #ffffff12; padding-top: 10px; }
 .trendLine small { margin-top: 5px; }
-.milestones { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; border: 1px solid #35484a; border-radius: 9px; background: #35484a; overflow: hidden; }
-.milestones > div { background: #152227; padding: 13px 16px; display: flex; flex-direction: column; gap: 8px; }
-.milestones span { color: #aebfbb; font-size: 11px; }
-.milestones strong { font-size: 20px; font-variant-numeric: tabular-nums; }
 .root .summary { margin-top: 32px; }
 .root .summary div { background: #122025; padding: 15px 20px; }
 .root .summary strong { font-size: 21px; }
@@ -224,7 +220,6 @@
 .manaColumn span { display: block; background: linear-gradient(#75c8ed, #34799d); width: 100%; }
 @media (max-width: 1150px) { .overviewGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .spectrumGrid { grid-template-columns: 1fr; } }
 @media (max-width: 650px) {
-  .milestones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .spectrumLegend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .root .metricCard { padding: 16px; }
   .balanceGrid, .flowGrid { grid-template-columns: 1fr; }
@@ -240,4 +235,83 @@
   .durationFilters label { flex-basis: 100%; }
   .durationFilters button { width: 100%; }
   .chartReadout > div { display: grid; }
+}
+
+/* Growth: funnels, retention, distributions and per-device bars (20261112_growth_analytics.sql). */
+.funnelGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+.funnelGrid .panel { margin: 0; min-width: 0; }
+.funnel { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.funnel li { display: grid; grid-template-columns: 92px minmax(0, 1fr) 54px 64px; align-items: center; gap: 10px; }
+.funnelLabel { color: #c8d7d3; font-size: 13px; }
+.funnelTrack { height: 22px; background: #1d2d33; border-radius: 4px; overflow: hidden; }
+.funnelTrack span { display: block; height: 100%; background: linear-gradient(90deg, #7cc9bf, #4f9b93); border-radius: 4px; }
+.funnel strong { font-variant-numeric: tabular-nums; text-align: right; }
+.funnel small { color: #9db0ad; font-size: 11px; }
+.rateTiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.rateTiles[data-size=large] { grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 6px 0 16px; }
+.rateTiles > div { background: #111f24; border: 1px solid #35484a; border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.rateTiles span { color: #aebfbb; font-size: 12px; }
+.rateTiles strong { font-size: 24px; font-variant-numeric: tabular-nums; }
+.rateTiles[data-size=large] strong { font-size: 28px; }
+.rateTiles small { color: #9db0ad; font-size: 11px; }
+.cohortBars { display: flex; align-items: flex-end; gap: 3px; height: 120px; overflow-x: auto; padding-bottom: 2px; }
+.cohortBars > div { flex: 1 0 14px; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; }
+.cohortBars small { font-size: 9px; color: #8ea3a0; writing-mode: vertical-rl; transform: rotate(180deg); height: 30px; }
+.cohortColumn { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+.cohortColumn > span { width: 100%; background: #36515a; border-radius: 3px 3px 0 0; display: flex; align-items: flex-end; overflow: hidden; min-height: 2px; }
+.cohortColumn > span > i { display: block; width: 100%; background: #7cc9bf; }
+.cohortColumn[data-open=true] > span { background: repeating-linear-gradient(45deg, #36515a 0 4px, #2a3f46 4px 8px); }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: #36515a; }
+.swatch[data-tone=back] { background: #7cc9bf; }
+.swatch[data-tone=open] { background: repeating-linear-gradient(45deg, #36515a 0 3px, #2a3f46 3px 6px); }
+.barList { --bar: #7cc9bf; list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 7px; }
+.barList[data-tone=amber] { --bar: #e5c879; }
+.barList[data-tone=blue] { --bar: #75c8ed; }
+.barList li { display: grid; grid-template-columns: minmax(80px, 150px) minmax(0, 1fr) 76px; align-items: center; gap: 10px; font-size: 13px; }
+.barList li > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #c8d7d3; }
+.barList li > div { height: 12px; background: #1d2d33; border-radius: 3px; overflow: hidden; }
+.barList li > div > i { display: block; height: 100%; background: var(--bar); }
+.barList li > strong { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.root .barList li > strong small { display: inline; margin-left: 3px; color: #9db0ad; font-weight: 400; }
+.barList li > small { grid-column: 2 / 4; color: #9db0ad; font-size: 11px; margin-top: -4px; }
+.stepGroup h4 { display: flex; gap: 10px; align-items: baseline; margin: 6px 0 10px; font-size: 13px; color: #d0b87a; }
+.stepGroup h4 small { color: #9db0ad; font-weight: 400; }
+.rangeList, .flowList { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+.rangeList li, .flowList li { display: grid; grid-template-columns: 120px minmax(0, 1fr) 120px; align-items: center; gap: 12px; font-size: 13px; }
+.rangeList li > span, .flowList li > span { display: flex; flex-direction: column; color: #c8d7d3; }
+.rangeList small, .flowList small { color: #9db0ad; font-size: 11px; }
+.rangeList li > div { position: relative; height: 12px; background: #1d2d33; border-radius: 3px; }
+.rangeList li > div > i { position: absolute; inset: 0 auto 0 0; background: #4f7f8c; border-radius: 3px; }
+.rangeList li > div > b { position: absolute; top: -3px; width: 3px; height: 18px; background: #e4e8e5; border-radius: 1px; }
+.rangeList li > strong, .flowList li > strong { text-align: right; font-variant-numeric: tabular-nums; }
+.rangeList li > strong small { display: block; }
+.rangeList li.rangeNote { display: block; }
+.flowList li > div { display: grid; gap: 3px; }
+.flowList li > div > i { display: block; height: 8px; border-radius: 2px; min-width: 0; }
+.flowList i[data-flow=in] { background: #71bf9a; }
+.flowList i[data-flow=out] { background: #dec17d; }
+.platformBadge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; background: #263740; color: #cfe1dc; border: 1px solid #3d5359; }
+.platformBadge[data-platform=Android] { color: #a8e6b8; border-color: #4c7a5a; }
+.platformBadge[data-platform=Windows] { color: #9fd3f3; border-color: #3f6a85; }
+.platformBadge[data-platform=macOS] { color: #e6d6a8; border-color: #7a6a45; }
+.deviceModes { display: grid; gap: 6px; min-width: 150px; }
+.deviceModes > div > span { display: flex; justify-content: space-between; font-size: 11px; color: #aebfbb; }
+.deviceModes > div > span b { color: #e4e8e5; font-weight: 600; }
+.deviceModes .stacked { margin: 3px 0 0; min-height: 7px; }
+.deviceModes .stacked > i { display: block; height: 7px; }
+.tutorialBadge { min-width: 120px; }
+.tutorialBadge > div { height: 7px; background: #1d2d33; border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
+.tutorialBadge > div > i { display: block; height: 100%; background: #e5c879; }
+.tutorialBadge[data-done=true] > div > i { background: #71bf9a; }
+.searchRow { display: flex; align-items: flex-end; gap: 10px; max-width: 520px; margin-bottom: 12px; }
+.searchRow label { flex: 1; }
+.guestCode { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; color: #e5c879; }
+.onlineDot { color: #71dfa0; }
+.onlineDot::before { content: "● "; }
+@media (max-width: 1000px) { .funnelGrid { grid-template-columns: 1fr; } .rateTiles[data-size=large] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 650px) {
+  .funnel li { grid-template-columns: 76px minmax(0, 1fr) 44px; }
+  .funnel li small { display: none; }
+  .rangeList li, .flowList li { grid-template-columns: 90px minmax(0, 1fr) 80px; }
+  .searchRow { flex-direction: column; align-items: stretch; }
 }

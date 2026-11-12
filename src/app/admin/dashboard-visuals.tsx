@@ -1,5 +1,7 @@
 import { hasMeasurement, measuredSegments, type PlayDashboard } from "./play-analytics-types";
 import { recentDays, weekTrend, winSplit } from "./dashboard-metrics";
+import { accountFunnel, guestFunnel, type Growth } from "./growth-data";
+import { FunnelChart } from "./growth-visuals";
 import styles from "./admin.module.css";
 
 export function Sparkline({ values, label, dates }: { values: (number | null)[]; label: string; dates?: string[] }) {
@@ -28,9 +30,10 @@ export function TrendBadge({ data, metric }: { data: PlayDashboard; metric: "reg
   </div>;
 }
 
-export function DashboardOverview({ data, now, live, guestFresh }: {
+export function DashboardOverview({ data, now, live, guestFresh, growth = null, growthNote }: {
   data: PlayDashboard | null; now: number;
   live: { online: number; lobby: number; playing: number } | null; guestFresh: boolean;
+  growth?: Growth | null; growthNote?: string;
 }) {
   const days = data ? recentDays(data.daily) : [];
   const stale = !!data?.servers.length && !live;
@@ -49,19 +52,24 @@ export function DashboardOverview({ data, now, live, guestFresh }: {
         {live && <small>大廳 {live.lobby} · 對戰 {live.playing}</small>}
         {age !== null && Number.isFinite(age) && <small>最舊心跳 {Math.max(0, Math.floor(age))} 秒前</small>}
       </article>
-      <article className={styles.metricCard} data-tone="teal"><span className={styles.metricLabel}>活動遊客裝置 · 90 秒內</span>
+      <article className={styles.metricCard} data-tone="teal"><span className={styles.metricLabel}>線上遊客</span>
         <strong className={styles.metricValue}>{guestFresh && data ? data.counts.guest_online : "待確認"}<small>{guestFresh ? "台" : ""}</small></strong>
         <Sparkline values={days.map(d => d.guest_active)} dates={days.map(d => d.day)} label="近七日每日活躍遊客裝置" />
-        <small>曲線為近七日每日活動</small></article>
-      <article className={styles.metricCard} data-tone="amber"><span className={styles.metricLabel}>正式完賽 · 累計</span>
+        <small>近 7 日每日活躍</small></article>
+      <article className={styles.metricCard} data-tone="amber"><span className={styles.metricLabel}>正式完賽</span>
         <strong className={styles.metricValue}>{data?.counts.formal_matches.toLocaleString("zh-TW") ?? "—"}<small>場</small></strong>
         <Sparkline values={days.map(d => d.matches)} dates={days.map(d => d.day)} label="近七日每日正式完賽" />
         <small>近七日完賽</small>{data && <TrendBadge data={data} metric="matches" />}</article>
     </div>
-    <div className={styles.milestones}>{[
-      ["已建立收藏", data?.counts.collection_users], ["曾進正式對戰", data?.counts.admitted_users],
-      ["曾正式完賽", data?.counts.completed_users], ["遊客回報裝置", data?.counts.guest_installs], ["曾遊玩的遊客裝置", data?.counts.guest_played],
-    ].map(([label, value]) => <div key={label}><span>{label}</span><strong>{value ?? "—"}</strong></div>)}</div>
+    {data && <div className={styles.funnelGrid}>
+      <article className={styles.panel}><h3>帳號玩家走到哪一步 · 累計</h3>
+        <FunnelChart steps={accountFunnel(data.counts)} label="帳號玩家漏斗" /></article>
+      <article className={styles.panel}><h3>遊客走到哪一步 · 近 {growth?.days ?? 28} 日新裝置</h3>
+        {growth ? <FunnelChart steps={guestFunnel(growth.funnel)} label="遊客漏斗" />
+          : <p className={styles.empty}>{growthNote ?? "載入中…"}</p>}
+        {growth && growth.funnel.onboarding_reported < growth.funnel.installs &&
+          <small>教學進度只來自新版遊戲：{growth.funnel.onboarding_reported}／{growth.funnel.installs} 台有回報。</small>}</article>
+    </div>}
   </>;
 }
 

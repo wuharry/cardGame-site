@@ -6,6 +6,8 @@ import { durationLabel, hasMeasurement, matchCompletion, matchFilterParams, matc
   matchSourceLabel, readMatchAnalytics, type MatchAnalytics, type MatchFilters, type MatchSource } from "./play-analytics-types";
 import styles from "./admin.module.css";
 import DurationSpectrum from "./duration-spectrum";
+import { missingGrowthRPC, readGrowth, type Growth } from "./growth-data";
+import { TurnsPanel } from "./growth-visuals";
 
 const date = (value: string | null) => value ? new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }) : "未記錄";
 const mode = (value: string) => matchModes[value as keyof typeof matchModes] ?? value;
@@ -63,8 +65,20 @@ export default function MatchDuration({ api, disabled, onExpired }: {
   const [result, setResult] = useState<{ query: MatchFilters; data: MatchAnalytics } | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "unavailable" | "error" | "expired">("loading");
   const [error, setError] = useState("");
+  const [growth, setGrowth] = useState<Growth | null>(null);
+  const [growthNote, setGrowthNote] = useState("載入中…");
   const expired = useRef(onExpired);
   useEffect(() => { expired.current = onExpired; }, [onExpired]);
+  // Turn counts come from the growth view; an older database only hides this panel.
+  useEffect(() => {
+    let active = true;
+    if (disabled) return;
+    api.rpc<unknown>("tcg_admin_growth", { p_days: 28 }).then(value => { if (active) { setGrowth(readGrowth(value)); setGrowthNote(""); } })
+      .catch(e => { if (!active) return; setGrowth(null);
+        if (e instanceof AdminError && [401, 403].includes(e.status)) { expired.current(); return; }
+        setGrowthNote(missingGrowthRPC(e) ? "回合數尚未啟用：資料庫還沒套用 20261112_growth_analytics.sql。" : e instanceof Error ? e.message : "回合數查詢失敗。"); });
+    return () => { active = false; };
+  }, [api, disabled, revision]);
   useEffect(() => {
     let active = true;
     let loading = false;
@@ -106,6 +120,8 @@ export default function MatchDuration({ api, disabled, onExpired }: {
     {status === "unavailable" && <p role="status" className={styles.message}>對局耗時分析尚未啟用，請聯絡維護人員。</p>}
     {status === "error" && <p role="status" className={styles.message}>{error}</p>}
     {status === "expired" && <p role="status">登入或管理權限已失效，耗時資料已清除。</p>}
+    <section className={styles.durationSource} aria-label="正式對戰回合數"><h4>正式對戰每場幾回合 · 近 28 日（雙方回合合計）</h4>
+      {growth ? <TurnsPanel growth={growth} /> : <p className={styles.empty}>{growthNote}</p>}</section>
     {data && <MatchDurationView data={data} />}
   </section>;
 }
