@@ -22,6 +22,8 @@ export function SiteFooter() {
             <DownloadLink>遊戲下載</DownloadLink>
             <a href={FEEDBACK_URL} target="_blank" rel="noopener noreferrer">試玩回饋 ↗</a>
             <Link href="/credits" prefetch={false}>製作群與授權</Link>
+            <Link href="/privacy" prefetch={false}>隱私權政策</Link>
+            <Link href="/account/delete" prefetch={false}>刪除帳號</Link>
           </nav>
           <p>個人開發專案 · 遊戲開發中，內容將持續調整。</p>
           <p>© 2026 Harvey · 紙鴉牌。原創且依法受保護的內容保留相關權利；第三方素材依各自授權使用。</p>

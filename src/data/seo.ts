@@ -11,7 +11,7 @@ export const HOME_TITLE = `${SITE_NAME} — 四路前後排的回合制卡牌對
 const platforms = BUILDS.filter((build) => downloadUrl(build)).map((build) => build.platform);
 export const HOME_DESCRIPTION = `${SITE_NAME}：HD-2D 回合制卡牌對戰，四路前後排、六種卡型與種族結界，${GAME_FACTS.cards} 種正式卡。組建自己的六十張，挑戰 AI 或與朋友連線對戰。${platforms.length ? `查看${platforms.join("／")}試玩下載與更新。` : "目前下載暫停，請查看各平台狀態與更新進度。"}`;
 
-export const PUBLIC_PATHS = ["/", "/guide", "/news", "/credits", "/install/android"] as const;
+export const PUBLIC_PATHS = ["/", "/guide", "/news", "/credits", "/install/android", "/privacy", "/account/delete"] as const;
 export const siteUrl = (path: string) => new URL(path, `${SITE_ORIGIN}/`).href;
 
 export function pageMetadata(path: string, title: string, description: string): Metadata {
