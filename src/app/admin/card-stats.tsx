@@ -2,13 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AdminError, type AdminAPI } from "./admin-api";
+import Image from "next/image";
 import cardNames from "./card-names.json";
+import snapshot from "./card-catalog.json";
 import styles from "./admin.module.css";
-import { cardHints, cardStatsParams, LOW_KEEP_RATE, MIN_SAMPLE, readCardStats, sortCards, type CardStats, type Filters,
+import { cardHints, cardStatsParams, LOW_KEEP_RATE, MIN_SAMPLE, readCardStats, sortCards, type CardStatRow, type CardStats, type Filters,
   type SortKey } from "./card-stats-data";
 import { matchModes } from "./play-analytics-types";
 
 const names = cardNames as Record<string, string>;
+const catalog = snapshot.cards as Record<string, { cost: number; rarity: number; art?: string }>;
+const cardInfo = (id: string) => Object.hasOwn(catalog, id) ? catalog[id] : undefined;
 const sources = { official: "正式對戰", local: "本機回報", all: "全部來源" } as const;
 const controllers = { human: "真人", ai: "內建 AI", npc: "NPC 作者", all: "全部" } as const;
 const sorts: Record<SortKey, string> = { decks_with: "帶卡牌組數", deck_rate: "組入率", edit_keep_rate: "改牌保留率",
@@ -21,6 +25,46 @@ const modeName = (value: string | null) => value ? matchModes[value as keyof typ
 
 export const missingCardStatsRPC = (error: unknown) => error instanceof AdminError && error.status === 404 &&
   /尚未安裝|PGRST202|tcg_admin_card_stats/.test(error.message);
+
+// A bar inside the cell: the length is the rate, so a column reads at a glance.
+function RateCell({ value, children }: { value: number | null; children?: React.ReactNode }) {
+  return <td className={styles.rateCell}><span>{rate(value)}</span>
+    {value !== null && <span className={styles.rateTrack} aria-hidden="true"><i style={{ width: `${Math.min(100, Math.max(0, value))}%` }} /></span>}
+    {children}</td>;
+}
+
+function CardLabel({ id, detailed }: { id: string; detailed: boolean }) {
+  const info = cardInfo(id);
+  return <td className={styles.cardLabel} data-rarity={info?.rarity ?? "unknown"}><div>
+    {info?.art ? <span className={styles.cardThumb}><Image src={info.art} alt="" width={40} height={28} sizes="40px" /></span>
+      : <span className={styles.costGem} aria-label={info ? `${info.cost} 費` : "費用未提供"}>{info?.cost ?? "?"}</span>}
+    <span>{cardName(id)}{detailed && <small>{id}</small>}</span></div></td>;
+}
+
+// Each dot is one card. Cards often put in decks but rarely played gather in the lower right.
+export function CardScatter({ rows }: { rows: CardStatRow[] }) {
+  const points = rows.filter(row => row.deck_rate !== null && row.play_rate !== null);
+  if (points.length < 3) return null;
+  const maxDecks = Math.max(1, ...points.map(row => row.decks_with));
+  const x = (value: number) => 50 + value / 100 * 640;
+  const y = (value: number) => 270 - value / 100 * 240;
+  return <figure className={styles.scatter}>
+    <svg viewBox="0 0 720 310" role="img" aria-label={`逐卡散佈圖：橫軸組入率、縱軸打出率，共 ${points.length} 張卡`}>
+      <rect x={x(50)} y={y(50)} width={x(100) - x(50)} height={y(0) - y(50)} fill="#de9d9814" />
+      <text x={x(98)} y={y(4)} textAnchor="end" fill="#de9d98" fontSize="12">常帶卻打不出</text>
+      {[0, 25, 50, 75, 100].map(v => <g key={v}>
+        <line x1={x(0)} x2={x(100)} y1={y(v)} y2={y(v)} stroke="#2b3d40" />
+        <text x={x(0) - 8} y={y(v) + 4} textAnchor="end" fill="#9db0ad" fontSize="11">{v}%</text>
+        <text x={x(v)} y={y(0) + 18} textAnchor="middle" fill="#9db0ad" fontSize="11">{v}%</text></g>)}
+      <text x={x(50)} y={306} textAnchor="middle" fill="#b9cac6" fontSize="12">組入率 →</text>
+      <text x={14} y={y(50)} fill="#b9cac6" fontSize="12" transform={`rotate(-90 14 ${y(50)})`} textAnchor="middle">打出率 →</text>
+      {points.map(row => <circle key={row.card_id} cx={x(row.deck_rate!)} cy={y(row.play_rate!)}
+        r={3 + Math.sqrt(row.decks_with / maxDecks) * 7} fill={cardHints(row).length ? "#e5c879" : "#7cc9bf"} fillOpacity=".72" stroke="#0e1519">
+        <title>{`${cardName(row.card_id)}：組入率 ${row.deck_rate}%、打出率 ${row.play_rate}%、${row.decks_with} 副牌組`}</title></circle>)}
+    </svg>
+    <figcaption><span><i className={styles.swatch} data-tone="back" />一般</span><span><i className={styles.swatch} data-tone="warn" />有提醒</span><span>點越大＝越多牌組帶</span></figcaption>
+  </figure>;
+}
 
 export function CardStatsView({ data, sort, ascending, tokens = false }: { data: CardStats; sort: SortKey; ascending: boolean; tokens?: boolean }) {
   const [search, setSearch] = useState("");
@@ -43,6 +87,7 @@ export function CardStatsView({ data, sort, ascending, tokens = false }: { data:
         onChange={event => setOnlyHints(event.target.checked)} /> 只看有提醒的卡</label>
       {(search || onlyHints) && <button type="button" onClick={() => { setSearch(""); setOnlyHints(false); }}>清除篩選</button>}
     </div>
+    <CardScatter rows={cards} />
     <div className={styles.tableTools}>
       <p className={styles.note} role="status">{cards.length.toLocaleString("zh-TW")}／{data.cards.length.toLocaleString("zh-TW")} 張卡</p>
       <label className={styles.checkFilter}><input type="checkbox" checked={detailed} onChange={event => setDetailed(event.target.checked)} /> 詳細數據</label>
@@ -52,13 +97,13 @@ export function CardStatsView({ data, sort, ascending, tokens = false }: { data:
       {detailed && <th scope="col">回收率</th>}<th scope="col">主動技能使用率</th>{detailed && <th scope="col">可用時發動率</th>}<th scope="col">平均存活<span className={styles.columnUnit}>己方回合</span></th>
       {detailed && <><th scope="col">死亡／召還／其他／到結束</th><th scope="col">帶卡勝／敗</th></>}<th scope="col">提醒</th>
     </tr></thead><tbody>{sortCards(cards, sort, ascending).map(row => <tr key={row.card_id}>
-      <td>{cardName(row.card_id)}{detailed && <small>{row.card_id}</small>}</td>
-      <td>{rate(row.deck_rate)}{detailed && <small>{row.decks_with} 副</small>}</td>
-      <td>{rate(row.edit_keep_rate)}{detailed && <small>保留 {row.edit_kept}／{row.edit_seen} · 移出 {row.edit_seen - row.edit_kept} · 新增 {row.edit_added}</small>}</td>
-      <td>{rate(row.play_rate)}{detailed && <small>{row.drawn} 抽</small>}</td>
-      {detailed && <td>{rate(row.recycle_rate)}<small>{row.recycled} 次</small></td>}
-      <td>{rate(row.skill_use_rate)}{detailed && <small>{row.summoned} 登場 · {row.skill_uses} 次技能</small>}</td>
-      {detailed && <td>{rate(row.chance_use_rate)}<small>{row.skill_chance_uses}／{row.skill_chances} 回合</small></td>}
+      <CardLabel id={row.card_id} detailed={detailed} />
+      <RateCell value={row.deck_rate}>{detailed && <small>{row.decks_with} 副</small>}</RateCell>
+      <RateCell value={row.edit_keep_rate}>{detailed && <small>保留 {row.edit_kept}／{row.edit_seen} · 移出 {row.edit_seen - row.edit_kept} · 新增 {row.edit_added}</small>}</RateCell>
+      <RateCell value={row.play_rate}>{detailed && <small>{row.drawn} 抽</small>}</RateCell>
+      {detailed && <RateCell value={row.recycle_rate}><small>{row.recycled} 次</small></RateCell>}
+      <RateCell value={row.skill_use_rate}>{detailed && <small>{row.summoned} 登場 · {row.skill_uses} 次技能</small>}</RateCell>
+      {detailed && <RateCell value={row.chance_use_rate}><small>{row.skill_chance_uses}／{row.skill_chances} 回合</small></RateCell>}
       <td>{row.avg_alive_turns === null ? "無樣本" : row.avg_alive_turns}</td>
       {detailed && <><td>{row.left_death}／{row.left_recall}／{row.left_other}／{row.left_end}</td>
         <td>{row.deck_wins}／{row.deck_losses}</td></>}
