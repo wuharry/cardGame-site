@@ -332,7 +332,7 @@ export default function AdminConsole() {
           {detail.receipts.map((r) => <tr key={r.source + r.request_id}><td>{date(r.created_at)}</td><td>{r.source === "starter" ? "新手抽卡" : r.pack_id} · {r.draw_count} 張</td>
             <td>{r.card_ids.map(name).join("、")}</td></tr>)}</tbody></table>{!detail.receipts.length && <p className={styles.empty}>尚無抽卡紀錄。</p>}</div>}
         {tab === "matches" && <div className={styles.tableScroll}><table><thead><tr><th>時間</th><th>結果</th><th>對手 ID</th><th>結束原因</th></tr></thead><tbody>
-          {detail.matches.map((m) => <tr key={m.match_id}><td>{date(m.completed_at)}</td><td>{outcome[m.outcome as keyof typeof outcome] ?? m.outcome}</td><td>{m.opponent_id}</td><td>{m.reason === "disconnect" ? "離開／斷線" : "擊敗"}</td></tr>)}</tbody></table>
+          {detail.matches.map((m) => <tr key={m.match_id}><td>{date(m.completed_at)}</td><td>{outcome[m.outcome as keyof typeof outcome] ?? m.outcome}</td><td>{m.opponent_id ?? "已刪除帳號"}</td><td>{m.reason === "disconnect" ? "離開／斷線" : "擊敗"}</td></tr>)}</tbody></table>
           {!detail.matches.length && <p className={styles.empty}>尚無正式對局紀錄。</p>}</div>}
         {tab === "deck" && <><p className={styles.note}>最近通過入場驗證的牌組，可能與玩家目前草稿不同。</p>
           {detail.last_submitted_deck ? <><p>{detail.last_submitted_deck.deck_id} · {date(detail.last_submitted_deck.submitted_at)}</p>

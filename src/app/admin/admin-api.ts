@@ -242,7 +242,7 @@ export type PlayerDetail = {
   restriction: { suspended: boolean; reason?: string };
   record: { wins: number; losses: number; draws: number; total: number };
   receipts: { source: string; request_id: string; created_at: string; draw_count: number; pack_id: string; card_ids: string[] }[];
-  matches: { match_id: string; completed_at: string; opponent_id: string; outcome: string; reason: string }[];
+  matches: { match_id: string; completed_at: string; opponent_id: string | null; outcome: string; reason: string }[];
   last_submitted_deck: { deck_id: string; cards: Record<string, number>; submitted_at: string } | null;
   audit: { request_id: string; actor_id: string; action: string; reason: string; before_value: unknown; after_value: unknown; created_at: string }[];
 };
