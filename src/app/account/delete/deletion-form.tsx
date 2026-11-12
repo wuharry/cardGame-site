@@ -27,7 +27,7 @@ export function DeletionForm() {
     try {
       if (step === "email") {
         await api.current.sendCode(email);
-        setStep("code"); setMessage("若帳號存在，驗證碼已寄出。請查看信箱；這一步不會建立新帳號。");
+        setStep("code"); setMessage("若帳號存在，刪帳驗證碼已寄出。請找主旨「紙鴉牌｜刪除帳號驗證碼」的最新信件，確認收件信箱相同。不要使用註冊或登入信；重新寄送後請改用最新一封。這一步不會建立或刪除帳號。");
       } else if (step === "code") {
         await api.current.verify(code);
         setCode(""); setStep("confirm"); setMessage("信箱已驗證。確認下方帳號與刪除範圍後，才能永久刪除。");
@@ -46,7 +46,7 @@ export function DeletionForm() {
       <input className={input} type="email" autoComplete="email" maxLength={254} required disabled={busy} value={email} onChange={e => setEmail(e.target.value)} />
     </label>}
     {step !== "email" && step !== "deleted" && <p className="mt-5 break-all text-parchment">申請帳號：{email.trim().toLowerCase()}</p>}
-    {step === "code" && <label className="mt-5 block text-parchment">Email 驗證碼
+    {step === "code" && <label className="mt-5 block text-parchment">刪除帳號驗證碼
       <input className={input} inputMode="numeric" autoComplete="one-time-code" pattern="([0-9]{6}|[0-9]{8})" maxLength={8} required disabled={busy} value={code} onChange={e => setCode(e.target.value)} />
     </label>}
     {step === "confirm" && <>
@@ -58,7 +58,7 @@ export function DeletionForm() {
     <p role="status" aria-live="polite" className="mt-5 break-words leading-7 text-quill">{busy ? "正在處理，請稍候…" : message}</p>
     {step !== "deleted" && <div className="mt-6 flex flex-wrap gap-4">
       <button className={`${action} ${step === "confirm" ? "border-red-300 bg-red-950/50" : "bg-brass/20"}`} disabled={busy || (step === "confirm" && confirmation !== "DELETE")}>
-        {step === "email" ? "寄送驗證碼" : step === "code" ? "驗證信箱" : "永久刪除我的帳號"}
+        {step === "email" ? "寄送刪帳驗證碼" : step === "code" ? "驗證信箱" : "永久刪除我的帳號"}
       </button>
       {step !== "email" && <button type="button" className={action} disabled={busy} onClick={() => {
         api.current?.clear(); setCode(""); setConfirmation(""); setStep("email"); setMessage("");

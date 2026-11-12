@@ -1,6 +1,8 @@
 // Public client configuration only. The RPC verifies fresh OTP and auth.uid() itself.
 const ORIGIN = "https://xmyksnpupebxkskydkes.supabase.co";
 const PUBLIC_KEY = "sb_publishable_3yiCd0_cN9CVTYSEZkflLQ_KXTdoy2D";
+// Email presentation only; the RPC still checks fresh OTP and explicit DELETE.
+const EMAIL_CONTEXT = "https://twilight-codex.vercel.app/account/delete";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 type Transport = typeof fetch;
 
@@ -52,7 +54,7 @@ export class DeletionAPI {
     const epoch = this.epoch;
     this.sending = true;
     try {
-      await this.request("/auth/v1/otp", { email, create_user: false });
+      await this.request("/auth/v1/otp?redirect_to=" + encodeURIComponent(EMAIL_CONTEXT), { email, create_user: false });
       if (epoch !== this.epoch) throw new DeletionError("已取消，請重新開始。");
       this.email = email;
       this.resendAt = Date.now() + 60000;

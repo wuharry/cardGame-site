@@ -32,8 +32,8 @@ try {
     await page.screenshot({ path: `${output}/privacy-${width}.png`, fullPage: true });
     await page.goto(new URL("/account/delete", base).href, { waitUntil: "networkidle" });
     await page.getByLabel("帳號 Email", { exact: true }).fill("fixture@example.invalid");
-    await page.getByRole("button", { name: "寄送驗證碼", exact: true }).click();
-    await page.getByLabel("Email 驗證碼", { exact: true }).fill("123456");
+    await page.getByRole("button", { name: "寄送刪帳驗證碼", exact: true }).click();
+    await page.getByLabel("刪除帳號驗證碼", { exact: true }).fill("123456");
     await page.getByRole("button", { name: "驗證信箱", exact: true }).click();
     await page.getByLabel("輸入大寫 DELETE 確認", { exact: true }).waitFor();
     assert.equal(await page.getByRole("button", { name: "永久刪除我的帳號" }).isDisabled(), true);

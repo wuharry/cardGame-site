@@ -16,6 +16,7 @@ await rejects(() => api.sendCode("invalid"), /Email/);
 queue.push({ body: {} });
 await api.sendCode(" Fixture@Example.invalid ");
 check(requests[0].body.create_user === false && requests[0].body.email === "fixture@example.invalid", "deletion never registers a new account");
+check(new URL(requests[0].url).searchParams.get("redirect_to") === "https://twilight-codex.vercel.app/account/delete", "deletion has its own email purpose without credentials in URL");
 check(requests[0].redirect === "error" && requests[0].cache === "no-store" && requests[0].credentials === "omit", "credentials cannot follow redirects or enter cache/cookies");
 await rejects(() => api.sendCode("fixture@example.invalid"), /稍候/);
 await rejects(() => api.verify("no"), /驗證碼/);
