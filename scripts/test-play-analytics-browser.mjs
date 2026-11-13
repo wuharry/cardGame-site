@@ -150,6 +150,8 @@ export default function Fixture() {
       }
       else if (name === "tcg_admin_guest_players") result = { page: 0, total: 0, players: [] };
       else if (name === "tcg_admin_player_rates") result = { page: 0, players: [{ id: "fixture-player", email: "fixture@example.invalid", wins: 3, losses: 1, draws: 0, total: 4, win_rate: 75, loss_rate: 25, verified_match_online: false }] };
+      // Matches production before 20261112_growth_analytics.sql: the panels show 「尚未啟用」.
+      else if (name === "tcg_admin_growth") return route.fulfill({ status: 404, json: { code: "PGRST202", message: "Could not find the function public.tcg_admin_growth" } });
       else throw new Error(`Unexpected fixture RPC ${name}`);
       return route.fulfill({ json: result });
     });
@@ -312,6 +314,9 @@ export default function Fixture() {
       else if (name === "tcg_admin_change") {
         if (uncertainChange) return route.fulfill({ status: 503, json: { message: "Synthetic uncertain operation" } });
         result = {};
+      } else if (name === "tcg_admin_growth" || name === "tcg_admin_demo_diamonds") {
+        // Optional panels before their migrations: the console shows 「尚未啟用」 and keeps working.
+        return route.fulfill({ status: 404, json: { code: "PGRST202", message: `Could not find the function public.${name}` } });
       } else throw new Error(`Unexpected console fixture RPC ${name}`);
       return route.fulfill({ json: result });
     });
@@ -332,7 +337,9 @@ export default function Fixture() {
     assert.equal(calls.length, 0, "Signed-out console requests no private data");
     await login();
     await page.getByRole("region", { name: "逐卡統計表", exact: true }).waitFor();
-    assert.deepEqual(calls.filter(c => c.name.startsWith("tcg_admin_")).map(c => c.name), ["tcg_admin_session", "tcg_admin_card_stats"], "Deep link loads only card statistics");
+    // The header's demo-request badge polls on every page; everything else must be card statistics only.
+    assert.deepEqual(calls.filter(c => c.name.startsWith("tcg_admin_") && c.name !== "tcg_admin_demo_diamonds").map(c => c.name),
+      ["tcg_admin_session", "tcg_admin_card_stats"], "Deep link loads only card statistics");
     assert.equal(await page.getByRole("region", { name: "遊玩統計", exact: true }).count(), 0);
     await select("analytics", "營運總覽");
     await page.getByRole("heading", { name: "每日玩家活動 · 近 28 日" }).waitFor();
