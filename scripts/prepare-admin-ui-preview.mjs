@@ -29,11 +29,12 @@ const previewCommerce = {initialized:true,gold:1250,diamonds:80,equipped_emotes:
  {request_id:"fixture-emote-buy",action:"buy_emote",item_id:"fixture-emote",item_text:"示範台詞",terminal_error:"",created_at:"2026-10-24T00:10:00Z",gold_before:1250,gold_after:1250,diamonds_before:100,diamonds_after:80,price:20,expected_price:20},
  {request_id:"fixture-rejected",action:"buy_pack",item_id:"pack",item_text:"未完成交易",terminal_error:"fixture-error",created_at:"2026-10-24T00:15:00Z",gold_before:1250,gold_after:1250,diamonds_before:80,diamonds_after:80,price:null,expected_price:null}]};
 export class AdminAPI {
- async signIn(_email:string, _password:string) {return {account_id:"fixture-admin",email:"preview@example.invalid",access_level:"operator"} as AdminSession;}
+ async signIn(_email:string, _password:string):Promise<MfaStep> {return {kind:"verify"};}
+ async completeMfa(_code:string) {return {account_id:"fixture-admin",email:"preview@example.invalid",access_level:"operator"} as AdminSession;}
  async signOut() {}
  onSessionExpired(_listener:()=>void) {return ()=>{};}
  async sendSetupCode(_email:string) {throw new Error("合成預覽不寄送驗證碼");}
- async verifySetupCode(_email:string, _code:string): Promise<AdminSession> {throw new Error("合成預覽不驗證真實帳號");}
+ async verifySetupCode(_email:string, _code:string): Promise<MfaStep> {throw new Error("合成預覽不驗證真實帳號");}
  async updatePassword(_credential:string) {throw new Error("合成預覽不變更密碼");}
  async change(_change:Change) {throw new Error("合成預覽禁止寫入");}
  async rpc<T>(name:string, params:Record<string,unknown>={}):Promise<T> {

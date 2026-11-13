@@ -10,7 +10,7 @@ const originalNow = Date.now;
 const calls = [];
 const replies = [];
 globalThis.fetch = async (url, options) => {
-  calls.push({ url, ...options, body: JSON.parse(options.body) });
+  calls.push({ url, ...options, body: options.body === undefined ? undefined : JSON.parse(options.body) });
   const next = await replies.shift();
   if (next instanceof Error) throw next;
   assert.ok(next, "No unexpected HTTP request");
@@ -18,6 +18,27 @@ globalThis.fetch = async (url, options) => {
 };
 let checks = 0;
 const check = (value, label) => { assert.ok(value, label); checks++; console.log("PASS", label); };
+// Every admin login: password or email code -> database admin check -> authenticator lookup,
+// then the authenticator code -> challenge -> verify (aal2 tokens) -> database admin check again.
+const FACTOR = "00000000-0000-4000-8000-0000000000f1";
+const CHALLENGE = "00000000-0000-4000-8000-0000000000c1";
+const adminSession = (level = "operator") => ({ body: { account_id: "test-admin", email: "owner@example.test", access_level: level } });
+const tokenReply = token => ({ body: { access_token: token, refresh_token: `${token}-refresh`, expires_in: 3600 } });
+const firstFactor = (token, level) => [tokenReply(token), adminSession(level),
+  { body: { factors: [{ id: FACTOR, factor_type: "totp", status: "verified" }] } }];
+const secondFactor = (token, level) => [{ body: { id: CHALLENGE } }, tokenReply(`${token}-aal2`), adminSession(level)];
+const signInFully = async (client, token, level = "operator") => {
+  replies.push(...firstFactor(token, level));
+  await client.signIn("owner@example.test", "fixture-password");
+  replies.push(...secondFactor(token, level));
+  return client.completeMfa("123456");
+};
+const setupFully = async (client, token, level = "operator", code = "123456") => {
+  replies.push(...firstFactor(token, level));
+  await client.verifySetupCode("owner@example.test", code);
+  replies.push(...secondFactor(token, level));
+  return client.completeMfa("123456");
+};
 try {
   const api = new AdminAPI();
   await assert.rejects(() => api.signIn("not-an-email", "fixture-password"), (e) => e instanceof AdminError);
@@ -29,14 +50,29 @@ try {
   check(!calls.at(-1).body.data && !calls.at(-1).body.access_level, "Password setup cannot request an administrator role");
   await assert.rejects(() => api.rpc("tcg_admin_players", {}), (e) => e.status === 401);
   checks++;
-  replies.push({ body: { access_token: "fake-access", refresh_token: "fake-refresh", expires_in: 3600 } },
-    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "operator" } });
-  const session = await api.signIn(" Owner@Example.test ", " fixture-password ");
-  check(session.access_level === "operator" && calls.at(-1).url.endsWith("tcg_admin_session"), "Login requires database administrator verification");
-  check(calls.at(-2).url.endsWith("/auth/v1/token?grant_type=password")
-    && calls.at(-2).body.password === " fixture-password " && calls.at(-2).body.email === "owner@example.test"
-    && !Object.hasOwn(calls.at(-2).body, "token"), "Normal login sends the exact password through the password grant, never an OTP");
-  check(calls.at(-1).headers.Authorization === "Bearer fake-access", "RPC uses the signed-in user's JWT");
+  replies.push(...firstFactor("fake-access"));
+  const step = await api.signIn(" Owner@Example.test ", " fixture-password ");
+  check(step.kind === "verify" && calls.at(-2).url.endsWith("tcg_admin_session") && calls.at(-1).url.endsWith("/auth/v1/user")
+    && calls.at(-1).method === "GET" && calls.at(-1).body === undefined,
+    "Login checks database administrator membership first, then looks up the authenticator");
+  check(calls.at(-3).url.endsWith("/auth/v1/token?grant_type=password")
+    && calls.at(-3).body.password === " fixture-password " && calls.at(-3).body.email === "owner@example.test"
+    && !Object.hasOwn(calls.at(-3).body, "token"), "Normal login sends the exact password through the password grant, never an OTP");
+  const beforeCode = calls.length;
+  await assert.rejects(() => api.rpc("tcg_admin_players", {}), (e) => e.status === 401);
+  await assert.rejects(() => api.completeMfa("12345"), (e) => e.message.includes("6 位數字"));
+  check(calls.length === beforeCode, "The password alone unlocks no administrator RPC, and malformed codes never reach Auth");
+  replies.push({ body: { id: CHALLENGE } }, { status: 422, body: { error_code: "mfa_verification_failed", msg: "Invalid TOTP code entered" } });
+  await assert.rejects(() => api.completeMfa("000000"), (e) => e.message.includes("驗證碼不正確") && e.status === 422);
+  check(!calls.some(c => c.url.includes("/logout")), "A wrong authenticator code keeps the password step for the next code");
+  replies.push(...secondFactor("fake-access"));
+  const session = await api.completeMfa(" 123 456 ");
+  check(session.access_level === "operator" && calls.at(-3).url.endsWith(`/auth/v1/factors/${FACTOR}/challenge`)
+    && calls.at(-2).url.endsWith(`/auth/v1/factors/${FACTOR}/verify`) && calls.at(-2).body.code === "123456"
+    && calls.at(-2).body.challenge_id === CHALLENGE, "The authenticator code is checked against a fresh challenge, spaces removed");
+  check(calls.at(-1).url.endsWith("tcg_admin_session") && calls.at(-1).headers.Authorization === "Bearer fake-access-aal2",
+    "Login requires database administrator verification with the verified (aal2) session");
+  check(calls.at(-1).headers.Authorization === "Bearer fake-access-aal2", "RPC uses the signed-in user's JWT");
   check(calls.every((c) => c.headers.apikey.startsWith("sb_publishable_")), "No service-role credential in browser requests");
   const change = { p_request: "10000000-0000-4000-8000-000000000001", p_account: "test-player", p_action: "grant_tickets", p_payload: { amount: 2 }, p_reason: "測試補發" };
   replies.push(new Error("lost reply"));
@@ -86,6 +122,31 @@ try {
   await assert.rejects(() => outsider.signIn("player@example.test", "fixture-password"), (e) => e.message.includes("管理權限"));
   await assert.rejects(() => outsider.rpc("tcg_admin_players", {}), (e) => e.status === 401);
   check(calls.at(-1).url.includes("/logout"), "An ordinary authenticated player is rejected and its browser session is cleared");
+  check(!calls.some(c => c.url.includes("/auth/v1/factors") && c.headers.Authorization === "Bearer outsider"),
+    "A non-administrator is never offered or enrolled in a second factor");
+  const enrolling = new AdminAPI();
+  const STALE = "00000000-0000-4000-8000-0000000000e1";
+  const FRESH = "00000000-0000-4000-8000-0000000000e2";
+  replies.push(tokenReply("enroll-access"), { status: 400, body: { code: "P0001", message: "administrator mfa required" } },
+    { body: { factors: [{ id: STALE, factor_type: "totp", status: "unverified" }] } }, { body: { id: STALE } },
+    { body: { id: FRESH, type: "totp", totp: { qr_code: '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
+      secret: "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP", uri: "otpauth://totp/fixture" } } });
+  const enrollStep = await enrolling.signIn("owner@example.test", "fixture-password");
+  check(enrollStep.kind === "enroll" && enrollStep.secret === "JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP"
+    && enrollStep.qr.startsWith("data:image/svg+xml") && !enrollStep.qr.includes("<"),
+    "A first login after the MFA migration enrolls an authenticator; the QR code is an encoded image URI, never markup");
+  check(calls.at(-2).method === "DELETE" && calls.at(-2).url.endsWith(`/auth/v1/factors/${STALE}`)
+    && calls.at(-1).url.endsWith("/auth/v1/factors") && calls.at(-1).body.factor_type === "totp" && calls.at(-1).body.issuer === "紙鴉牌後台",
+    "An abandoned, never-verified enrollment is replaced before a new QR code is issued");
+  replies.push({ body: { id: CHALLENGE } }, tokenReply("enroll-access-aal2"), adminSession());
+  await enrolling.completeMfa("654321");
+  check(calls.at(-3).url.endsWith(`/auth/v1/factors/${FRESH}/challenge`), "The first code proves the newly enrolled authenticator");
+  replies.push({ body: {} }); await enrolling.signOut();
+  const switchedOff = new AdminAPI();
+  replies.push(tokenReply("off-access"), adminSession(), { body: { factors: [] } },
+    { status: 422, body: { error_code: "mfa_totp_enroll_not_enabled", msg: "MFA enroll is disabled for TOTP" } }, { body: {} });
+  await assert.rejects(() => switchedOff.signIn("owner@example.test", "fixture-password"), (e) => e.message.includes("TOTP"));
+  check(calls.at(-1).url.includes("/logout"), "If the project has TOTP switched off, login says how to fix it and clears the session");
   const setup = new AdminAPI();
   const beforeInvalidCode = calls.length;
   for (const invalid of ["not-an-email-code", "12345", "12345678901", "12345a"]) {
@@ -95,11 +156,15 @@ try {
   check(calls.length === beforeInvalidCode, "Malformed setup verification codes do not reach Auth");
   await assert.rejects(() => setup.updatePassword("fixture-new-password"), (e) => e.status === 401);
   check(calls.length === beforeInvalidCode, "A new password cannot be set before verified administrator recovery");
-  replies.push({ body: { access_token: "longer-code-access", refresh_token: "longer-code-refresh", expires_in: 3600 } },
-    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "viewer" } });
+  replies.push(...firstFactor("longer-code-access", "viewer"));
   await setup.verifySetupCode("owner@example.test", " 12345678 ");
-  check(calls.at(-2).body.token === "12345678", "Configured longer numeric OTPs remain valid and surrounding whitespace is trimmed");
-  check(calls.at(-1).url.endsWith("tcg_admin_session"), "Setup OTP still requires database administrator approval");
+  check(calls.at(-3).body.token === "12345678", "Configured longer numeric OTPs remain valid and surrounding whitespace is trimmed");
+  check(calls.at(-2).url.endsWith("tcg_admin_session"), "Setup OTP still requires database administrator approval");
+  const beforeSetupCode = calls.length;
+  await assert.rejects(() => setup.updatePassword("fixture-new-password"), (e) => e.status === 401);
+  check(calls.length === beforeSetupCode, "The email code alone cannot change the password before the authenticator code");
+  replies.push(...secondFactor("longer-code-access", "viewer"));
+  await setup.completeMfa("123456");
   const beforeWeakPassword = calls.length;
   await assert.rejects(() => setup.updatePassword("short"), (e) => e.message.includes("12"));
   await assert.rejects(() => setup.updatePassword("長".repeat(25)), (e) => e.message.includes("過長"));
@@ -113,15 +178,13 @@ try {
   await setup.updatePassword(" fixture-new-password ");
   check(calls.at(-2).url.endsWith("/auth/v1/user") && calls.at(-2).method === "PUT"
     && calls.at(-2).body.password === " fixture-new-password "
-    && calls.at(-2).headers.Authorization === "Bearer longer-code-access",
+    && calls.at(-2).headers.Authorization === "Bearer longer-code-access-aal2",
     "Password setup updates the verified user's password through authenticated PUT without trimming it");
   check(calls.at(-3).url.endsWith("tcg_admin_session") && calls.at(-1).url.endsWith("/auth/v1/logout?scope=local"),
     "Password setup rechecks the backend role, then signs out instead of silently preserving the OTP session");
   await assert.rejects(() => setup.rpc("tcg_admin_players", {}), (e) => e.status === 401);
   const expiredSetup = new AdminAPI();
-  replies.push({ body: { access_token: "setup-expired-access", refresh_token: "setup-expired-refresh", expires_in: 3600 } },
-    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "operator" } });
-  await expiredSetup.verifySetupCode("owner@example.test", "123456");
+  await setupFully(expiredSetup, "setup-expired-access");
   const setupTime = Date.now(); Date.now = () => setupTime + 601000;
   const beforeExpiredSetup = calls.length;
   await assert.rejects(() => expiredSetup.updatePassword("fixture-new-password"), (e) => e.status === 401);
@@ -129,9 +192,7 @@ try {
   Date.now = originalNow;
   replies.push({ body: {} }); await expiredSetup.signOut();
   const revokedSetup = new AdminAPI();
-  replies.push({ body: { access_token: "revoked-setup-access", refresh_token: "revoked-setup-refresh", expires_in: 3600 } },
-    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "operator" } });
-  await revokedSetup.verifySetupCode("owner@example.test", "123456");
+  await setupFully(revokedSetup, "revoked-setup-access");
   replies.push({ status: 403, body: { code: "42501", message: "administrator required" } });
   const beforeRevokedChange = calls.length;
   await assert.rejects(() => revokedSetup.updatePassword("fixture-new-password"), (e) => e.message.includes("管理權限"));
@@ -158,9 +219,10 @@ try {
   replies.push(new Promise((resolve) => { resolveOld = resolve; }));
   const oldLogin = lateLogin.signIn("owner@example.test", "fixture-old-password");
   await lateLogin.signOut();
-  replies.push({ body: { access_token: "new-login-access", refresh_token: "new-login-refresh", expires_in: 3600 } },
-    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "operator" } });
+  replies.push(...firstFactor("new-login-access"));
   await lateLogin.signIn("owner@example.test", "fixture-current-password");
+  replies.push(...secondFactor("new-login-access"));
+  await lateLogin.completeMfa("123456");
   replies.push({ body: {} });
   resolveOld({ body: { access_token: "cancelled-login-access", refresh_token: "cancelled-login-refresh", expires_in: 3600 } });
   await assert.rejects(() => oldLogin, (e) => e.message.includes("取消登入"));
@@ -169,7 +231,7 @@ try {
     "A cancelled login revokes only its late-returned session");
   replies.push({ body: { players: [] } });
   await lateLogin.rpc("tcg_admin_players", {});
-  check(calls.at(-1).headers.Authorization === "Bearer new-login-access",
+  check(calls.at(-1).headers.Authorization === "Bearer new-login-access-aal2",
     "A stale password response cannot replace or clear a newer authenticated login");
   replies.push({ body: {} }); await lateLogin.signOut();
   const cancelledSetup = new AdminAPI();
@@ -184,9 +246,7 @@ try {
   await assert.rejects(() => cancelledSetup.updatePassword("fixture-new-password"), (e) => e.status === 401);
   check(calls.length === beforeCancelledSetup, "Cancelled OTP recovery cannot later revive password-change permission");
   const replacedSetup = new AdminAPI();
-  replies.push({ body: { access_token: "old-setup-access", refresh_token: "old-setup-refresh", expires_in: 3600 } },
-    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "operator" } });
-  await replacedSetup.verifySetupCode("owner@example.test", "123456");
+  await setupFully(replacedSetup, "old-setup-access");
   const originalRpc = replacedSetup.rpc.bind(replacedSetup);
   let notifyRoleChecked;
   let releaseRoleCheck;
@@ -208,9 +268,7 @@ try {
   const cancelledPasswordChange = replacedSetup.updatePassword("fixture-stale-password");
   await roleChecked;
   replies.push({ body: {} }); await replacedSetup.signOut();
-  replies.push({ body: { access_token: "replacement-setup-access", refresh_token: "replacement-setup-refresh", expires_in: 3600 } },
-    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "operator" } });
-  await replacedSetup.verifySetupCode("owner@example.test", "12345678");
+  await setupFully(replacedSetup, "replacement-setup-access", "operator", "12345678");
   const beforeRelease = calls.length;
   releaseRoleCheck();
   await assert.rejects(() => cancelledPasswordChange);
@@ -220,21 +278,17 @@ try {
     { body: { id: "test-admin" } }, { body: {} });
   await replacedSetup.updatePassword("fixture-current-password");
   check(calls.at(-2).method === "PUT" && calls.at(-2).body.password === "fixture-current-password"
-    && calls.at(-2).headers.Authorization === "Bearer replacement-setup-access",
+    && calls.at(-2).headers.Authorization === "Bearer replacement-setup-access-aal2",
     "The newly verified setup keeps its own permission and only writes its current password");
   const expiryApi = new AdminAPI();
-  const loginReply = token => [{ body: { access_token: token, refresh_token: "fixture-refresh", expires_in: 3600 } },
-    { body: { account_id: "test-admin", email: "owner@example.test", access_level: "operator" } }];
-  replies.push(...loginReply("old-page-access"));
-  await expiryApi.signIn("owner@example.test", "fixture-password");
+  await signInFully(expiryApi, "old-page-access");
   let expirations = 0;
   const unsubscribe = expiryApi.onSessionExpired(() => { expirations++; });
   let resolveOldPage;
   replies.push(new Promise(resolve => { resolveOldPage = resolve; }));
   const oldPage = expiryApi.rpc("tcg_admin_card_stats", {});
   replies.push({ body: {} }); await expiryApi.signOut();
-  replies.push(...loginReply("current-page-access"));
-  await expiryApi.signIn("owner@example.test", "fixture-password");
+  await signInFully(expiryApi, "current-page-access");
   resolveOldPage({ status: 403, body: { code: "42501", message: "Old page was denied" } });
   await assert.rejects(() => oldPage, error => error.status === 403);
   check(expirations === 0, "An old login's delayed denial cannot expire the replacement session");
@@ -252,8 +306,7 @@ try {
   resolveMutation({ body: {} });
   await assert.rejects(() => interruptedMutation, error => error.uncertain && error.message.includes("取消舊請求"));
   check(true, "An operation completed after session invalidation keeps an uncertain outcome so its journal UUID survives");
-  replies.push(...loginReply("retry-access"));
-  await expiryApi.signIn("owner@example.test", "fixture-password");
+  await signInFully(expiryApi, "retry-access");
   const beforeRefresh = Date.now(); Date.now = () => beforeRefresh + 3600000;
   let resolveRetryRefresh;
   replies.push(new Promise(resolve => { resolveRetryRefresh = resolve; }));
@@ -263,7 +316,7 @@ try {
   await assert.rejects(() => interruptedRetry, error => error.uncertain && error.message.includes("取消舊請求"));
   Date.now = originalNow;
   check(true, "Cancellation during a retry's token refresh also preserves the prior uncertain mutation journal");
-  check(calls.every((c) => c.body.create_user !== true), "No admin flow creates or registers an Auth account");
+  check(calls.every((c) => c.body?.create_user !== true), "No admin flow creates or registers an Auth account");
   check(replies.length === 0, "All scripted HTTP outcomes were consumed");
   console.log(`Admin API: ${checks} checks PASS`);
 } finally { globalThis.fetch = originalFetch; Date.now = originalNow; }
