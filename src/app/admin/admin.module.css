@@ -16,6 +16,11 @@
 .root label { display: flex; flex-direction: column; gap: 7px; color: #aebfbb; }
 .login { margin: 70px auto; max-width: 470px; padding: 32px; border: 1px solid #35484a; border-radius: 12px; background: #172328; }
 .login form { display: grid; gap: 16px; margin: 24px 0; }
+/* Authenticator enrollment: the QR code needs a light quiet zone to scan on the dark panel. */
+.mfaSetup { display: grid; justify-items: center; gap: 10px; margin-top: 20px; }
+.mfaQr { width: 192px; height: 192px; padding: 10px; border-radius: 10px; background: #fff; }
+.mfaSecret { max-width: 100%; padding: 8px 10px; border-radius: 6px; background: #0f181b; color: #e7d9a8;
+  font-size: 14px; letter-spacing: 0.06em; overflow-wrap: anywhere; user-select: all; }
 .badge { display: inline-block; padding: 5px 9px; font-size: 12px; border-radius: 5px; color: #dbc486; background: #39382b; }
 .message { padding: 14px 18px; background: #33382d; border-left: 3px solid #dbc486; border-radius: 4px; overflow-wrap: anywhere; }
 .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 25px 0; }

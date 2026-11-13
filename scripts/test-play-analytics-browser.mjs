@@ -150,6 +150,8 @@ export default function Fixture() {
       }
       else if (name === "tcg_admin_guest_players") result = { page: 0, total: 0, players: [] };
       else if (name === "tcg_admin_player_rates") result = { page: 0, players: [{ id: "fixture-player", email: "fixture@example.invalid", wins: 3, losses: 1, draws: 0, total: 4, win_rate: 75, loss_rate: 25, verified_match_online: false }] };
+      // Matches production before 20261112_growth_analytics.sql: the panels show 「尚未啟用」.
+      else if (name === "tcg_admin_growth") return route.fulfill({ status: 404, json: { code: "PGRST202", message: "Could not find the function public.tcg_admin_growth" } });
       else throw new Error(`Unexpected fixture RPC ${name}`);
       return route.fulfill({ json: result });
     });
@@ -295,6 +297,10 @@ export default function Fixture() {
       calls.push({ name, body });
       let result;
       if (name === "token") result = { access_token: "synthetic-access", refresh_token: "synthetic-refresh", expires_in: 3600 };
+      // Second factor: one already-enrolled authenticator; verifying it returns the aal2 session.
+      else if (name === "user") result = { factors: [{ id: "00000000-0000-4000-8000-0000000000f1", factor_type: "totp", status: "verified" }] };
+      else if (name === "challenge") result = { id: "00000000-0000-4000-8000-0000000000c1" };
+      else if (name === "verify") result = { access_token: "synthetic-access-aal2", refresh_token: "synthetic-refresh-aal2", expires_in: 3600 };
       else if (name === "logout") result = {};
       else if (name === "tcg_admin_session") result = { account_id: "fixture-admin", email: "fixture-admin@example.invalid", access_level: "operator" };
       else if (name === "tcg_admin_card_stats") {
@@ -312,6 +318,9 @@ export default function Fixture() {
       else if (name === "tcg_admin_change") {
         if (uncertainChange) return route.fulfill({ status: 503, json: { message: "Synthetic uncertain operation" } });
         result = {};
+      } else if (name === "tcg_admin_growth" || name === "tcg_admin_demo_diamonds") {
+        // Optional panels before their migrations: the console shows 「尚未啟用」 and keeps working.
+        return route.fulfill({ status: 404, json: { code: "PGRST202", message: `Could not find the function public.${name}` } });
       } else throw new Error(`Unexpected console fixture RPC ${name}`);
       return route.fulfill({ json: result });
     });
@@ -321,6 +330,8 @@ export default function Fixture() {
       await page.getByRole("textbox", { name: "管理者 Email", exact: true }).fill("fixture-admin@example.invalid");
       await page.getByLabel("管理後台密碼", { exact: true }).fill("synthetic-password-only");
       await page.getByRole("button", { name: "登入管理後台", exact: true }).click();
+      await page.getByLabel("驗證 App 的 6 位數字", { exact: true }).fill("123456");
+      await page.getByRole("button", { name: "驗證並進入", exact: true }).click();
       await page.getByRole("button", { name: "登出", exact: true }).waitFor();
     };
     const select = async (id, label) => {
@@ -332,7 +343,12 @@ export default function Fixture() {
     assert.equal(calls.length, 0, "Signed-out console requests no private data");
     await login();
     await page.getByRole("region", { name: "逐卡統計表", exact: true }).waitFor();
-    assert.deepEqual(calls.filter(c => c.name.startsWith("tcg_admin_")).map(c => c.name), ["tcg_admin_session", "tcg_admin_card_stats"], "Deep link loads only card statistics");
+    // The header's demo-request badge polls on every page; everything else must be card statistics only.
+    assert.deepEqual(calls.filter(c => c.name.startsWith("tcg_admin_") && c.name !== "tcg_admin_demo_diamonds").map(c => c.name),
+      ["tcg_admin_session", "tcg_admin_session", "tcg_admin_card_stats"],
+      "Deep link checks administrator membership before and after the authenticator code, then loads only card statistics");
+    assert.ok(calls.findIndex(c => c.name === "verify") < calls.findLastIndex(c => c.name === "tcg_admin_session"),
+      "The console opens only after the authenticator code is verified");
     assert.equal(await page.getByRole("region", { name: "遊玩統計", exact: true }).count(), 0);
     await select("analytics", "營運總覽");
     await page.getByRole("heading", { name: "每日玩家活動 · 近 28 日" }).waitFor();

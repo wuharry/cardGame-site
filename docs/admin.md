@@ -36,6 +36,22 @@ Next production build 可執行 `node node_modules/next/dist/bin/next build`；�
 
 API 依據：[Supabase 密碼登入](https://supabase.com/docs/guides/auth/passwords)、[已登入使用者修改密碼](https://supabase.com/docs/reference/javascript/auth-updateuser)。
 
+## 後台雙重驗證（2026-11-13）
+
+**密碼或 Email 驗證碼通過之後，還要輸入驗證 App 的 6 位數字才進得了後台；只有密碼什麼都打不開。** 第一次登入會顯示 QR 碼，用 Google Authenticator、Microsoft Authenticator 或 1Password 等 App 掃描，之後每次登入輸入 App 上「紙鴉牌後台」目前的數字。
+
+- 流程：密碼／Email 驗證碼 → `tcg_admin_session` 確認是管理者 → 查詢、或第一次建立驗證 App（TOTP）→ challenge → verify 取得 aal2 session → 再查一次 `tcg_admin_session`。資料庫回非管理者時直接停下，不會替一般玩家建立第二因素。
+- 驗證碼通過前，`rpc()` 不送出任何管理 RPC。驗證碼輸錯可以直接再輸入下一組，不必重打密碼；其他錯誤會登出。
+- 沒完成的舊註冊（未驗證的 factor）會先刪掉再發新的 QR 碼。QR 碼只以 `<img>` data URI 顯示（`encodeURIComponent`），不把伺服器回的 SVG 當 HTML 插入。
+- 「首次設定／忘記密碼」也一樣：Email 驗證碼之後先過驗證 App，才能設定新密碼。
+- 資料庫端由 game repo 的 `deploy/account/20261113_admin_mfa.sql` 強制：每個後台 RPC 都要求 aal2。**順序：先部署這版網站、管理者登入並綁定驗證 App，最後才套用那份 SQL。** 先套 SQL 的話，舊網站會進不了後台。
+- 手機遺失：專案擁有者在 Supabase Dashboard → Authentication → Users 刪除該帳號的 MFA factor（或在 SQL Editor 執行 `delete from auth.mfa_factors where user_id = '<帳號 UUID>'`），下次登入重新綁定。
+- 前提：Supabase 專案要開啟 TOTP（Dashboard → Authentication → Multi-Factor）。沒開時登入會直接說明要去哪裡開，並清除 session。
+
+本機驗證：`node scripts/test-admin-api.mjs` 53 項通過（新增：只有密碼打不開 RPC、錯碼可重試、第一次綁定與 QR 只當圖片、非管理者不會被建立第二因素、TOTP 未開啟的提示）；`test-play-analytics-browser.mjs` 以正式 build 與合成後端走完含驗證碼的登入。正式環境實際掃碼綁定為 **NOT RUN**（密碼由管理者本人輸入，不交給代理）。
+
+API 依據：[Supabase MFA（TOTP）](https://supabase.com/docs/guides/auth/auth-mfa/totp)。
+
 ## 玩家禮物信箱（2026-10-15）
 
 - 在玩家資料的管理操作選「寄送禮物信件」，填標題、內容、卡包券數量及原因，再確認送出。

@@ -2,7 +2,8 @@
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import Link from "next/link";
-import { AdminAPI, AdminError, type AdminSession, type Change, type PlayerDetail, type PlayerList, type PlayerMailList } from "./admin-api";
+import Image from "next/image";
+import { AdminAPI, AdminError, type AdminSession, type Change, type MfaStep, type PlayerDetail, type PlayerList, type PlayerMailList } from "./admin-api";
 import cards from "./card-names.json";
 import styles from "./admin.module.css";
 import PlayAnalytics from "./play-analytics";
@@ -32,6 +33,9 @@ export default function AdminConsole() {
   const [setup, setSetup] = useState(false);
   const [setupSession, setSetupSession] = useState<AdminSession | null>(null);
   const [code, setCode] = useState("");
+  const [mfa, setMfa] = useState<MfaStep | null>(null);
+  const [mfaCode, setMfaCode] = useState("");
+  const requestedPage = useRef<AdminPage>("analytics");
   const [sent, setSent] = useState(false);
   const [resendAt, setResendAt] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -56,7 +60,7 @@ export default function AdminConsole() {
   const clearPrivateState = () => {
     setDemoCount(null); setDemoPending(false);
     setSession(null); setSetupSession(null); setSetup(false); setSent(false);
-    setPassword(""); setConfirmPassword(""); setCode("");
+    setPassword(""); setConfirmPassword(""); setCode(""); setMfa(null); setMfaCode("");
     setList(null); setDetail(null); setMail(null); setMailOffset(0); setSearch("");
     setPending(null); setAttempted(false); setReason(""); setMailTitle(""); setMailBody("");
     setTab("collection"); setAction("grant_tickets"); setAmount(1); setCardId(Object.keys(cards)[0]);
@@ -130,13 +134,39 @@ export default function AdminConsole() {
     };
   }, []);
 
+  const mfaPrompt = (step: MfaStep) => step.kind === "enroll"
+    ? "第一次登入：請用驗證 App 掃描 QR 碼，再輸入 App 上的 6 位數字。"
+    : "請輸入驗證 App 上目前顯示的 6 位數字。";
+
   const login = async () => {
-    const requestedPage = pageFromHash(window.location.hash);
+    requestedPage.current = pageFromHash(window.location.hash);
     const credential = password;
     setPassword(""); setConfirmPassword("");
-    const s = await api.signIn(email.trim(), credential);
+    const step = await api.signIn(email.trim(), credential);
+    setMfa(step); setMfaCode(""); setCode("");
+    setMessage(mfaPrompt(step));
+  };
+
+  // The password alone opens nothing: the console starts only after the authenticator code.
+  const confirmMfa = async () => {
+    const totp = mfaCode;
+    setMfaCode("");
+    const s = await api.completeMfa(totp);
+    setMfa(null); setMessage("");
+    if (setup) {
+      setSetupSession(s);
+      setMessage("管理者身分已驗證，請設定管理後台專用密碼。");
+      return;
+    }
+    await finishLogin(s);
+  };
+
+  const cancelMfa = async () => { clearPrivateState(); setMessage(""); await api.signOut(); };
+
+  const finishLogin = async (s: AdminSession) => {
+    const page = requestedPage.current;
     setSession(s); setCode("");
-    writePage(requestedPage, true);
+    writePage(page, true);
     const saved = sessionStorage.getItem(journalKey(s.account_id));
     if (saved) {
       try {
@@ -151,7 +181,7 @@ export default function AdminConsole() {
         throw new AdminError(error instanceof Error ? `待確認操作無法恢復：${error.message}` : "待確認操作無法恢復。");
       }
     }
-    if (requestedPage === "players" || saved) await loadList();
+    if (page === "players" || saved) await loadList();
   };
 
   const cancelSetup = async () => {
@@ -166,9 +196,9 @@ export default function AdminConsole() {
       await api.sendSetupCode(email.trim()); setSent(true); setResendAt(Date.now() + 60000);
       setMessage("驗證碼已寄出，請查看管理者信箱。");
     } else if (!setupSession) {
-      const verified = await api.verifySetupCode(email.trim(), code.trim());
-      setSetupSession(verified); setCode("");
-      setMessage("管理者身分已驗證，請設定管理後台專用密碼。");
+      const step = await api.verifySetupCode(email.trim(), code.trim());
+      setMfa(step); setMfaCode(""); setCode("");
+      setMessage(mfaPrompt(step));
     } else {
       const credential = password;
       const confirmed = confirmPassword;
@@ -234,7 +264,24 @@ export default function AdminConsole() {
         })}>登出</button></>}</div>
     </header>
     {message && <p role="status" className={styles.message}>{message}</p>}
-    {!session ? <section className={styles.login}>
+    {!session && mfa ? <section className={styles.login}>
+      <h2>雙重驗證</h2>
+      <p id="admin-mfa-help" className={styles.note}>{mfa.kind === "enroll"
+        ? "用 Google Authenticator、Microsoft Authenticator 或 1Password 等驗證 App 掃描。之後每次登入都要輸入 App 上的 6 位數字。"
+        : "打開手機上的驗證 App，輸入「紙鴉牌後台」目前顯示的 6 位數字。"}</p>
+      {mfa.kind === "enroll" && <div className={styles.mfaSetup}>
+        <Image src={mfa.qr} alt="驗證 App 設定用 QR 碼" width={192} height={192} unoptimized className={styles.mfaQr} />
+        <p className={styles.note}>無法掃描時，在 App 裡手動輸入這組金鑰：</p>
+        <code className={styles.mfaSecret}>{mfa.secret}</code>
+      </div>}
+      <form onSubmit={(event) => { event.preventDefault(); void work(confirmMfa); }}>
+        <label>驗證 App 的 6 位數字<input type="text" name="totp" autoComplete="one-time-code" inputMode="numeric"
+          pattern="[0-9 ]{6,7}" minLength={6} maxLength={7} aria-describedby="admin-mfa-help" required value={mfaCode}
+          disabled={busy} onChange={(event) => setMfaCode(event.target.value)} /></label>
+        <button className={styles.primary} disabled={busy}>{busy ? "處理中…" : "驗證並進入"}</button>
+        <button type="button" disabled={busy} onClick={() => void work(cancelMfa)}>取消，回到登入</button>
+      </form>
+    </section> : !session ? <section className={styles.login}>
       <h2>{setup ? "設定管理者密碼" : "管理者登入"}</h2>
       <p id="admin-login-help" className={styles.note}>{setup
         ? "驗證已授權信箱後設定密碼，至少 12 個字元。"
