@@ -3,7 +3,7 @@
  * 公開附件的檔名、大小與檢查碼核對後才部署；各平台驗證範圍另載於版本說明。
  * RELEASE_BASE 可指向公開 GitHub Release 的 /releases/download/<tag>。
  */
-export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26";
+export const RELEASE_BASE: string = "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27";
 
 /** suspended：附件仍在，但已知嚴重問題，官網與版本 API 暫停提供下載。 */
 export type BuildStatus = "available" | "suspended" | "preparing" | "planned";
@@ -81,23 +81,23 @@ export const BUILDS: Build[] = [
     "platform": "Windows",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Windows-20261113-R26.zip",
-    "version": "2026.11.13-R26",
-    "size": "83.2 MiB",
-    "bytes": 87284567,
-    "updated": "2026-11-13",
-    "sha256": "f3a5b4533866865bf910c21fa74f3c68dcaed5b0a94455f0f26f1ed97abaf676",
-    "build": 2026111301,
-    "minimumBuild": 2026111301,
+    "file": "TwilightCodex-Windows-20261115-R27.zip",
+    "version": "2026.11.15-R27",
+    "size": "83.3 MiB",
+    "bytes": 87372481,
+    "updated": "2026-11-15",
+    "sha256": "2f9b132669c4b55bf6fd86115335b5e4ef2a9ff639e01d226fd7d6d57bff676a",
+    "build": 2026111501,
+    "minimumBuild": 2026111501,
     "protocol": 34,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Windows-20261113-R26.pck",
-      "bytes": 459255148,
-      "sha256": "6f0fd25c5c595b406adaff7c6aea7eb1126278e91a117324473f5571d1c2019e",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26/TwilightCodex-Content-Windows-20261113-R26.pck"
+      "filename": "TwilightCodex-Content-Windows-20261115-R27.pck",
+      "bytes": 466193240,
+      "sha256": "3e93150b5a9d5d3e717d0e7e8a328beeae9172e1ed064b34626c304335d8fe11",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27/TwilightCodex-Content-Windows-20261115-R27.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27",
     "requirement": "Windows 10／11 · x86_64 · 滑鼠與鍵盤"
   },
   {
@@ -106,23 +106,23 @@ export const BUILDS: Build[] = [
     "platform": "macOS",
     "en": "ZIP · Universal",
     "status": "available",
-    "file": "TwilightCodex-macOS-20261113-R26.zip",
-    "version": "2026.11.13-R26",
-    "size": "104.1 MiB",
-    "bytes": 109187652,
-    "updated": "2026-11-13",
-    "sha256": "2ad1562c947b37d3607f693c307260b02966397303f31b355a9cd5ce99a37436",
-    "build": 2026111301,
-    "minimumBuild": 2026111301,
+    "file": "TwilightCodex-macOS-20261115-R27.zip",
+    "version": "2026.11.15-R27",
+    "size": "104.2 MiB",
+    "bytes": 109273426,
+    "updated": "2026-11-15",
+    "sha256": "b47d464903db9239d186d9a8c78faa5b5133151e9e5952ad44224aefbc35f2d8",
+    "build": 2026111501,
+    "minimumBuild": 2026111501,
     "protocol": 34,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-macOS-20261113-R26.pck",
-      "bytes": 459255148,
-      "sha256": "e4c24c33ff1e91ad5dd65cc6ac2794d551ead4dc7e42cae221095864c6913d35",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26/TwilightCodex-Content-macOS-20261113-R26.pck"
+      "filename": "TwilightCodex-Content-macOS-20261115-R27.pck",
+      "bytes": 466193240,
+      "sha256": "091ff987a594fb1ed0ee892b4d3ec9c3ed61d303a1d8d562154d2ac1cfedb002",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27/TwilightCodex-Content-macOS-20261115-R27.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27",
     "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
     "downloadNotice": {
       "zh": "本版尚未完成 macOS 實機驗證。",
@@ -135,23 +135,23 @@ export const BUILDS: Build[] = [
     "platform": "Linux",
     "en": "ZIP · x86_64",
     "status": "available",
-    "file": "TwilightCodex-Linux-20261113-R26.zip",
-    "version": "2026.11.13-R26",
-    "size": "85.6 MiB",
-    "bytes": 89760771,
-    "updated": "2026-11-13",
-    "sha256": "b5a61aa70ace47c3774ef4b7b34e6e2ce5671cf366d455770c1f1cd84437a9af",
-    "build": 2026111301,
-    "minimumBuild": 2026111301,
+    "file": "TwilightCodex-Linux-20261115-R27.zip",
+    "version": "2026.11.15-R27",
+    "size": "85.7 MiB",
+    "bytes": 89849440,
+    "updated": "2026-11-15",
+    "sha256": "ceec57c34234a6446c7a24925c5055e1b4049c402d5c0cc97e18d7c2cb27cb08",
+    "build": 2026111501,
+    "minimumBuild": 2026111501,
     "protocol": 34,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Linux-20261113-R26.pck",
-      "bytes": 459255148,
-      "sha256": "b176424b4f7274de662ee55b50b8a0e367924883721533be025901151812e808",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26/TwilightCodex-Content-Linux-20261113-R26.pck"
+      "filename": "TwilightCodex-Content-Linux-20261115-R27.pck",
+      "bytes": 466193240,
+      "sha256": "bfeda4785c60a3bcb7ed1df4e83eeaeab68c5c2a51084bcfc7aad9281ad26e86",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27/TwilightCodex-Content-Linux-20261115-R27.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27",
     "requirement": "Linux x86_64 · glibc 2.39+（Ubuntu 24.04+）· Vulkan 或 OpenGL 3.3",
     "downloadNotice": {
       "zh": "Linux 實體顯示卡、操作與完整對局仍待驗。",
@@ -164,23 +164,23 @@ export const BUILDS: Build[] = [
     "platform": "Android",
     "en": "APK · arm64",
     "status": "available",
-    "file": "TwilightCodex-Android-20261113-R26.apk",
-    "version": "2026.11.13-R26",
-    "size": "77.7 MiB",
-    "bytes": 81497027,
-    "updated": "2026-11-13",
-    "sha256": "c4bc6e9014443559685841c76db02d204dbbeea4bdc476948e3e0e39142a5dbf",
-    "build": 2026111301,
-    "minimumBuild": 2026111301,
+    "file": "TwilightCodex-Android-20261115-R27.apk",
+    "version": "2026.11.15-R27",
+    "size": "77.8 MiB",
+    "bytes": 81584719,
+    "updated": "2026-11-15",
+    "sha256": "037d7f01d416916e6df9755e74318a68caefa6aeb29fdd73ae5d6639e8a2637d",
+    "build": 2026111501,
+    "minimumBuild": 2026111501,
     "protocol": 34,
     "delivery": "streamed",
     "content": {
-      "filename": "TwilightCodex-Content-Android-20261113-R26.pck",
-      "bytes": 122178652,
-      "sha256": "96a12d0efca9292e25272f720c474e84a39e51ee21d411975931f63b7e89c29e",
-      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26/TwilightCodex-Content-Android-20261113-R26.pck"
+      "filename": "TwilightCodex-Content-Android-20261115-R27.pck",
+      "bytes": 129116680,
+      "sha256": "9431c988dd484bb59077964d0a281a009a44d0e18b07200feb1eb3c64fe94829",
+      "url": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27/TwilightCodex-Content-Android-20261115-R27.pck"
     },
-    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.13-r26",
+    "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.15-r27",
     "requirement": "Android 7.0+ · arm64-v8a · Vulkan 相容裝置",
     "downloadNotice": {
       "zh": "這是新 App，需要另外安裝。確認新版正常後，舊版可以移除。遊客與本機進度不會自動轉移；使用原本的帳號登入，可恢復雲端收藏與錢包。 本版尚未完成 Android 實機驗證；安裝、觸控與持續效能待驗。",
@@ -260,6 +260,16 @@ export interface ReleaseNote {
 
 /** 依目前程式與版本化驗收整理；歷史開發更新不代表另有可下載的執行檔。 */
 export const RELEASE_NOTES: ReleaseNote[] = [
+{
+  "version": "2026.11.15-R27",
+  "date": "2026-11-15",
+  "title": "R27",
+  "changes": [
+    "Windows／macOS／Linux／Android：2026.11.15-R27。",
+    "BUILD／最低線上 BUILD：2026111501；protocol：34；Godot：4.7.2。",
+    "macOS 原生、Android 實機、真人完整對局與持續效能：NOT RUN。"
+  ]
+},
 {
   "version": "2026.11.13-R26",
   "date": "2026-11-12",
