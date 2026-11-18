@@ -2,7 +2,7 @@
 export const GAME_FACTS = {
   nameZh: "紙鴉牌",
   nameEn: "Deckmarch",
-  version: "2026.11.15-R27",
+  version: "2026.11.17-R28",
   engine: "Godot 4.7.2",
   lanes: 4,
   heroHp: 20,
@@ -11,7 +11,7 @@ export const GAME_FACTS = {
   cards: 244,
   tokens: 23,
   aiPresets: 19,
-  protocol: 34,
+  protocol: 36,
 } as const;
 
 export interface LaneUnit {

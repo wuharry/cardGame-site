@@ -57,7 +57,7 @@ check(metrics.currencyFlow(transactions, "diamonds").outgoing === 10, "Currency 
 check(metrics.currencyFlow([tx("legacy", 0, 0)], "diamonds").measured === 0, "Missing diamond amounts do not become zero-flow evidence");
 
 assert.deepEqual(Object.keys(catalog.cards).sort(), Object.keys(names).sort());
-check(catalog.source_revision === "7322cc35a03edf48b857083f2c9e95131426c715" && catalog.source_release === "2026.11.15-R27" && catalog.cards.knight.cost === 4, "Card metadata is pinned to the R27 resource snapshot");
+check(catalog.source_revision === "508a719c66086c4ea574e95a69b853a073c4c1bb" && catalog.source_release === "2026.11.17-R28" && catalog.cards.knight.cost === 4, "Card metadata is pinned to the R28 resource snapshot");
 const expensive = Object.entries(catalog.cards).find(([, card]) => card.cost > 8)[0];
 const curve = cards.manaCurve({ knight: 3, bat: 1, [expensive]: 2, "unreleased-fixture-card": 4 });
 check(curve.known === 6 && curve.unknown === 4 && curve.buckets[8] === 2 && curve.buckets[4] === 3, "Mana curve weights copies and collects 8+ costs without guessing unknown cards");
