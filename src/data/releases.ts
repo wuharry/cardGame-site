@@ -125,8 +125,8 @@ export const BUILDS: Build[] = [
     "releaseBase": "https://github.com/wuharry/twilight-codex-downloads/releases/download/v2026.11.17-r28",
     "requirement": "macOS 13.0+ · Apple Silicon／Intel · 滑鼠與鍵盤",
     "downloadNotice": {
-      "zh": "本版尚未完成 macOS 實機驗證。",
-      "en": "Native macOS testing has not been run for this release."
+      "zh": "macOS：使用者回報僅啟動通過，互動未完整測。",
+      "en": "macOS startup passed according to the user; interaction testing is incomplete."
     }
   },
   {

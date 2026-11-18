@@ -99,9 +99,10 @@ for (const build of downloads) {
   assert.equal(releases.downloadMirrorPageUrl(build), null);
 }
 const macos = downloads.find((build) => build.id === "macos");
-assert.ok(macos.downloadNotice.zh.includes("本版尚未完成 macOS 實機驗證")
-  && macos.downloadNotice.en.includes("Native macOS testing has not been run for this release"),
-"macOS download preserves its native-testing limitation before the download action");
+assert.ok(macos.downloadNotice.zh.includes("僅啟動通過") && macos.downloadNotice.zh.includes("互動未完整測")
+  && macos.downloadNotice.en.includes("startup passed according to the user")
+  && macos.downloadNotice.en.includes("interaction testing is incomplete"),
+"macOS download distinguishes user-reported startup from incomplete interaction testing before download");
 const androidOffer = downloads.find((build) => build.id === "android");
 const android = androidOffer.onlineUpdate ?? androidOffer;
 const linux = downloads.find((build) => build.id === "linux");
