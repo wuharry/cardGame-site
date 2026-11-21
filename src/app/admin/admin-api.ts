@@ -182,14 +182,19 @@ export class AdminAPI {
     if (current !== this.epoch) throw new AdminError("已取消登入，請重新登入。");
     const svg = typeof enrolled?.totp?.qr_code === "string" ? enrolled.totp.qr_code : "";
     const secret = typeof enrolled?.totp?.secret === "string" ? enrolled.totp.secret : "";
+    // Supabase's SVGo renderer prefixes raw SVG with an XML declaration and comment.
+    // Keep the original bytes for the image; only normalize the prefix for validation.
+    const svgRoot = svg.length <= 200000 ? svg.trimStart()
+      .replace(/^<\?xml[^?]*\?>\s*/, "").replace(/^(?:<!--[\s\S]*?-->\s*)+/, "") : "";
+    const svgData = /^data:image\/svg\+xml(?:;charset=utf-8|;utf-8)?(?:;base64)?,/i.test(svg);
     if (typeof enrolled?.id !== "string" || !/^[0-9a-f-]{36}$/.test(enrolled.id)
         || !/^[A-Z2-7]{16,128}=*$/.test(secret) || svg.length > 200000
-        || !(svg.startsWith("<svg") || svg.startsWith("data:image/svg+xml"))) {
+        || !(/^<svg(?:\s|>)/.test(svgRoot) || svgData)) {
       throw new AdminError("驗證 App 設定回覆不完整，請重新登入。");
     }
     this.factorId = enrolled.id;
     // Shown only as an <img> data URI, never injected as markup.
-    const qr = svg.startsWith("data:") ? svg : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    const qr = svgData ? svg : `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
     return { kind: "enroll", qr, secret };
   }
 
