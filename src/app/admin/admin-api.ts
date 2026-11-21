@@ -16,6 +16,10 @@ export type Change = {
 const MFA_REQUIRED = "需要先完成雙重驗證，請重新登入。";
 const MFA_UNAVAILABLE = "登入服務尚未開啟驗證 App（TOTP）雙重驗證，請到 Supabase Dashboard → Authentication → Multi-Factor 開啟後再登入。";
 const TOTP_ISSUER = "紙鴉牌後台";
+// Supabase draws both light and dark QR modules as individual SVG rectangles.
+// A normal QR with this issuer is ~450 KB; allow even a version-40 (177² module)
+// image while retaining a finite bound on the data URI rendered by the browser.
+const MAX_MFA_SVG_LENGTH = 4_000_000;
 
 /** After the password (or email code), the console needs an authenticator code before any admin RPC. */
 export type MfaStep =
@@ -184,11 +188,11 @@ export class AdminAPI {
     const secret = typeof enrolled?.totp?.secret === "string" ? enrolled.totp.secret : "";
     // Supabase's SVGo renderer prefixes raw SVG with an XML declaration and comment.
     // Keep the original bytes for the image; only normalize the prefix for validation.
-    const svgRoot = svg.length <= 200000 ? svg.trimStart()
+    const svgRoot = svg.length <= MAX_MFA_SVG_LENGTH ? svg.trimStart()
       .replace(/^<\?xml[^?]*\?>\s*/, "").replace(/^(?:<!--[\s\S]*?-->\s*)+/, "") : "";
     const svgData = /^data:image\/svg\+xml(?:;charset=utf-8|;utf-8)?(?:;base64)?,/i.test(svg);
     if (typeof enrolled?.id !== "string" || !/^[0-9a-f-]{36}$/.test(enrolled.id)
-        || !/^[A-Z2-7]{16,128}=*$/.test(secret) || svg.length > 200000
+        || !/^[A-Z2-7]{16,128}=*$/.test(secret) || svg.length > MAX_MFA_SVG_LENGTH
         || !(/^<svg(?:\s|>)/.test(svgRoot) || svgData)) {
       throw new AdminError("驗證 App 設定回覆不完整，請重新登入。");
     }

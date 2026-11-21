@@ -1,10 +1,13 @@
 import { strict as assert } from "node:assert";
 import { readFile } from "node:fs/promises";
 import ts from "typescript";
+import { gunzipSync } from "node:zlib";
 
 const source = await readFile(new URL("../src/app/admin/admin-api.ts", import.meta.url), "utf8");
 const js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
 const { AdminAPI, AdminError } = await import(`data:text/javascript;base64,${Buffer.from(js).toString("base64")}`);
+const denseQr = JSON.parse(await readFile(new URL("./fixtures/admin-mfa-dense-qr.json", import.meta.url), "utf8"));
+const denseSvg = gunzipSync(Buffer.from(denseQr.svg_gzip_base64, "base64")).toString("utf8");
 const originalFetch = globalThis.fetch;
 const originalNow = Date.now;
 const calls = [];
@@ -152,8 +155,21 @@ try {
     && decodeURIComponent(xmlStep.qr.slice(xmlStep.qr.indexOf(",") + 1)) === supabaseSvg,
     "Supabase SVGo XML declaration and comment do not block first authenticator enrollment");
   replies.push({ body: {} }); await xmlEnrollment.signOut();
+  for (const recovery of [false, true]) {
+    const denseEnrollment = new AdminAPI();
+    replies.push(tokenReply("dense-enroll-access"), adminSession(), { body: { factors: [] } },
+      { body: { id: FRESH, type: "totp", totp: { qr_code: denseSvg, secret: denseQr.secret } } });
+    const denseStep = recovery
+      ? await denseEnrollment.verifySetupCode("owner@example.test", "123456")
+      : await denseEnrollment.signIn("owner@example.test", "fixture-password");
+    check(denseSvg.length === denseQr.svg_length && denseSvg.length > 200000
+      && denseStep.kind === "enroll" && decodeURIComponent(denseStep.qr.split(",")[1]) === denseSvg,
+      `${recovery ? "Email recovery" : "Password login"} accepts a realistic dense Supabase QR without discarding the authenticated first step`);
+    replies.push({ body: {} }); await denseEnrollment.signOut();
+  }
   for (const invalidQr of ['<?xml version="1.0"?><html>not an SVG</html>',
-    'data:text/html,<svg></svg>', 'data:image/svg+xml-malformed,<svg></svg>']) {
+    'data:text/html,<svg></svg>', 'data:image/svg+xml-malformed,<svg></svg>',
+    `<svg>${" ".repeat(4000000)}</svg>`]) {
     const invalidEnrollment = new AdminAPI();
     replies.push(tokenReply("invalid-qr-access"), adminSession(), { body: { factors: [] } },
       { body: { id: FRESH, type: "totp", totp: { qr_code: invalidQr,

@@ -9,6 +9,7 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { chromium } from "playwright-core";
 import { installAdminNavigationFixture } from "./lib/admin-navigation-fixture.mjs";
+import { testAdminLogin } from "./lib/admin-login-browser.mjs";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const scratch = await mkdtemp(join(tmpdir(), "cardgame-admin-fixture-"));
@@ -449,6 +450,7 @@ export default function Fixture() {
     console.log(`PASS public ${width}: no overflow, menu escape, repeated downloads and keyboard focus`);
   }
   assert.deepEqual(errors, []); assert.deepEqual(outside, []);
+  await testAdminLogin(browser, `http://127.0.0.1:${port}`, output, cardStats);
   console.log(`PASS no browser errors or external backend requests; screenshots: ${output}`);
   }
 } finally {

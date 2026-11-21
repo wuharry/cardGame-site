@@ -38,6 +38,7 @@ export default function AdminConsole() {
   const requestedPage = useRef<AdminPage>("analytics");
   const [sent, setSent] = useState(false);
   const [resendAt, setResendAt] = useState(0);
+  const [resendSeconds, setResendSeconds] = useState(0);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [search, setSearch] = useState("");
@@ -125,6 +126,16 @@ export default function AdminConsole() {
   useEffect(() => api.onSessionExpired(() => expireSession()), [api]);
 
   useEffect(() => {
+    if (!resendAt) return;
+    const timer = window.setInterval(() => {
+      const remaining = Math.max(0, Math.ceil((resendAt - Date.now()) / 1000));
+      setResendSeconds(remaining);
+      if (!remaining) window.clearInterval(timer);
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [resendAt]);
+
+  useEffect(() => {
     const synchronize = () => synchronizePage();
     window.addEventListener("popstate", synchronize);
     window.addEventListener("hashchange", synchronize);
@@ -190,13 +201,20 @@ export default function AdminConsole() {
     await api.signOut();
   };
 
+  const sendSetup = async () => {
+    if (Date.now() < resendAt) return;
+    await api.sendSetupCode(email.trim());
+    setSent(true); setCode(""); setResendAt(Date.now() + 60000); setResendSeconds(60);
+    setMessage("驗證碼已寄出，請查看管理者信箱，輸入最新一封的數字驗證碼。");
+  };
+
   const setupPassword = async () => {
     if (!sent) {
-      if (Date.now() < resendAt) { setMessage("請等一分鐘再寄送驗證碼。"); return; }
-      await api.sendSetupCode(email.trim()); setSent(true); setResendAt(Date.now() + 60000);
-      setMessage("驗證碼已寄出，請查看管理者信箱。");
+      await sendSetup();
     } else if (!setupSession) {
-      const step = await api.verifySetupCode(email.trim(), code.trim());
+      const emailCode = code.trim();
+      setCode(""); // An accepted email code is single-use, even if a later MFA step fails.
+      const step = await api.verifySetupCode(email.trim(), emailCode);
       setMfa(step); setMfaCode(""); setCode("");
       setMessage(mfaPrompt(step));
     } else {
@@ -300,11 +318,16 @@ export default function AdminConsole() {
         {setup && setupSession && <label>確認新密碼<input type="password" name="confirm-password" autoComplete="new-password"
           minLength={12} maxLength={72} required value={confirmPassword} disabled={busy}
           onChange={(event) => setConfirmPassword(event.target.value)} /></label>}
-        <button className={styles.primary} disabled={busy}>{busy ? "處理中…" : !setup ? "登入管理後台"
-          : !sent ? "寄送設定驗證碼" : !setupSession ? "驗證管理者身分" : "儲存新密碼"}</button>
+        <button className={styles.primary} disabled={busy || (setup && !sent && resendSeconds > 0)}>{busy ? "處理中…" : !setup ? "登入管理後台"
+          : !sent ? resendSeconds > 0 ? `寄送設定驗證碼（${resendSeconds} 秒後可寄送）` : "寄送設定驗證碼"
+          : !setupSession ? "驗證管理者身分" : "儲存新密碼"}</button>
         {setup ? <>
-          {sent && !setupSession && <button type="button" disabled={busy} onClick={() => { setSent(false); setCode(""); setMessage(""); }}>
-            修改 Email／重新寄送</button>}
+          {sent && !setupSession && <>
+            <button type="button" disabled={busy || resendSeconds > 0} onClick={() => void work(sendSetup)}>
+              {resendSeconds > 0 ? `重新寄送驗證碼（${resendSeconds} 秒後可寄送）` : "重新寄送驗證碼"}</button>
+            <button type="button" disabled={busy} onClick={() => { setSent(false); setCode(""); setMessage(""); }}>
+              修改 Email</button>
+          </>}
           <button type="button" disabled={busy} onClick={() => void work(cancelSetup)}>返回帳號密碼登入</button>
         </> : <button type="button" disabled={busy} onClick={() => {
           setSetup(true); setPassword(""); setConfirmPassword(""); setCode(""); setMessage("");
