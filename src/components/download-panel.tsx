@@ -44,7 +44,7 @@ export function DownloadPanel() {
           {available.length > 0 && (
             <nav aria-label="可下載的平台" className="mt-5 flex flex-wrap gap-2">
               {available.map((build) => (
-                <a key={build.id} href={`#download-${build.id}`} className="press-button border border-brass-dim px-3 py-2 text-sm text-brass-hi hover:border-brass">
+                <a key={build.id} href={`#download-${build.id}`} className="press-button inline-flex min-h-11 items-center border border-brass-dim px-3 py-2 text-sm text-brass-hi hover:border-brass">
                   選擇 {build.platform}
                 </a>
               ))}

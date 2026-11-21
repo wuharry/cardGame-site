@@ -9,7 +9,7 @@ export function DownloadLink({ children, className, onClick }: {
   className?: string;
   onClick?: () => void;
 }) {
-  return <Link href="/#download" className={className} onClick={onClick} onNavigate={(event) => {
+  return <Link href="/#download" prefetch={false} className={className} onClick={onClick} onNavigate={(event) => {
     const section = document.getElementById("download");
     if (window.location.pathname !== "/" || !section) return;
     event.preventDefault();

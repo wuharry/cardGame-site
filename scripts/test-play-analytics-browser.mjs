@@ -12,7 +12,8 @@ import { installAdminNavigationFixture } from "./lib/admin-navigation-fixture.mj
 import { testAdminLogin } from "./lib/admin-login-browser.mjs";
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const scratch = await mkdtemp(join(tmpdir(), "cardgame-admin-fixture-"));
+// Webpack cannot resolve a junction to Next across Windows drive letters.
+const scratch = await mkdtemp(join(process.platform === "win32" ? dirname(repo) : tmpdir(), "cardgame-admin-fixture-"));
 const output = resolve(process.argv[2] ?? join(repo, "shots/admin-analytics"));
 await mkdir(output, { recursive: true });
 let server, browser;
@@ -117,7 +118,10 @@ export default function Fixture() {
     await new Promise(resolve => { process.once("SIGTERM", resolve); process.once("SIGINT", resolve); });
     process.exitCode = 0;
   } else {
-  browser = await chromium.launch({ executablePath: process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", headless: true });
+  const chromePath = process.env.CHROME_PATH ?? (process.platform === "win32"
+    ? "C:/Program Files/Google/Chrome/Application/chrome.exe"
+    : process.platform === "darwin" ? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" : "/usr/bin/google-chrome");
+  browser = await chromium.launch({ executablePath: chromePath, headless: true });
   let scenario = "normal";
   let delayDashboard = false;
   const requests = [], errors = [], outside = [];
@@ -423,7 +427,7 @@ export default function Fixture() {
     console.log(`PASS ${mobile ? "mobile" : "desktop"} console: sticky navigation, deep links/back, page isolation, request scoping, pending mutation/retry restoration, stale requests, revoked session and re-login`);
     await context.close();
   }
-  for (const width of [390, 1440]) {
+  for (const width of [320, 390, 768, 1440]) {
     const context = await browser.newContext({ viewport: { width, height: 900 } });
     await context.route("**/*", route => new URL(route.request().url()).hostname === "127.0.0.1" ? route.continue() : route.abort());
     const page = await context.newPage(); page.on("pageerror", error => errors.push(error.message));
@@ -431,7 +435,7 @@ export default function Fixture() {
     await page.evaluate(() => document.fonts.ready);
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
     await page.screenshot({ path: join(output, `public-home-${width}.png`) });
-    if (width === 390) {
+    if (width <= 1000) {
       await page.getByRole("button", { name: "開啟導覽選單" }).click();
       await page.keyboard.press("Escape");
       assert.equal(await page.getByRole("button", { name: "開啟導覽選單" }).getAttribute("aria-expanded"), "false");
@@ -443,9 +447,23 @@ export default function Fixture() {
       await page.waitForFunction(() => document.activeElement?.id === "download");
       const bounds = await page.locator("#download").boundingBox();
       const header = await page.locator(".site-header").boundingBox();
-      assert(bounds.y >= header.height - 1 && bounds.y < 200, "Download section clears sticky header on repeated clicks");
+      assert(bounds.y >= header.height - 1 && bounds.y <= header.height + 32, "Download section aligns below sticky header without doubled spacing");
     }
     await page.screenshot({ path: join(output, `public-download-${width}.png`) });
+    if (width <= 700) {
+      for (const control of [page.locator(".menu-toggle"), download, page.getByRole("navigation", { name: "可下載的平台" }).locator("a").first()]) {
+        const box = await control.boundingBox();
+        assert(box.width >= 44 && box.height >= 44, "Primary mobile controls have comfortable touch areas");
+      }
+      await page.goto(`http://127.0.0.1:${port}/#cards`, { waitUntil: "networkidle" });
+      await page.getByRole("button", { name: /伏印/ }).click();
+      await page.locator(".codex-description h3", { hasText: "伏印" }).waitFor();
+      assert.equal(await page.getByRole("button", { name: /伏印/ }).getAttribute("aria-pressed"), "true");
+      const rule = await page.locator(".codex-description > p:not(.overline)").boundingBox();
+      assert(rule.y > 0 && rule.y + rule.height < 900, "Selected card rule stays visible alongside its controls on mobile");
+      await page.waitForTimeout(250); // Capture the completed selection-color transition.
+      await page.screenshot({ path: join(output, `public-cards-${width}.png`) });
+    }
     await context.close();
     console.log(`PASS public ${width}: no overflow, menu escape, repeated downloads and keyboard focus`);
   }

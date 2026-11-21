@@ -8,7 +8,8 @@
   --muted: #aab3b5;
   --line: rgb(211 181 122 / 25%);
 }
-html:has(.marketing-home) { scroll-behavior: auto; }
+/* Anchor targets already include the sticky header; do not add global padding twice. */
+html:has(.marketing-home) { scroll-behavior: auto; scroll-padding-top: 0; }
 .content-width { width: min(1200px, calc(100% - 96px)); margin-inline: auto; }
 .site-header { position: sticky; top: 0; z-index: 50; background: rgb(10 16 21 / 97%); border-bottom: 1px solid var(--line); color: var(--paper); }
 .header-inner { max-width: 1500px; min-height: 84px; padding: 12px 40px; margin: auto; display: flex; align-items: center; gap: 28px; }
@@ -81,7 +82,7 @@ html:has(.marketing-home) { scroll-behavior: auto; }
 .hero-game-preview img { width: 100%; height: auto; aspect-ratio: 16 / 9; }
 .hero-game-preview > span { position: absolute; bottom: 16px; right: 16px; padding: 8px 14px; background: #0a1015ed; color: var(--gold-light); font-size: 11px; border: 1px solid var(--line); }
 .hero-game-preview > span span { margin-left: 14px; }
-.hero-capture-caption { color: #a9b3b5; font: 10px/1.7 var(--font-sans); margin: 12px 0 20px; }
+.hero-capture-caption { color: #a9b3b5; font: 12px/1.7 var(--font-sans); margin: 12px 0 20px; }
 .hero-art-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .hero-art-strip figure { border: 1px solid var(--line); background: #0a1015a8; }
 .hero-art-strip figure > div { position: relative; aspect-ratio: 2 / 1; overflow: hidden; }
@@ -132,7 +133,7 @@ html:has(.marketing-home) { scroll-behavior: auto; }
 .battle-image { position: relative; border: 1px solid var(--line); padding: 7px; background: #0b1117; }
 .battle-image::before { content: ""; position: absolute; inset: -10px 20px; border: 1px solid rgb(211 181 122 / 14%); pointer-events: none; }
 .battle-image img { width: 100%; height: auto; }
-.battle-image figcaption { display: flex; align-items: center; gap: 2px; color: var(--gold); font: 9px/1.6 var(--font-sans); letter-spacing: .1em; padding: 13px 10px 8px; }
+.battle-image figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--gold); font: 12px/1.6 var(--font-sans); letter-spacing: .04em; padding: 13px 10px 8px; }
 .battle-image figcaption > span:last-child { margin-left: auto; color: #94a3a6; letter-spacing: 0; }
 .battle-copy { position: relative; }
 .chapter-number { font: 100px/1 var(--font-display); color: rgb(211 181 122 / 7%); position: absolute; top: -30px; right: 0; pointer-events: none; }
@@ -295,7 +296,7 @@ html:has(.marketing-home) { scroll-behavior: auto; }
   .hero-showcase-heading > span:last-child { font-size: 10px; }
   .hero-art-strip { gap: 8px; }
   .hero-art-strip figcaption { padding: 7px 3px; font-size: 10px; }
-  .hero-capture-caption { font-size: 9px; margin-bottom: 14px; }
+  .hero-capture-caption { margin-bottom: 14px; }
   .arena-selectors { gap: 8px; margin-bottom: 16px; }
   .arena-selectors button { padding: 3px; }
   .arena-thumbnail { aspect-ratio: 16 / 10; }
@@ -312,8 +313,8 @@ html:has(.marketing-home) { scroll-behavior: auto; }
   .site-brand { font-size: 19px; gap: 8px; }
   .site-brand small { font-size: 7px; }
   .brand-mark { width: 26px; height: 26px; }
-  .header-download { padding: 9px 12px; font-size: 12px; min-height: 42px; gap: 8px; }
-  .menu-toggle { width: 40px; height: 42px; font-size: 19px; }
+  .header-download { padding: 9px 12px; font-size: 12px; min-height: 44px; gap: 8px; }
+  .menu-toggle { width: 44px; height: 44px; flex-shrink: 0; font-size: 19px; }
   .hero-inner { display: flex; flex-direction: column; width: calc(100% - 40px); padding-top: 38px; padding-bottom: 0; gap: 8px; }
   .hero-copy { text-align: center; width: 100%; }
   .hero-copy .overline { font-size: 10px; }
@@ -362,13 +363,13 @@ html:has(.marketing-home) { scroll-behavior: auto; }
   .card-selectors small { font-size: 9px; }
   .card-display { grid-template-columns: 1fr; }
   .codex-art { min-height: 0; aspect-ratio: 720 / 507; }
-  .codex-description { padding: 28px; }
+  .codex-description { grid-row: 1; padding: 24px; }
   .codex-description h3 { font-size: 39px; margin: 8px 0 10px; }
   .codex-description > p:not(.overline) { font-size: 14px; }
   .codex-description dl { margin-block: 20px 10px; padding-top: 17px; }
   .arena-gallery figcaption > div { display: block; }
   .arena-gallery figcaption span { display: block; margin-top: 8px; font-size: 12px; }
-  .arena-gallery figcaption small { font-size: 10px; }
+  .arena-gallery figcaption small { font-size: 12px; }
   .modes-grid { grid-template-columns: 1fr; }
   .modes-grid article, .modes-grid article:first-child, .modes-grid article:last-child { padding: 28px 0; border-left: 0; }
   .mode-number { float: right; font-size: 32px; }

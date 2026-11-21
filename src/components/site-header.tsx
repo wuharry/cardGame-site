@@ -28,7 +28,7 @@ export function SiteHeader() {
     }}>
       <a className="skip-link" href="#main-content">跳到主要內容</a>
       <div className="header-inner">
-        <Link href="/#main-content" className="site-brand" aria-label="紙鴉牌首頁" onClick={() => setOpen(false)}>
+        <Link href="/#main-content" prefetch={false} className="site-brand" aria-label="紙鴉牌首頁" onClick={() => setOpen(false)}>
           <Image className="brand-mark" src="/apple-icon.png" alt="" width={40} height={40} sizes="40px" />
           <span>紙鴉牌<small>DECKMARCH</small></span>
         </Link>
