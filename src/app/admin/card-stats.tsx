@@ -20,7 +20,7 @@ const sorts: Record<SortKey, string> = { decks_with: "帶卡牌組數", deck_rat
   avg_alive_turns: "平均存活" };
 const date = (value: string) => new Date(value).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" });
 const rate = (value: number | null) => value === null ? "無樣本" : `${value}%`;
-const cardName = (id: string) => names[id] ?? (id.startsWith("tokens/") ? `衍生物 ${id.slice(7)}` : id);
+const cardName = (id: string) => (Object.hasOwn(names, id) ? names[id] : undefined) ?? (id.startsWith("tokens/") ? `衍生物 ${id.slice(7)}` : id);
 const modeName = (value: string | null) => value ? matchModes[value as keyof typeof matchModes] ?? value : "全部模式";
 
 export const missingCardStatsRPC = (error: unknown) => error instanceof AdminError && error.status === 404 &&
@@ -43,26 +43,39 @@ function CardLabel({ id, detailed }: { id: string; detailed: boolean }) {
 
 // Each dot is one card. Cards often put in decks but rarely played gather in the lower right.
 export function CardScatter({ rows }: { rows: CardStatRow[] }) {
+  const [selectedId, setSelectedId] = useState("");
   const points = rows.filter(row => row.deck_rate !== null && row.play_rate !== null);
   if (points.length < 3) return null;
+  const selected = points.find(row => row.card_id === selectedId) ?? points[0];
+  const maxPlay = Math.max(100, Math.ceil(Math.max(...points.map(row => row.play_rate!)) / 25) * 25);
   const maxDecks = Math.max(1, ...points.map(row => row.decks_with));
   const x = (value: number) => 50 + value / 100 * 640;
-  const y = (value: number) => 270 - value / 100 * 240;
+  const y = (value: number) => 270 - value / maxPlay * 240;
   return <figure className={styles.scatter}>
-    <svg viewBox="0 0 720 310" role="img" aria-label={`逐卡散佈圖：橫軸組入率、縱軸打出率，共 ${points.length} 張卡`}>
+    <label className={styles.scatterSelect}>查看卡牌<select aria-label="散佈圖卡牌" value={selected.card_id} onChange={event => setSelectedId(event.target.value)}>
+      {points.map(row => <option key={row.card_id} value={row.card_id}>{cardName(row.card_id)}</option>)}
+    </select></label>
+    <svg tabIndex={0} onKeyDown={event => {
+      const index = points.indexOf(selected);
+      const next = event.key === "Home" ? 0 : event.key === "End" ? points.length - 1
+        : ["ArrowRight", "ArrowDown"].includes(event.key) ? (index + 1) % points.length
+        : ["ArrowLeft", "ArrowUp"].includes(event.key) ? (index - 1 + points.length) % points.length : null;
+      if (next !== null) { event.preventDefault(); setSelectedId(points[next].card_id); }
+    }} viewBox="0 0 720 310" role="img" aria-label={`逐卡散佈圖：橫軸組入率、縱軸打出率，共 ${points.length} 張卡`}>
       <rect x={x(50)} y={y(50)} width={x(100) - x(50)} height={y(0) - y(50)} fill="#de9d9814" />
-      <text x={x(98)} y={y(4)} textAnchor="end" fill="#de9d98" fontSize="12">常帶卻打不出</text>
+      <text x={x(98)} y={y(4)} textAnchor="end" fill="#de9d98" fontSize="12">常帶、打出率較低</text>
       {[0, 25, 50, 75, 100].map(v => <g key={v}>
-        <line x1={x(0)} x2={x(100)} y1={y(v)} y2={y(v)} stroke="#2b3d40" />
-        <text x={x(0) - 8} y={y(v) + 4} textAnchor="end" fill="#9db0ad" fontSize="11">{v}%</text>
+        <line x1={x(0)} x2={x(100)} y1={y(v * maxPlay / 100)} y2={y(v * maxPlay / 100)} stroke="#2b3d40" />
+        <text x={x(0) - 8} y={y(v * maxPlay / 100) + 4} textAnchor="end" fill="#9db0ad" fontSize="11">{v * maxPlay / 100}%</text>
         <text x={x(v)} y={y(0) + 18} textAnchor="middle" fill="#9db0ad" fontSize="11">{v}%</text></g>)}
       <text x={x(50)} y={306} textAnchor="middle" fill="#b9cac6" fontSize="12">組入率 →</text>
       <text x={14} y={y(50)} fill="#b9cac6" fontSize="12" transform={`rotate(-90 14 ${y(50)})`} textAnchor="middle">打出率 →</text>
-      {points.map(row => <circle key={row.card_id} cx={x(row.deck_rate!)} cy={y(row.play_rate!)}
-        r={3 + Math.sqrt(row.decks_with / maxDecks) * 7} fill={cardHints(row).length ? "#e5c879" : "#7cc9bf"} fillOpacity=".72" stroke="#0e1519">
+      {points.map(row => <circle key={row.card_id} onClick={() => setSelectedId(row.card_id)} cx={x(row.deck_rate!)} cy={y(row.play_rate!)}
+        r={3 + Math.sqrt(row.decks_with / maxDecks) * 7} fill={cardHints(row).length ? "#e5c879" : "#7cc9bf"} fillOpacity=".72" stroke={row === selected ? "#fff0bc" : "#0e1519"} strokeWidth={row === selected ? 3 : 1}>
         <title>{`${cardName(row.card_id)}：組入率 ${row.deck_rate}%、打出率 ${row.play_rate}%、${row.decks_with} 副牌組`}</title></circle>)}
     </svg>
-    <figcaption><span><i className={styles.swatch} data-tone="back" />一般</span><span><i className={styles.swatch} data-tone="warn" />有提醒</span><span>點越大＝越多牌組帶</span></figcaption>
+    <p className={styles.scatterReadout} aria-live="polite">{cardName(selected.card_id)} · 組入率 {rate(selected.deck_rate)} · 打出率 {rate(selected.play_rate)} · {selected.decks_with} 副牌組 · {selected.played} 次打出／{selected.drawn} 抽{selected.drawn < MIN_SAMPLE ? " · 少量樣本" : ""}</p>
+    <figcaption><span><i className={styles.swatch} data-tone="back" />一般</span><span><i className={styles.swatch} data-tone="warn" />有提醒</span><span>點越大＝越多牌組帶</span><span>可用方向鍵切換；重疊的點請用選單選取</span></figcaption>
   </figure>;
 }
 
@@ -87,30 +100,32 @@ export function CardStatsView({ data, sort, ascending, tokens = false }: { data:
         onChange={event => setOnlyHints(event.target.checked)} /> 只看有提醒的卡</label>
       {(search || onlyHints) && <button type="button" onClick={() => { setSearch(""); setOnlyHints(false); }}>清除篩選</button>}
     </div>
+    <p className={styles.note}>提醒只協助找出要檢查的卡，不代表設計好壞。各指標至少 {MIN_SAMPLE} 筆樣本才顯示提醒。</p>
+    {data.source === "all" && <p className={styles.note}>目前包含本機自行回報，判斷平衡時建議分開比較正式對戰與本機資料。</p>}
     <CardScatter rows={cards} />
     <div className={styles.tableTools}>
       <p className={styles.note} role="status">{cards.length.toLocaleString("zh-TW")}／{data.cards.length.toLocaleString("zh-TW")} 張卡</p>
       <label className={styles.checkFilter}><input type="checkbox" checked={detailed} onChange={event => setDetailed(event.target.checked)} /> 詳細數據</label>
     </div>
-    <div className={`${styles.tableScroll} ${styles.cardStatsTable}`} tabIndex={0} role="region" aria-label="逐卡統計表"><table><thead><tr>
+    {cards.length > 0 && <div className={`${styles.tableScroll} ${styles.cardStatsTable}`} tabIndex={0} role="region" aria-label="逐卡統計表"><table><thead><tr>
       <th scope="col">卡牌</th><th scope="col">組入率</th><th scope="col">改牌保留率</th><th scope="col">打出率</th>
       {detailed && <th scope="col">回收率</th>}<th scope="col">主動技能使用率</th>{detailed && <th scope="col">可用時發動率</th>}<th scope="col">平均存活<span className={styles.columnUnit}>己方回合</span></th>
       {detailed && <><th scope="col">死亡／召還／其他／到結束</th><th scope="col">帶卡勝／敗</th></>}<th scope="col">提醒</th>
     </tr></thead><tbody>{sortCards(cards, sort, ascending).map(row => <tr key={row.card_id}>
       <CardLabel id={row.card_id} detailed={detailed} />
-      <RateCell value={row.deck_rate}>{detailed && <small>{row.decks_with} 副</small>}</RateCell>
-      <RateCell value={row.edit_keep_rate}>{detailed && <small>保留 {row.edit_kept}／{row.edit_seen} · 移出 {row.edit_seen - row.edit_kept} · 新增 {row.edit_added}</small>}</RateCell>
-      <RateCell value={row.play_rate}>{detailed && <small>{row.drawn} 抽</small>}</RateCell>
+      <RateCell value={row.deck_rate}><small>{row.decks_with}／{data.decks} 副</small></RateCell>
+      <RateCell value={row.edit_keep_rate}><small>保留 {row.edit_kept}／{row.edit_seen}{row.edit_seen > 0 && row.edit_seen < MIN_SAMPLE ? " · 少量樣本" : ""}</small>{detailed && <small>移出 {row.edit_seen - row.edit_kept} · 新增 {row.edit_added}</small>}</RateCell>
+      <RateCell value={row.play_rate}><small>{row.played} 次打出／{row.drawn} 抽{row.drawn > 0 && row.drawn < MIN_SAMPLE ? " · 少量樣本" : ""}</small></RateCell>
       {detailed && <RateCell value={row.recycle_rate}><small>{row.recycled} 次</small></RateCell>}
-      <RateCell value={row.skill_use_rate}>{detailed && <small>{row.summoned} 登場 · {row.skill_uses} 次技能</small>}</RateCell>
+      <RateCell value={row.skill_use_rate}><small>{row.skill_units}／{row.summoned} 登場{row.summoned > 0 && row.summoned < MIN_SAMPLE ? " · 少量樣本" : ""}</small>{detailed && <small>{row.skill_uses} 次技能</small>}</RateCell>
       {detailed && <RateCell value={row.chance_use_rate}><small>{row.skill_chance_uses}／{row.skill_chances} 回合</small></RateCell>}
       <td>{row.avg_alive_turns === null ? "無樣本" : row.avg_alive_turns}</td>
       {detailed && <><td>{row.left_death}／{row.left_recall}／{row.left_other}／{row.left_end}</td>
         <td>{row.deck_wins}／{row.deck_losses}</td></>}
       <td>{cardHints(row).map(hint => <small key={hint}>{hint}</small>)}</td>
-    </tr>)}</tbody></table></div>
+    </tr>)}</tbody></table></div>}
     {!data.cards.length ? <div className={styles.empty}>
-      <p>尚無對局資料，請調整期間或來源。</p>
+      <p>目前篩選下尚無逐卡樣本。完成支援統計的對局後才會累積數字，也可以調整期間或來源。</p>
     </div> : !cards.length && <p className={styles.empty}>沒有符合條件的卡牌，請清除篩選。</p>}
     <details className={styles.helpDetails}><summary>指標說明</summary>
       <dl>
@@ -140,8 +155,10 @@ export default function CardStatsPanel({ api, disabled, onExpired }: {
   useEffect(() => { expired.current = onExpired; }, [onExpired]);
   useEffect(() => {
     let active = true;
+    let started = false;
     const load = async () => {
-      if (disabled || document.hidden) return;
+      if (disabled || document.hidden || started) return;
+      started = true;
       setStatus("loading");
       try {
         const data = readCardStats(await api.rpc<unknown>("tcg_admin_card_stats", cardStatsParams(query)));
@@ -156,8 +173,11 @@ export default function CardStatsPanel({ api, disabled, onExpired }: {
       }
     };
     void load();
-    return () => { active = false; };
+    const visible = () => { if (!document.hidden) void load(); };
+    document.addEventListener("visibilitychange", visible);
+    return () => { active = false; document.removeEventListener("visibilitychange", visible); };
   }, [api, disabled, query, revision]);
+  const pending = JSON.stringify(draft) !== JSON.stringify(query);
   const data = result?.query === query && status !== "expired" ? result.data : null;
   const modeMatches = new Map(facets.modes.map(m => [m.mode, m.matches]));
   const versions = facets.versions.some(v => v.version === draft.version) || !draft.version
@@ -170,7 +190,7 @@ export default function CardStatsPanel({ api, disabled, onExpired }: {
         {[7, 28, 90, 365].map(days => <option key={days} value={days}>近 {days} 日</option>)}</select></label>
       <label>來源<select aria-label="統計來源" value={draft.source} disabled={disabled} onChange={e => setDraft({ ...draft, source: e.target.value as Filters["source"] })}>
         {Object.entries(sources).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
-      <button type="submit" className={styles.primary} aria-label="套用／更新卡牌統計" disabled={disabled}>更新</button>
+      <button type="submit" className={styles.primary} aria-label="套用／更新卡牌統計" disabled={disabled}>{pending ? "套用篩選" : "更新"}</button>
       </div>
       <details className={styles.advancedFilters}><summary>進階篩選{draft.controller !== "human" || draft.mode || draft.version || draft.tokens ? " · 已設定" : ""}</summary>
         <div className={styles.durationFilters}>
@@ -186,6 +206,7 @@ export default function CardStatsPanel({ api, disabled, onExpired }: {
         </div>
       </details>
     </form>
+    {pending && <div className={styles.pendingFilters} role="status"><span>篩選尚未套用，下方仍顯示原查詢結果。</span><button type="button" onClick={() => setDraft(query)}>還原篩選</button></div>}
     <div className={`${styles.durationFilters} ${styles.cardSort}`}>
       <label>排序<select aria-label="卡牌統計排序" value={sort} onChange={e => setSort(e.target.value as SortKey)}>
         {Object.entries(sorts).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>

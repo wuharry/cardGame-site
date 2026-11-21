@@ -18,7 +18,9 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
   return (
-    <header className="site-header" onKeyDown={(event) => {
+    <header className="site-header" onBlur={(event) => {
+      if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+    }} onKeyDown={(event) => {
       if (event.key === "Escape" && open) {
         setOpen(false);
         toggle.current?.focus();
@@ -35,7 +37,9 @@ export function SiteHeader() {
         </nav>
         <DownloadLink className="header-download" onClick={() => setOpen(false)}>下載試玩 <span aria-hidden="true">↓</span></DownloadLink>
         <button ref={toggle} type="button" className="menu-toggle" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "關閉導覽選單" : "開啟導覽選單"} onClick={() => setOpen(!open)}>
-          <span aria-hidden="true">{open ? "✕" : "☰"}</span>
+          <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <path d={open ? "M6 6l12 12M18 6L6 18" : "M4 6h16M4 12h16M4 18h16"} />
+          </svg>
         </button>
       </div>
       <nav id="mobile-nav" className="mobile-nav" aria-label="手機導覽" hidden={!open}>

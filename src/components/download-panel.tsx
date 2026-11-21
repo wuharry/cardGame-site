@@ -24,7 +24,7 @@ export function DownloadPanel() {
   } : FIRST_MATCH_HELP;
 
   return (
-    <section id="download" aria-labelledby="download-title" className="border-t border-rule-soft bg-board">
+    <section id="download" tabIndex={-1} aria-labelledby="download-title" className="border-t border-rule-soft bg-board">
       <div className="mx-auto max-w-6xl px-5 py-20 md:py-28">
         <header className="max-w-2xl">
           <p className="eyebrow">DOWNLOAD & PLAY</p>

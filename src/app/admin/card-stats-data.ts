@@ -23,8 +23,8 @@ export const MIN_SAMPLE = 10;
 // Players usually swap a few cards per edit, so most cards survive one; a card cut this often stands out.
 export const LOW_KEEP_RATE = 60;
 
-const count = (value: unknown) => typeof value === "number" && Number.isFinite(value) && value >= 0;
-const nullableRate = (value: unknown) => value === null || count(value);
+const count = (value: unknown) => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+const nullableRate = (value: unknown) => value === null || (typeof value === "number" && Number.isFinite(value) && value >= 0);
 const facets = (value: unknown, key: "mode" | "version") => Array.isArray(value)
   && value.every(item => typeof item?.[key] === "string" && count(item.matches));
 
@@ -37,10 +37,18 @@ export function readCardStats(value: unknown): CardStats {
   const data = value as CardStats;
   if (!data || typeof data !== "object" || !Array.isArray(data.cards) || !count(data.matches) || !count(data.decks)
     || !count(data.deck_edits) || !facets(data.modes, "mode") || !facets(data.versions, "version")
-    || typeof data.generated_at !== "string") throw new Error("卡牌統計資料格式不符。");
+    || typeof data.generated_at !== "string" || !Number.isFinite(Date.parse(data.generated_at))
+    || !count(data.days) || !["official", "local", "all"].includes(data.source)
+    || !["human", "ai", "npc", "all"].includes(data.controller)
+    || !(data.mode === null || typeof data.mode === "string")
+    || !(data.version === null || typeof data.version === "string")
+    || new Set(data.cards.map(row => row?.card_id)).size !== data.cards.length) throw new Error("卡牌統計資料格式不符。");
   for (const row of data.cards) {
     if (typeof row?.card_id !== "string"
-      || ![row.decks_with, row.drawn, row.played, row.summoned, row.skill_chances, row.edit_seen, row.edit_kept, row.edit_added].every(count)
+      || ![row.decks_with, row.drawn, row.played, row.recycled, row.summoned, row.skill_units, row.skill_uses,
+        row.skill_chances, row.skill_chance_uses, row.edit_seen, row.edit_kept, row.edit_added,
+        row.left_death, row.left_recall, row.left_other, row.left_end, row.deck_wins, row.deck_losses].every(count)
+      || row.edit_kept > row.edit_seen
       || ![row.deck_rate, row.play_rate, row.recycle_rate, row.skill_use_rate, row.chance_use_rate, row.avg_alive_turns,
         row.edit_keep_rate].every(nullableRate))
       throw new Error("卡牌統計資料格式不符。");
@@ -51,11 +59,11 @@ export function readCardStats(value: unknown): CardStats {
 // Hints point at what to inspect first; thresholds are deliberately coarse and need a minimum sample.
 export function cardHints(row: CardStatRow): string[] {
   const hints: string[] = [];
-  if (row.summoned >= MIN_SAMPLE && (row.avg_alive_turns ?? 0) < 1) hints.push("常上場就死：先查存活與啟動時機");
-  if (row.skill_chances >= MIN_SAMPLE && (row.chance_use_rate ?? 100) < 30) hints.push("有機會也少按：技能可能不划算");
-  if (row.drawn >= MIN_SAMPLE && (row.recycle_rate ?? 0) >= 40) hints.push("常被回收：本身不想打出");
-  if (row.drawn >= MIN_SAMPLE && (row.play_rate ?? 100) < 40) hints.push("常卡手");
-  if (row.edit_seen >= MIN_SAMPLE && (row.edit_keep_rate ?? 100) < LOW_KEEP_RATE) hints.push("改牌時常被拿掉：試過後不想留");
+  if (row.summoned >= MIN_SAMPLE && row.avg_alive_turns !== null && row.avg_alive_turns < 1) hints.push("平均存活短：比對離場原因與啟動時機");
+  if (row.skill_chances >= MIN_SAMPLE && (row.chance_use_rate ?? 100) < 30) hints.push("有機會也少按：檢查成本與其他可選行動");
+  if (row.drawn >= MIN_SAMPLE && (row.recycle_rate ?? 0) >= 40) hints.push("常被回收：檢查魔力需求與牌組用途");
+  if (row.drawn >= MIN_SAMPLE && (row.play_rate ?? 100) < 40) hints.push("打出率偏低：檢查費用、時機與對局長度");
+  if (row.edit_seen >= MIN_SAMPLE && (row.edit_keep_rate ?? 100) < LOW_KEEP_RATE) hints.push("改牌時常被拿掉：比對版本與牌組變化");
   return hints;
 }
 

@@ -15,6 +15,7 @@ export function DownloadLink({ children, className, onClick }: {
     event.preventDefault();
     // Native fragment navigation updates :target before the final layout/scroll.
     window.location.hash = "download";
+    section.focus({ preventScroll: true });
     section.scrollIntoView({ block: "start" });
   }}>{children}</Link>;
 }

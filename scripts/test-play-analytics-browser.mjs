@@ -185,7 +185,7 @@ export default function Fixture() {
     await dailyPanel.screenshot({ path: join(output, `${prefix}-daily.png`) });
     const online = page.locator("article").filter({ has: page.getByRole("heading", { name: "主機連線 · 最近 24 小時" }) });
     await online.locator("svg").focus(); await page.keyboard.press("Home");
-    assert((await online.locator('[aria-live="polite"]').innerText()).includes("全部連線：0 條"));
+    assert((await online.locator('[aria-live="polite"]').innerText()).includes("全部：0 條"));
     await online.screenshot({ path: join(output, `${prefix}-online.png`) });
     assert((await section.innerText()).includes("0 秒") && (await section.innerText()).includes("未記錄"));
     await section.getByText("指標說明", { exact: true }).click();
@@ -214,6 +214,11 @@ export default function Fixture() {
     }
     const cards = page.getByRole("region", { name: "卡牌統計", exact: true });
     const cardTable = cards.getByRole("region", { name: "逐卡統計表", exact: true });
+    assert((await cardTable.innerText()).includes("18 次打出／30 抽"), "Default view exposes denominators");
+    await cards.getByRole("combobox", { name: "散佈圖卡牌" }).selectOption("soldier");
+    assert((await cards.locator('[aria-live="polite"]').innerText()).includes("士兵"));
+    await cards.locator("svg").focus(); await page.keyboard.press("End");
+    assert((await cards.locator('[aria-live="polite"]').innerText()).includes("騎士"));
     await cards.getByRole("checkbox", { name: "詳細數據", exact: true }).check();
     await cardTable.getByText("tf_tide_healer", { exact: true }).waitFor();
     assert.deepEqual(requests.find(r => r.name === "tcg_admin_card_stats").params, { p_days: 28, p_source: "official",
@@ -231,6 +236,10 @@ export default function Fixture() {
     await cards.screenshot({ path: join(output, `${prefix}-card-stats.png`) });
     await cards.getByText("進階篩選", { exact: true }).click();
     assert((await cards.getByRole("combobox", { name: "統計模式" }).innerText()).includes("天梯（10 局）"));
+    await cards.getByRole("combobox", { name: "統計模式" }).selectOption("ranked");
+    await cards.getByText("篩選尚未套用，下方仍顯示原查詢結果。").waitFor();
+    await cards.getByRole("button", { name: "還原篩選" }).click();
+    assert.equal(await cards.getByRole("combobox", { name: "統計模式" }).inputValue(), "");
     await cards.getByRole("combobox", { name: "統計模式" }).selectOption("ranked");
     await cards.getByRole("combobox", { name: "統計版本" }).selectOption("2026.10.29-R22");
     await cards.getByRole("button", { name: "套用／更新卡牌統計" }).click();
@@ -334,10 +343,10 @@ export default function Fixture() {
       await page.getByRole("button", { name: "驗證並進入", exact: true }).click();
       await page.getByRole("button", { name: "登出", exact: true }).waitFor();
     };
-    const select = async (id, label) => {
+    const select = async (id, label, waitForHeading = true) => {
       if (mobile) await page.getByRole("combobox", { name: "後台功能", exact: true }).selectOption(id);
       else await page.getByRole("navigation", { name: "後台功能", exact: true }).getByRole("link", { name: new RegExp(label) }).click();
-      await page.getByRole("heading", { level: 1, name: label, exact: true }).waitFor();
+      if (waitForHeading) await page.getByRole("heading", { level: 1, name: label, exact: true }).waitFor();
     };
     await page.goto(`http://127.0.0.1:${port}/admin#card-stats`, { waitUntil: "networkidle" });
     assert.equal(calls.length, 0, "Signed-out console requests no private data");
@@ -377,6 +386,7 @@ export default function Fixture() {
     await page.getByText("Synthetic uncertain operation", { exact: true }).waitFor();
     const mutationId = calls.find(c => c.name === "tcg_admin_change").body.p_request;
     await page.goto(`http://127.0.0.1:${port}/admin#card-stats`);
+    await page.reload(); // A fragment-only goto preserves the document; recovery requires a real reload.
     await login();
     await page.getByText("找到一筆尚未確認的操作，請重試同一筆以確認結果。", { exact: true }).waitFor();
     assert.equal(new URL(page.url()).hash, "#players", "Restored operation opens its own player page");
@@ -385,10 +395,10 @@ export default function Fixture() {
     await page.getByText("操作完成並已留下紀錄。", { exact: true }).waitFor();
     assert.deepEqual(calls.filter(c => c.name === "tcg_admin_change").map(c => c.body.p_request), [mutationId, mutationId], "Retry preserves mutation UUID");
     await select("guests", "遊客分析");
-    await page.getByRole("heading", { name: "匿名裝置", exact: true }).waitFor();
+    await page.getByRole("heading", { name: "所有遊客裝置", exact: true }).waitFor();
     await select("player-rates", "玩家戰績");
     await page.getByText("正式伺服器 · 累計戰績", { exact: true }).waitFor();
-    assert.equal(await page.getByRole("heading", { name: "匿名裝置", exact: true }).count(), 0);
+    assert.equal(await page.getByRole("heading", { name: "所有遊客裝置", exact: true }).count(), 0);
     slowCards = true;
     await select("card-stats", "卡牌統計");
     await select("match-duration", "對局耗時");
@@ -396,7 +406,7 @@ export default function Fixture() {
     await page.waitForTimeout(750);
     assert.equal(await page.getByRole("region", { name: "卡牌統計", exact: true }).count(), 0, "Unmounted request cannot restore an old page");
     slowCards = false; denyCards = true;
-    await select("card-stats", "卡牌統計");
+    await select("card-stats", "卡牌統計", false);
     await page.getByRole("button", { name: "登入管理後台", exact: true }).waitFor();
     assert(!(await page.locator("body").innerText()).includes(user.email), "Revoked permission clears private player data from every page");
     denyCards = false;
@@ -411,6 +421,32 @@ export default function Fixture() {
     await page.getByRole("button", { name: "登入管理後台", exact: true }).waitFor();
     console.log(`PASS ${mobile ? "mobile" : "desktop"} console: sticky navigation, deep links/back, page isolation, request scoping, pending mutation/retry restoration, stale requests, revoked session and re-login`);
     await context.close();
+  }
+  for (const width of [390, 1440]) {
+    const context = await browser.newContext({ viewport: { width, height: 900 } });
+    await context.route("**/*", route => new URL(route.request().url()).hostname === "127.0.0.1" ? route.continue() : route.abort());
+    const page = await context.newPage(); page.on("pageerror", error => errors.push(error.message));
+    await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+    await page.screenshot({ path: join(output, `public-home-${width}.png`) });
+    if (width === 390) {
+      await page.getByRole("button", { name: "開啟導覽選單" }).click();
+      await page.keyboard.press("Escape");
+      assert.equal(await page.getByRole("button", { name: "開啟導覽選單" }).getAttribute("aria-expanded"), "false");
+    }
+    const download = page.locator(".header-download");
+    for (let repeat = 0; repeat < 2; repeat++) {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await download.click();
+      await page.waitForFunction(() => document.activeElement?.id === "download");
+      const bounds = await page.locator("#download").boundingBox();
+      const header = await page.locator(".site-header").boundingBox();
+      assert(bounds.y >= header.height - 1 && bounds.y < 200, "Download section clears sticky header on repeated clicks");
+    }
+    await page.screenshot({ path: join(output, `public-download-${width}.png`) });
+    await context.close();
+    console.log(`PASS public ${width}: no overflow, menu escape, repeated downloads and keyboard focus`);
   }
   assert.deepEqual(errors, []); assert.deepEqual(outside, []);
   console.log(`PASS no browser errors or external backend requests; screenshots: ${output}`);

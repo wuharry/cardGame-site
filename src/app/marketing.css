@@ -43,7 +43,12 @@ html:has(.marketing-home) { scroll-behavior: auto; }
     contain-intrinsic-block-size: auto 400px;
   }
 }
-.marketing-home :where(section, article, div)[id], .subpage-heading { scroll-margin-top: 24px; }
+.marketing-home :where(section, article, div)[id], .subpage-heading { scroll-margin-top: 104px; }
+.menu-toggle svg { margin: auto; }
+.marketing-home #download:focus-visible { outline: 2px solid var(--gold); outline-offset: -4px; }
+@media (max-width: 1000px) {
+  .marketing-home :where(section, article, div)[id], .subpage-heading { scroll-margin-top: 88px; }
+}
 .marketing-home h2, .marketing-home h3, .subpage-heading h1, .site-footer { font-family: var(--font-serif); }
 .overline { font: 600 11px/1.6 var(--font-sans); letter-spacing: .22em; color: var(--gold); text-transform: uppercase; }
 .status-dot { display: inline-block; width: 5px; height: 5px; margin-right: 9px; border-radius: 50%; background: var(--gold-light); box-shadow: 0 0 12px rgb(240 216 163 / 45%); vertical-align: middle; }

@@ -24,6 +24,13 @@ assert.throws(() => readCardStats({ ...payload, versions: [{ version: 21, matche
 assert.throws(() => readCardStats({ ...payload, cards: [row("archer", { edit_keep_rate: "75" })] }));
 check(true, "A pre-v2 payload (no retention or facets) is rejected instead of shown as zero retention");
 check(cardHints(row("a", { avg_alive_turns: 0.5 })).some(h => h.includes("存活")), "Short-lived minions are flagged for survival first");
+check(!cardHints(row("a", { avg_alive_turns: null })).some(h => h.includes("存活")), "Missing lifetime is not treated as immediate death");
+for (const extra of [{ recycled: -1 }, { skill_units: "2" }, { left_death: 0.5 }, { edit_kept: 99 }]) {
+  assert.throws(() => readCardStats({ ...payload, cards: [row("a", extra)] }));
+}
+assert.throws(() => readCardStats({ ...payload, generated_at: "invalid" }));
+assert.throws(() => readCardStats({ ...payload, cards: [row("a"), row("a")] }));
+check(true, "Displayed counters, retention bounds, dates and duplicate card IDs are validated");
 check(cardHints(row("a", { chance_use_rate: 20 })).some(h => h.includes("少按")), "Low use despite opportunity is flagged");
 check(cardHints(row("a", { recycle_rate: 45 })).some(h => h.includes("回收")), "Frequently recycled cards are flagged");
 check(cardHints(row("a", { edit_keep_rate: 40 })).some(h => h.includes("拿掉")), "Cards often cut in deck edits are flagged");
